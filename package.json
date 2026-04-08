@@ -6,11 +6,13 @@
 		"dev": "turbo run dev",
 		"lint": "turbo run lint",
 		"check-types": "turbo run check-types",
-		"format": "prettier --write \"**/*.{ts,tsx,md}\""
+		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
+		"ui:add": "bunx shadcn add --cwd packages/ui -p src/components/ui"
 	},
 	"devDependencies": {
 		"prettier": "^3.6.0",
 		"prettier-plugin-tailwindcss": "^0.7.1",
+		"shadcn": "^4.2.0",
 		"turbo": "^2.9.5"
 	},
 	"engines": {

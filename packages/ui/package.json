@@ -5,23 +5,32 @@
 		"**/*.css"
 	],
 	"files": [
-		"dist"
+		"dist",
+		"src"
 	],
 	"exports": {
 		"./styles.css": "./dist/index.css",
-		"./*": "./dist/*.js"
+		"./components/ui/*": "./src/components/ui/*.tsx",
+		"./lib/*": "./src/lib/*.ts"
 	},
 	"license": "MIT",
 	"scripts": {
 		"build:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
-		"build:components": "tsc",
+		"build:components": "tsc --noEmit",
 		"check-types": "tsc --noEmit",
 		"dev:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
-		"dev:components": "tsc --watch",
+		"dev:components": "tsc --noEmit --watch",
 		"lint": "eslint src --max-warnings 0"
 	},
 	"peerDependencies": {
 		"react": "^19"
+	},
+	"dependencies": {
+		"class-variance-authority": "^0.7.1",
+		"clsx": "^2.1.1",
+		"lucide-react": "^1.7.0",
+		"radix-ui": "^1.4.3",
+		"tailwind-merge": "^3.5.0"
 	},
 	"devDependencies": {
 		"@repo/eslint-config": "*",

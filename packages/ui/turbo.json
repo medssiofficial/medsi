@@ -8,7 +8,7 @@
 			"outputs": ["dist/**"]
 		},
 		"build:components": {
-			"outputs": ["dist/**"]
+			"outputs": []
 		},
 		"dev": {
 			"with": ["dev:styles", "dev:components"]
