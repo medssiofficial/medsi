@@ -1,5 +1,5 @@
 {
-	"name": "with-tailwind",
+	"name": "Medssi",
 	"private": true,
 	"scripts": {
 		"build": "turbo run build",
