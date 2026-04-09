@@ -2,6 +2,7 @@ import "@repo/ui/styles.css";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Manrope, Space_Grotesk } from "next/font/google";
+import { user } from "@repo/database/types/browser";
 
 const spaceGrotesk = Space_Grotesk({
 	subsets: ["latin"],

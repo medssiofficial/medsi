@@ -5,9 +5,10 @@ import path from "node:path";
 import { cwd } from "node:process";
 import z from "zod";
 
-if (existsSync(path.resolve(cwd(), ".env"))) {
+if (existsSync(path.resolve(cwd(), "../../.env"))) {
+	console.log("Loading .env file");
 	config({
-		path: path.resolve(cwd(), ".env"),
+		path: path.resolve(cwd(), "../../.env"),
 	});
 }
 
