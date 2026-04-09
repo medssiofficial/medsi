@@ -1,6 +1,7 @@
 {
 	"$schema": "https://turborepo.dev/schema.json",
 	"ui": "tui",
+	"globalEnv": ["DIRECT_DATABASE_URL", "DATABASE_URL"],
 	"tasks": {
 		"build": {
 			"dependsOn": ["^build"],
@@ -16,6 +17,27 @@
 		"dev": {
 			"cache": false,
 			"persistent": true
+		},
+		"db:generate": {
+			"cache": false
+		},
+		"db:migrate": {
+			"cache": false
+		},
+		"db:deploy": {
+			"cache": false
+		},
+		"db:push": {
+			"cache": false
+		},
+		"db:push-dev": {
+			"cache": false
+		},
+		"db:studio": {
+			"cache": false
+		},
+		"db:sync": {
+			"cache": false
 		}
 	}
 }
