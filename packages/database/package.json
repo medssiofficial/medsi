@@ -1,0 +1,14 @@
+{
+	"name": "@repo/database",
+	"version": "0.0.0",
+	"type": "module",
+	"devDependencies": {
+		"prisma": "^7.7.0"
+	},
+	"dependencies": {
+		"@prisma/adapter-pg": "^7.7.0",
+		"@prisma/client": "^7.7.0",
+		"dotenv": "^17.4.1",
+		"pg": "^8.20.0"
+	}
+}
