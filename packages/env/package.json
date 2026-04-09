@@ -3,7 +3,9 @@
 	"version": "0.0.0",
 	"type": "module",
 	"exports": {
-		"./cli": "./cli.ts"
+		"./cli": "./cli.ts",
+		"./server": "./server.ts",
+		"./client": "./client.ts"
 	},
 	"dependencies": {
 		"@t3-oss/env-core": "^0.13.11",
