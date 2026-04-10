@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "with-tailwind",
@@ -81,6 +82,7 @@
       },
       "devDependencies": {
         "@next/eslint-plugin-next": "^16.2.0",
+        "@repo/database": "*",
         "@repo/eslint-config": "*",
         "@repo/tailwind-config": "*",
         "@repo/typescript-config": "*",
