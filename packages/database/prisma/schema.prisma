@@ -60,16 +60,86 @@ model doctor {
   clerk_id   String   @unique
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  specializations doctor_specialization[]
+  experiences     doctor_experience[]
+  profile         doctor_profile?
+  expertises      doctor_expertise[]
+}
+
+model doctor_profile {
+  id                  String   @id @default(ulid())
+  doctor_id           String   @unique
+  years_of_experience Decimal
+  name                String
+  dob                 DateTime
+  gender              Gender
+  email               String
+  mobile_number       String
+  country             String
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  doctor doctor @relation(fields: [doctor_id], references: [id])
 }
 
 model doctor_application {
-  id                 String                  @id @default(ulid())
-  application_status DoctorApplicationStatus @default(pending)
-  email              String
-  mobile_number      String
-  country            String
-  created_at         DateTime                @default(now())
-  updated_at         DateTime                @updatedAt
+  id                  String                  @id @default(ulid())
+  application_status  DoctorApplicationStatus @default(pending)
+  name                String
+  dob                 DateTime
+  gender              Gender
+  email               String
+  mobile_number       String
+  country             String
+  years_of_experience Decimal
+  created_at          DateTime                @default(now())
+  updated_at          DateTime                @updatedAt
+
+  specializations doctor_specialization[]
+  experiences     doctor_experience[]
+  expertises      doctor_expertise[]
+}
+
+model doctor_expertise {
+  id                    String   @id @default(ulid())
+  expertise             String
+  doctor_id             String?
+  doctor_application_id String?
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  doctor             doctor?             @relation(fields: [doctor_id], references: [id])
+  doctor_application doctor_application? @relation(fields: [doctor_application_id], references: [id])
+}
+
+model doctor_specialization {
+  id                    String   @id @default(ulid())
+  name                  String
+  certificate_file_key  String
+  doctor_id             String?
+  doctor_application_id String?
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  doctor             doctor?             @relation(fields: [doctor_id], references: [id])
+  doctor_application doctor_application? @relation(fields: [doctor_application_id], references: [id])
+}
+
+model doctor_experience {
+  id                         String   @id @default(ulid())
+  start_date                 DateTime
+  end_date                   DateTime
+  hospital_name              String
+  description                String
+  experience_letter_file_key String?
+  doctor_id                  String?
+  doctor_application_id      String?
+  created_at                 DateTime @default(now())
+  updated_at                 DateTime @updatedAt
+
+  doctor             doctor?             @relation(fields: [doctor_id], references: [id])
+  doctor_application doctor_application? @relation(fields: [doctor_application_id], references: [id])
 }
 
 model medical_case {
