@@ -1,0 +1,13 @@
+{
+	"name": "@repo/utils",
+	"version": "0.0.1",
+	"private": true,
+	"devDependencies": {
+		"next": "^16.2.3",
+		"typescript": "5.9.2",
+		"@repo/typescript-config": "*"
+	},
+	"dependencies": {
+		"@repo/types": "*"
+	}
+}
