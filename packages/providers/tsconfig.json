@@ -1,0 +1,10 @@
+{
+	"extends": "@repo/typescript-config/nextjs.json",
+	"compilerOptions": {
+		"strictNullChecks": true,
+		"baseUrl": ".",
+		"module": "ESNext",
+		"moduleResolution": "Bundler"
+	},
+	"exclude": ["node_modules"]
+}
