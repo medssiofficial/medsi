@@ -8,7 +8,7 @@ interface Props extends React.ComponentProps<typeof ClerkProvider> {
 	publishableKey: string;
 }
 
-const AuthProvider = (props: Props) => {
+export const AuthProvider = (props: Props) => {
 	const { children, publishableKey, ...rest } = props;
 
 	return (
@@ -23,5 +23,3 @@ const AuthProvider = (props: Props) => {
 		</ClerkProvider>
 	);
 };
-
-export default AuthProvider;

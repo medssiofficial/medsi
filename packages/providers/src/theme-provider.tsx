@@ -2,7 +2,7 @@
 
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 
-const ThemeProvider = (
+export const ThemeProvider = (
 	props: React.ComponentProps<typeof NextThemesProvider>,
 ) => {
 	const { children, ...rest } = props;

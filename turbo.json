@@ -1,7 +1,12 @@
 {
 	"$schema": "https://turborepo.dev/schema.json",
 	"ui": "tui",
-	"globalEnv": ["DIRECT_DATABASE_URL", "DATABASE_URL"],
+	"globalEnv": [
+		"DIRECT_DATABASE_URL",
+		"DATABASE_URL",
+		"ENV",
+		"NEXT_PUBLIC_ADMIN_CLERK_PUBLISHABLE_KEY"
+	],
 	"tasks": {
 		"build": {
 			"dependsOn": ["^build"],

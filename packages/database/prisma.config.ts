@@ -1,4 +1,4 @@
-import { CLI_ENV } from "@repo/env/cli";
+import { CLI_ENV } from "@repo/env";
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
