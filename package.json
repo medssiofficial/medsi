@@ -1,36 +1,43 @@
 {
-	"name": "Medssi",
-	"private": true,
-	"scripts": {
-		"build": "turbo run build",
-		"dev": "turbo run dev",
-		"lint": "turbo run lint",
-		"check-types": "turbo run check-types",
-		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
-		"ui:add": "bunx shadcn add --cwd packages/ui -p src/components/ui",
-		"db:generate": "turbo run db:generate --filter=@repo/database",
-		"db:migrate": "turbo run db:migrate --filter=@repo/database",
-		"db:deploy": "turbo run db:deploy --filter=@repo/database",
-		"db:push": "turbo run db:push --filter=@repo/database",
-		"db:push-dev": "turbo run db:push-dev --filter=@repo/database",
-		"db:studio": "turbo run db:studio --filter=@repo/database",
-		"db:sync": "turbo run db:sync --filter=@repo/database"
-	},
-	"devDependencies": {
-		"prettier": "^3.6.0",
-		"prettier-plugin-tailwindcss": "^0.7.1",
-		"shadcn": "^4.2.0",
-		"turbo": "^2.9.5"
-	},
-	"engines": {
-		"node": ">=18"
-	},
-	"packageManager": "bun@1.3.9",
-	"workspaces": [
-		"apps/*",
-		"packages/*"
-	],
-	"dependencies": {
-		"dotenv": "^17.4.1"
-	}
+  "name": "Medssi",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "check-types": "turbo run check-types",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "ui:add": "bunx shadcn add --cwd packages/ui -p src/components/ui",
+    "db:generate": "turbo run db:generate --filter=@repo/database",
+    "db:migrate": "turbo run db:migrate --filter=@repo/database",
+    "db:deploy": "turbo run db:deploy --filter=@repo/database",
+    "db:push": "turbo run db:push --filter=@repo/database",
+    "db:push-dev": "turbo run db:push-dev --filter=@repo/database",
+    "db:studio": "turbo run db:studio --filter=@repo/database",
+    "db:sync": "turbo run db:sync --filter=@repo/database"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.0",
+    "prettier-plugin-tailwindcss": "^0.7.1",
+    "shadcn": "^4.2.0",
+    "turbo": "^2.9.5"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "bun@1.3.9",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "dependencies": {
+    "dotenv": "^17.4.1"
+  },
+  "trustedDependencies": [
+    "@clerk/shared",
+    "@parcel/watcher",
+    "@prisma/engines",
+    "msw",
+    "prisma"
+  ]
 }
