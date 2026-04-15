@@ -5,42 +5,81 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-	--color-blue-1000: #2a8af6;
-	--color-purple-1000: #a853ba;
-	--color-red-1000: #e92a67;
 	--font-heading: var(--font-space-grotesk);
 	--font-sans: var(--font-manrope);
-	--color-sidebar-ring: var(--sidebar-ring);
-	--color-sidebar-border: var(--sidebar-border);
-	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-	--color-sidebar-accent: var(--sidebar-accent);
-	--color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-	--color-sidebar-primary: var(--sidebar-primary);
-	--color-sidebar-foreground: var(--sidebar-foreground);
-	--color-sidebar: var(--sidebar);
-	--color-chart-5: var(--chart-5);
-	--color-chart-4: var(--chart-4);
-	--color-chart-3: var(--chart-3);
-	--color-chart-2: var(--chart-2);
-	--color-chart-1: var(--chart-1);
-	--color-ring: var(--ring);
-	--color-input: var(--input);
-	--color-border: var(--border);
-	--color-destructive: var(--destructive);
-	--color-accent-foreground: var(--accent-foreground);
-	--color-accent: var(--accent);
-	--color-muted-foreground: var(--muted-foreground);
-	--color-muted: var(--muted);
-	--color-secondary-foreground: var(--secondary-foreground);
-	--color-secondary: var(--secondary);
-	--color-primary-foreground: var(--primary-foreground);
-	--color-primary: var(--primary);
-	--color-popover-foreground: var(--popover-foreground);
-	--color-popover: var(--popover);
-	--color-card-foreground: var(--card-foreground);
-	--color-card: var(--card);
-	--color-foreground: var(--foreground);
+
+	/* ── ShadCN core color bindings ── */
 	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-destructive: var(--destructive);
+	--color-border: var(--border);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+
+	/* ── Chart colors ── */
+	--color-chart-1: var(--chart-1);
+	--color-chart-2: var(--chart-2);
+	--color-chart-3: var(--chart-3);
+	--color-chart-4: var(--chart-4);
+	--color-chart-5: var(--chart-5);
+
+	/* ── Sidebar bindings ── */
+	--color-sidebar: var(--sidebar);
+	--color-sidebar-foreground: var(--sidebar-foreground);
+	--color-sidebar-primary: var(--sidebar-primary);
+	--color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+	--color-sidebar-accent: var(--sidebar-accent);
+	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+	--color-sidebar-border: var(--sidebar-border);
+	--color-sidebar-ring: var(--sidebar-ring);
+
+	/* ── Medssi medical semantic colors ── */
+	--color-success: var(--success);
+	--color-success-foreground: var(--success-foreground);
+	--color-success-surface: var(--success-surface);
+	--color-warning: var(--warning);
+	--color-warning-foreground: var(--warning-foreground);
+	--color-warning-surface: var(--warning-surface);
+	--color-error: var(--error);
+	--color-error-foreground: var(--error-foreground);
+	--color-error-surface: var(--error-surface);
+
+	/* ── Medssi brand colors ── */
+	--color-medssi-green: var(--medssi-green);
+	--color-medssi-green-dark: var(--medssi-green-dark);
+	--color-medssi-green-light: var(--medssi-green-light);
+	--color-medssi-green-surface: var(--medssi-green-surface);
+	--color-medssi-gold: var(--medssi-gold);
+	--color-medssi-gold-light: var(--medssi-gold-light);
+
+	/* ── Grey scale (direct access for precision layouts) ── */
+	--color-grey-50: var(--grey-50);
+	--color-grey-100: var(--grey-100);
+	--color-grey-200: var(--grey-200);
+	--color-grey-300: var(--grey-300);
+	--color-grey-400: var(--grey-400);
+	--color-grey-500: var(--grey-500);
+	--color-grey-600: var(--grey-600);
+	--color-grey-700: var(--grey-700);
+
+	/* ── Neutral warm tint ── */
+	--color-neutral-warm: var(--neutral-warm);
+	--color-neutral-warm-dark: var(--neutral-warm-dark);
+	--color-neutral-warm-medium: var(--neutral-warm-medium);
+
+	/* ── Radius tokens ── */
 	--radius-sm: calc(var(--radius) * 0.6);
 	--radius-md: calc(var(--radius) * 0.8);
 	--radius-lg: var(--radius);
@@ -50,73 +89,213 @@
 	--radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* ═══════════════════════════════════════════
+   LIGHT MODE — Medssi Design System
+   Monochrome-forward with medical green accent
+   ═══════════════════════════════════════════ */
 :root {
-	--background: oklch(1 0 0);
-	--foreground: oklch(0.145 0 0);
-	--card: oklch(1 0 0);
-	--card-foreground: oklch(0.145 0 0);
-	--popover: oklch(1 0 0);
-	--popover-foreground: oklch(0.145 0 0);
-	--primary: oklch(0.205 0 0);
-	--primary-foreground: oklch(0.985 0 0);
-	--secondary: oklch(0.97 0 0);
-	--secondary-foreground: oklch(0.205 0 0);
-	--muted: oklch(0.97 0 0);
-	--muted-foreground: oklch(0.556 0 0);
-	--accent: oklch(0.97 0 0);
-	--accent-foreground: oklch(0.205 0 0);
-	--destructive: oklch(0.577 0.245 27.325);
-	--border: oklch(0.922 0 0);
-	--input: oklch(0.922 0 0);
-	--ring: oklch(0.708 0 0);
-	--chart-1: oklch(0.879 0.169 91.605);
-	--chart-2: oklch(0.769 0.188 70.08);
-	--chart-3: oklch(0.666 0.179 58.318);
-	--chart-4: oklch(0.555 0.163 48.998);
-	--chart-5: oklch(0.473 0.137 46.201);
+	/* ── Core surfaces ── */
+	--background: #ffffff;
+	--foreground: #0a0a0a;
+	--card: #ffffff;
+	--card-foreground: #0a0a0a;
+	--popover: #ffffff;
+	--popover-foreground: #0a0a0a;
+
+	/* ── Primary: near-black for buttons & CTAs ── */
+	--primary: #171717;
+	--primary-foreground: #ffffff;
+
+	/* ── Secondary: subtle grey backgrounds ── */
+	--secondary: #f5f5f5;
+	--secondary-foreground: #1a1a1a;
+
+	/* ── Muted: subdued backgrounds & text ── */
+	--muted: #f5f5f5;
+	--muted-foreground: #737373;
+
+	/* ── Accent: interactive hover states ── */
+	--accent: #f5f5f5;
+	--accent-foreground: #1a1a1a;
+
+	/* ── Destructive ── */
+	--destructive: #c0392b;
+
+	/* ── Borders & inputs ── */
+	--border: #e5e5e5;
+	--input: #d4d4d4;
+	--ring: #a3a3a3;
+
+	/* ── Chart palette (monochrome with green accent) ── */
+	--chart-1: #171717;
+	--chart-2: #4a6741;
+	--chart-3: #737373;
+	--chart-4: #a3a3a3;
+	--chart-5: #d4d4d4;
+
+	/* ── Radius base ── */
 	--radius: 0.625rem;
-	--sidebar: oklch(0.985 0 0);
-	--sidebar-foreground: oklch(0.145 0 0);
-	--sidebar-primary: oklch(0.205 0 0);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.97 0 0);
-	--sidebar-accent-foreground: oklch(0.205 0 0);
-	--sidebar-border: oklch(0.922 0 0);
-	--sidebar-ring: oklch(0.708 0 0);
+
+	/* ── Sidebar (default: admin dark sidebar) ── */
+	--sidebar: #262626;
+	--sidebar-foreground: #ffffff;
+	--sidebar-primary: #404040;
+	--sidebar-primary-foreground: #ffffff;
+	--sidebar-accent: #404040;
+	--sidebar-accent-foreground: #ffffff;
+	--sidebar-border: rgba(255, 255, 255, 0.1);
+	--sidebar-ring: #525252;
+
+	/* ── Medssi medical semantic ── */
+	--success: #4a6741;
+	--success-foreground: #ffffff;
+	--success-surface: #eaf0e8;
+	--warning: #d4a017;
+	--warning-foreground: #ffffff;
+	--warning-surface: #fff8e1;
+	--error: #c0392b;
+	--error-foreground: #ffffff;
+	--error-surface: #fdedeb;
+
+	/* ── Medssi brand ── */
+	--medssi-green: #4a6741;
+	--medssi-green-dark: #3a5233;
+	--medssi-green-light: #5c7d52;
+	--medssi-green-surface: #eaf0e8;
+	--medssi-gold: #c5a059;
+	--medssi-gold-light: #d4b574;
+
+	/* ── Grey scale ── */
+	--grey-50: #f5f5f5;
+	--grey-100: #e5e5e5;
+	--grey-200: #d4d4d4;
+	--grey-300: #a3a3a3;
+	--grey-400: #737373;
+	--grey-500: #525252;
+	--grey-600: #404040;
+	--grey-700: #262626;
+
+	/* ── Warm neutrals (used for neutral/organic backgrounds) ── */
+	--neutral-warm: #f9f8f6;
+	--neutral-warm-dark: #e8e6e1;
+	--neutral-warm-medium: #b0ada6;
 }
 
+/* ═══════════════════════════════════════════
+   DARK MODE
+   ═══════════════════════════════════════════ */
 .dark {
-	--background: oklch(0.145 0 0);
-	--foreground: oklch(0.985 0 0);
-	--card: oklch(0.205 0 0);
-	--card-foreground: oklch(0.985 0 0);
-	--popover: oklch(0.205 0 0);
-	--popover-foreground: oklch(0.985 0 0);
-	--primary: oklch(0.922 0 0);
-	--primary-foreground: oklch(0.205 0 0);
-	--secondary: oklch(0.269 0 0);
-	--secondary-foreground: oklch(0.985 0 0);
-	--muted: oklch(0.269 0 0);
-	--muted-foreground: oklch(0.708 0 0);
-	--accent: oklch(0.269 0 0);
-	--accent-foreground: oklch(0.985 0 0);
-	--destructive: oklch(0.704 0.191 22.216);
-	--border: oklch(1 0 0 / 10%);
-	--input: oklch(1 0 0 / 15%);
-	--ring: oklch(0.556 0 0);
-	--chart-1: oklch(0.879 0.169 91.605);
-	--chart-2: oklch(0.769 0.188 70.08);
-	--chart-3: oklch(0.666 0.179 58.318);
-	--chart-4: oklch(0.555 0.163 48.998);
-	--chart-5: oklch(0.473 0.137 46.201);
-	--sidebar: oklch(0.205 0 0);
-	--sidebar-foreground: oklch(0.985 0 0);
-	--sidebar-primary: oklch(0.488 0.243 264.376);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.269 0 0);
-	--sidebar-accent-foreground: oklch(0.985 0 0);
-	--sidebar-border: oklch(1 0 0 / 10%);
-	--sidebar-ring: oklch(0.556 0 0);
+	/* ── Core surfaces ── */
+	--background: #1a1a1a;
+	--foreground: #f5f5f5;
+	--card: #262626;
+	--card-foreground: #f5f5f5;
+	--popover: #262626;
+	--popover-foreground: #f5f5f5;
+
+	/* ── Primary: light grey for buttons in dark mode ── */
+	--primary: #e5e5e5;
+	--primary-foreground: #1a1a1a;
+
+	/* ── Secondary ── */
+	--secondary: #2d2d2d;
+	--secondary-foreground: #f5f5f5;
+
+	/* ── Muted ── */
+	--muted: #2d2d2d;
+	--muted-foreground: #a3a3a3;
+
+	/* ── Accent ── */
+	--accent: #2d2d2d;
+	--accent-foreground: #f5f5f5;
+
+	/* ── Destructive ── */
+	--destructive: #e74c3c;
+
+	/* ── Borders & inputs ── */
+	--border: rgba(255, 255, 255, 0.1);
+	--input: rgba(255, 255, 255, 0.15);
+	--ring: #525252;
+
+	/* ── Chart palette (dark mode) ── */
+	--chart-1: #e5e5e5;
+	--chart-2: #5c7d52;
+	--chart-3: #a3a3a3;
+	--chart-4: #737373;
+	--chart-5: #525252;
+
+	/* ── Sidebar (stays dark in dark mode) ── */
+	--sidebar: #171717;
+	--sidebar-foreground: #f5f5f5;
+	--sidebar-primary: #2d2d2d;
+	--sidebar-primary-foreground: #f5f5f5;
+	--sidebar-accent: #2d2d2d;
+	--sidebar-accent-foreground: #f5f5f5;
+	--sidebar-border: rgba(255, 255, 255, 0.1);
+	--sidebar-ring: #525252;
+
+	/* ── Medssi medical semantic (dark mode) ── */
+	--success: #5c7d52;
+	--success-foreground: #ffffff;
+	--success-surface: #2a3a26;
+	--warning: #d4a017;
+	--warning-foreground: #1a1a1a;
+	--warning-surface: #3a3520;
+	--error: #e74c3c;
+	--error-foreground: #ffffff;
+	--error-surface: #3a2020;
+
+	/* ── Medssi brand (dark mode) ── */
+	--medssi-green: #5c7d52;
+	--medssi-green-dark: #4a6741;
+	--medssi-green-light: #6e9463;
+	--medssi-green-surface: #2a3a26;
+	--medssi-gold: #d4b574;
+	--medssi-gold-light: #e0c78a;
+
+	/* ── Grey scale (inverted for dark mode) ── */
+	--grey-50: #2d2d2d;
+	--grey-100: #3a3a3a;
+	--grey-200: #525252;
+	--grey-300: #737373;
+	--grey-400: #a3a3a3;
+	--grey-500: #d4d4d4;
+	--grey-600: #e5e5e5;
+	--grey-700: #f5f5f5;
+
+	/* ── Warm neutrals (dark mode) ── */
+	--neutral-warm: #1e1d1b;
+	--neutral-warm-dark: #2a2825;
+	--neutral-warm-medium: #5a5650;
+}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR VARIANTS
+   Apply these classes to switch sidebar themes
+   ═══════════════════════════════════════════ */
+
+/* Doctor app: white/light sidebar */
+.sidebar-light {
+	--sidebar: #ffffff;
+	--sidebar-foreground: #0a0a0a;
+	--sidebar-primary: #f5f5f5;
+	--sidebar-primary-foreground: #0a0a0a;
+	--sidebar-accent: #f5f5f5;
+	--sidebar-accent-foreground: #1a1a1a;
+	--sidebar-border: #e5e5e5;
+	--sidebar-ring: #a3a3a3;
+}
+
+/* Admin app: dark sidebar (default in light mode, explicit for clarity) */
+.sidebar-dark {
+	--sidebar: #262626;
+	--sidebar-foreground: #ffffff;
+	--sidebar-primary: #404040;
+	--sidebar-primary-foreground: #ffffff;
+	--sidebar-accent: #404040;
+	--sidebar-accent-foreground: #ffffff;
+	--sidebar-border: rgba(255, 255, 255, 0.1);
+	--sidebar-ring: #525252;
 }
 
 @layer base {
