@@ -6,7 +6,8 @@
 		"./types/browser": "./types/browser.ts",
 		"./types/server": "./types/server.ts",
 		"./types/*": "./types/*",
-		"./client": "./client.ts"
+		"./client": "./client.ts",
+		"./actions/*": "./actions/*"
 	},
 	"scripts": {
 		"db:generate": "prisma generate",
