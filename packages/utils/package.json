@@ -3,11 +3,14 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
+		"@repo/database": "*",
+		"@repo/types": "*",
+		"@repo/typescript-config": "*",
 		"next": "^16.2.3",
 		"typescript": "5.9.2",
-		"@repo/typescript-config": "*"
+		"zod": "^4.3.6"
 	},
 	"dependencies": {
-		"@repo/types": "*"
+		"winston": "^3.19.0"
 	}
 }
