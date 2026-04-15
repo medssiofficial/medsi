@@ -16,9 +16,11 @@ export const CLI_ENV = createEnv({
 	server: {
 		DATABASE_URL: z.url(),
 		DIRECT_DATABASE_URL: z.url(),
+		ENV: z.enum(["development", "production"]),
 	},
 	runtimeEnvStrict: {
 		DATABASE_URL: process.env.DATABASE_URL,
 		DIRECT_DATABASE_URL: process.env.DIRECT_DATABASE_URL,
+		ENV: process.env.ENV,
 	},
 });

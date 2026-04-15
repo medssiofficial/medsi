@@ -5,7 +5,8 @@
 	"exports": {
 		"./types/browser": "./types/browser.ts",
 		"./types/server": "./types/server.ts",
-		"./types/*": "./types/*"
+		"./types/*": "./types/*",
+		"./client": "./client.ts"
 	},
 	"scripts": {
 		"db:generate": "prisma generate",
