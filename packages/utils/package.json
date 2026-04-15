@@ -2,7 +2,11 @@
 	"name": "@repo/utils",
 	"version": "0.0.1",
 	"private": true,
+	"exports": {
+		"./server": "./server/index.ts"
+	},
 	"devDependencies": {
+		"@clerk/nextjs": "^7.2.0",
 		"@repo/database": "*",
 		"@repo/types": "*",
 		"@repo/typescript-config": "*",

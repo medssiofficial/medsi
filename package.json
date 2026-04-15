@@ -30,6 +30,9 @@
     "apps/*",
     "packages/*"
   ],
+  "overrides": {
+    "next": "16.2.3"
+  },
   "dependencies": {
     "dotenv": "^17.4.1"
   },
