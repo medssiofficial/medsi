@@ -1,7 +1,7 @@
 import { ShieldIcon } from "lucide-react";
 import { cn } from "../../lib/utils";
 
-type AdminLogoVariant = "dark" | "light";
+type AdminLogoVariant = "light" | "sidebar";
 type AdminLogoSize = "sm" | "md" | "lg";
 
 interface AdminLogoProps {
@@ -18,8 +18,14 @@ const sizeConfig: Record<AdminLogoSize, { icon: number; text: string }> = {
 };
 
 const variantConfig: Record<AdminLogoVariant, { icon: string; text: string }> = {
-	dark: { icon: "text-white", text: "text-white" },
-	light: { icon: "text-foreground", text: "text-foreground" },
+	sidebar: {
+		icon: "text-sidebar-foreground",
+		text: "text-sidebar-foreground",
+	},
+	light: {
+		icon: "text-foreground",
+		text: "text-foreground",
+	},
 };
 
 export const AdminLogo = ({
@@ -32,8 +38,11 @@ export const AdminLogo = ({
 	const v = variantConfig[variant];
 
 	return (
-		<div className={cn("flex items-center gap-2", className)}>
-			<ShieldIcon size={s.icon} className={v.icon} />
+		<div
+			className={cn("flex items-center gap-2", className)}
+			{...(!showText ? { role: "img", "aria-label": "Medssi Admin" } : {})}
+		>
+			<ShieldIcon size={s.icon} className={v.icon} aria-hidden="true" />
 			{showText && (
 				<span
 					className={cn(

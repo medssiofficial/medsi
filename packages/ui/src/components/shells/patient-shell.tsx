@@ -4,22 +4,22 @@ import { cn } from "../../lib/utils";
 import { Spinner } from "../ui/spinner";
 import { PatientTopBar } from "./patient-top-bar";
 import { PatientBottomNav } from "./patient-bottom-nav";
-import type { PatientShellProps, BottomNavItem } from "./types";
+import type { PatientShellProps } from "./types";
 
 export function PatientShell({
 	user,
 	navItems,
 	notificationCount = 0,
 	isLoading = false,
+	loadingText = "Loading...",
 	onNotificationClick,
 	onAvatarClick,
 	onNavItemClick,
+	className,
 	children,
-}: PatientShellProps & {
-	onNavItemClick?: (item: BottomNavItem) => void;
-}) {
+}: PatientShellProps) {
 	return (
-		<div className="flex min-h-svh flex-col bg-background">
+		<div className={cn("flex min-h-svh flex-col bg-background", className)}>
 			<PatientTopBar
 				user={user}
 				notificationCount={notificationCount}
@@ -39,7 +39,7 @@ export function PatientShell({
 						<div className="flex flex-col items-center gap-3">
 							<Spinner className="size-6 text-muted-foreground" />
 							<p className="text-sm text-muted-foreground">
-								Loading...
+								{loadingText}
 							</p>
 						</div>
 					</div>
@@ -50,6 +50,7 @@ export function PatientShell({
 
 			<PatientBottomNav
 				items={navItems}
+				isLoading={isLoading}
 				onItemClick={onNavItemClick}
 			/>
 		</div>

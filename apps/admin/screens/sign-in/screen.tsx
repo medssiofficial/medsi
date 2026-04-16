@@ -1,4 +1,4 @@
-"sue client";
+"use client";
 
 import { DASHBOARD_URL, SIGN_IN_URL } from "@/config/client-constants";
 import { SignIn } from "@clerk/nextjs";

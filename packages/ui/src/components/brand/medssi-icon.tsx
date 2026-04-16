@@ -31,6 +31,8 @@ export const MedssiIcon = ({
 
 	return (
 		<div
+			role="img"
+			aria-label="Medssi"
 			className={cn(
 				"flex items-center justify-center shrink-0",
 				s.box,
@@ -38,7 +40,7 @@ export const MedssiIcon = ({
 				className,
 			)}
 		>
-			<HeartPulseIcon size={s.icon} className={v.icon} />
+			<HeartPulseIcon size={s.icon} className={v.icon} aria-hidden="true" />
 		</div>
 	);
 };

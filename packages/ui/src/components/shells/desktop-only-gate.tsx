@@ -25,7 +25,7 @@ export function DesktopOnlyGate({
 					</p>
 				</div>
 				<div className="flex items-center gap-2 text-muted-foreground">
-					<MonitorIcon size={18} />
+					<MonitorIcon size={18} aria-hidden="true" />
 					<span className="text-xs font-medium">
 						Minimum 1024px width recommended
 					</span>

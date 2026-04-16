@@ -24,6 +24,7 @@
 	--color-accent: var(--accent);
 	--color-accent-foreground: var(--accent-foreground);
 	--color-destructive: var(--destructive);
+	--color-destructive-foreground: var(--destructive-foreground);
 	--color-border: var(--border);
 	--color-input: var(--input);
 	--color-ring: var(--ring);
@@ -120,6 +121,7 @@
 
 	/* ── Destructive ── */
 	--destructive: #c0392b;
+	--destructive-foreground: #ffffff;
 
 	/* ── Borders & inputs ── */
 	--border: #e5e5e5;
@@ -211,6 +213,7 @@
 
 	/* ── Destructive ── */
 	--destructive: #e74c3c;
+	--destructive-foreground: #ffffff;
 
 	/* ── Borders & inputs ── */
 	--border: rgba(255, 255, 255, 0.1);
@@ -284,6 +287,16 @@
 	--sidebar-accent-foreground: #1a1a1a;
 	--sidebar-border: #e5e5e5;
 	--sidebar-ring: #a3a3a3;
+}
+.dark .sidebar-light {
+	--sidebar: #262626;
+	--sidebar-foreground: #f5f5f5;
+	--sidebar-primary: #2d2d2d;
+	--sidebar-primary-foreground: #f5f5f5;
+	--sidebar-accent: #2d2d2d;
+	--sidebar-accent-foreground: #f5f5f5;
+	--sidebar-border: rgba(255, 255, 255, 0.1);
+	--sidebar-ring: #525252;
 }
 
 /* Admin app: dark sidebar (default in light mode, explicit for clarity) */

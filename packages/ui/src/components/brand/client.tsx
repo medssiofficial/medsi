@@ -2,9 +2,11 @@ import { cn } from "../../lib/utils";
 import { MedssiIcon } from "./medssi-icon";
 
 type ClientLogoSize = "sm" | "md" | "lg";
+type ClientLogoVariant = "dark" | "light";
 
 interface ClientLogoProps {
 	size?: ClientLogoSize;
+	variant?: ClientLogoVariant;
 	showText?: boolean;
 	className?: string;
 }
@@ -17,6 +19,7 @@ const sizeConfig: Record<ClientLogoSize, { icon: "sm" | "md" | "lg"; text: strin
 
 export const ClientLogo = ({
 	size = "md",
+	variant = "dark",
 	showText = true,
 	className,
 }: ClientLogoProps) => {
@@ -24,7 +27,7 @@ export const ClientLogo = ({
 
 	return (
 		<div className={cn("flex items-center gap-2", className)}>
-			<MedssiIcon size={s.icon} variant="dark" />
+			<MedssiIcon size={s.icon} variant={variant} />
 			{showText && (
 				<span
 					className={cn(

@@ -6,6 +6,7 @@ export interface NavItem {
 	label: string;
 	href: string;
 	icon: LucideIcon;
+	action?: string;
 	badge?: number | string;
 	isActive?: boolean;
 	children?: NavItem[];
@@ -66,25 +67,31 @@ export interface DesktopShellProps {
 	logo: React.ReactNode;
 	sidebarConfig: SidebarConfig;
 	topBarConfig?: TopBarConfig;
-	user?: ShellUser;
+	user?: ShellUser | null;
 	isLoading?: boolean;
+	loadingText?: string;
 	onSearch?: (query: string) => void;
 	onNotificationClick?: () => void;
 	onSignOut?: () => void;
 	onNavItemClick?: (item: NavItem) => void;
+	onFooterItemClick?: (item: NavItem) => void;
 	onUserMenuClick?: () => void;
+	className?: string;
 	children: React.ReactNode;
 }
 
 /* ── Patient shell ── */
 
 export interface PatientShellProps {
-	user?: ShellUser;
+	user?: ShellUser | null;
 	navItems: BottomNavItem[];
 	notificationCount?: number;
 	isLoading?: boolean;
+	loadingText?: string;
 	onNotificationClick?: () => void;
 	onAvatarClick?: () => void;
+	onNavItemClick?: (item: BottomNavItem) => void;
+	className?: string;
 	children: React.ReactNode;
 }
 

@@ -34,24 +34,32 @@ export function PatientTopBar({
 			<ClientLogo size="sm" />
 
 			<div className="flex items-center gap-4">
-				{/* Notifications */}
 				<button
 					type="button"
+					aria-label={
+						notificationCount > 0
+							? `Notifications (${notificationCount} unread)`
+							: "Notifications"
+					}
 					onClick={onNotificationClick}
-					className="relative flex size-10 items-center justify-center rounded-full bg-secondary"
+					disabled={isLoading}
+					className="relative flex size-10 items-center justify-center rounded-full bg-secondary disabled:opacity-50"
 				>
-					<BellIcon size={20} className="text-grey-500" />
+					<BellIcon size={20} className="text-muted-foreground" />
 					{notificationCount > 0 && (
 						<span className="absolute right-2 top-2 size-2 rounded-full bg-destructive" />
 					)}
 				</button>
 
-				{/* Avatar */}
 				{isLoading ? (
 					<Skeleton className="size-10 rounded-full" />
 				) : (
 					user && (
-						<button type="button" onClick={onAvatarClick}>
+						<button
+							type="button"
+							aria-label={`Account menu for ${user.name}`}
+							onClick={onAvatarClick}
+						>
 							<Avatar size="default" className="size-10">
 								{user.avatarUrl && (
 									<AvatarImage
@@ -59,7 +67,7 @@ export function PatientTopBar({
 										alt={user.name}
 									/>
 								)}
-								<AvatarFallback className="bg-grey-200 text-grey-500 font-semibold text-sm">
+								<AvatarFallback className="bg-muted text-muted-foreground font-semibold text-sm">
 									{user.initials}
 								</AvatarFallback>
 							</Avatar>

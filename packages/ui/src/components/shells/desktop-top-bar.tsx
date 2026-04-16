@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import { BellIcon, ChevronDownIcon, SearchIcon } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -48,64 +49,72 @@ export function DesktopTopBar({
 				className,
 			)}
 		>
-			{/* Breadcrumbs */}
-			{breadcrumbs.length > 0 && (
-				<Breadcrumb>
-					<BreadcrumbList>
-						{breadcrumbs.map((crumb, i) => {
-							const isLast = i === breadcrumbs.length - 1;
-							return (
-								<BreadcrumbItem key={`${crumb.label}-${i}`}>
-									{!isLast && i > 0 && <BreadcrumbSeparator />}
-									{isLast ? (
-										<BreadcrumbPage>{crumb.label}</BreadcrumbPage>
-									) : (
-										<>
-											<BreadcrumbLink href={crumb.href ?? "#"}>
-												{crumb.label}
-											</BreadcrumbLink>
-											{i < breadcrumbs.length - 1 && (
-												<BreadcrumbSeparator />
+			{isLoading ? (
+				<div className="flex items-center gap-2">
+					<Skeleton className="h-4 w-20" />
+					<Skeleton className="h-4 w-24" />
+				</div>
+			) : (
+				breadcrumbs.length > 0 && (
+					<Breadcrumb>
+						<BreadcrumbList>
+							{breadcrumbs.map((crumb, i) => {
+								const isLast = i === breadcrumbs.length - 1;
+								return (
+									<Fragment key={`${crumb.label}-${i}`}>
+										{i > 0 && <BreadcrumbSeparator />}
+										<BreadcrumbItem>
+											{isLast ? (
+												<BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+											) : (
+												<BreadcrumbLink href={crumb.href ?? "#"}>
+													{crumb.label}
+												</BreadcrumbLink>
 											)}
-										</>
-									)}
-								</BreadcrumbItem>
-							);
-						})}
-					</BreadcrumbList>
-				</Breadcrumb>
+										</BreadcrumbItem>
+									</Fragment>
+								);
+							})}
+						</BreadcrumbList>
+					</Breadcrumb>
+				)
 			)}
 
 			<div className="flex-1" />
 
-			{/* Search */}
 			{showSearch && (
 				<div className="flex h-9 w-72 items-center gap-2 rounded-lg border border-border bg-secondary px-3">
-					<SearchIcon size={16} className="text-muted-foreground" />
+					<SearchIcon size={16} className="text-muted-foreground" aria-hidden="true" />
 					<input
 						type="text"
 						placeholder={searchPlaceholder}
+						aria-label={searchPlaceholder}
 						className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
 						onChange={(e) => onSearch?.(e.target.value)}
+						disabled={isLoading}
 					/>
 				</div>
 			)}
 
-			{/* Notifications */}
 			{showNotifications && (
 				<button
 					type="button"
+					aria-label={
+						notificationCount > 0
+							? `Notifications (${notificationCount} unread)`
+							: "Notifications"
+					}
 					onClick={onNotificationClick}
-					className="relative flex h-9 w-9 items-center justify-center rounded-lg hover:bg-secondary"
+					disabled={isLoading}
+					className="relative flex h-9 w-9 items-center justify-center rounded-lg hover:bg-secondary disabled:opacity-50"
 				>
-					<BellIcon size={20} className="text-grey-500" />
+					<BellIcon size={20} className="text-muted-foreground" />
 					{notificationCount > 0 && (
 						<span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-destructive" />
 					)}
 				</button>
 			)}
 
-			{/* User avatar */}
 			{isLoading ? (
 				<div className="flex items-center gap-2">
 					<Skeleton className="size-8 rounded-full" />
@@ -115,6 +124,7 @@ export function DesktopTopBar({
 				user && (
 					<button
 						type="button"
+						aria-label={`User menu for ${user.name}`}
 						onClick={onUserMenuClick}
 						className="flex items-center gap-2 hover:opacity-80"
 					>
