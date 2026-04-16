@@ -1,13 +1,50 @@
+import { ShieldIcon } from "lucide-react";
 import { cn } from "../../lib/utils";
 
-interface Props {
+type AdminLogoVariant = "dark" | "light";
+type AdminLogoSize = "sm" | "md" | "lg";
+
+interface AdminLogoProps {
+	variant?: AdminLogoVariant;
+	size?: AdminLogoSize;
+	showText?: boolean;
 	className?: string;
 }
 
-export const AdminLogo = ({ className }: Props) => {
+const sizeConfig: Record<AdminLogoSize, { icon: number; text: string }> = {
+	sm: { icon: 18, text: "text-sm" },
+	md: { icon: 22, text: "text-base" },
+	lg: { icon: 26, text: "text-lg" },
+};
+
+const variantConfig: Record<AdminLogoVariant, { icon: string; text: string }> = {
+	dark: { icon: "text-white", text: "text-white" },
+	light: { icon: "text-foreground", text: "text-foreground" },
+};
+
+export const AdminLogo = ({
+	variant = "light",
+	size = "md",
+	showText = true,
+	className,
+}: AdminLogoProps) => {
+	const s = sizeConfig[size];
+	const v = variantConfig[variant];
+
 	return (
-		<div className={cn("flex items-center gap-2 font-sans", className)}>
-			<span className="text-lg">Admin</span>
+		<div className={cn("flex items-center gap-2", className)}>
+			<ShieldIcon size={s.icon} className={v.icon} />
+			{showText && (
+				<span
+					className={cn(
+						"font-heading font-bold whitespace-nowrap",
+						s.text,
+						v.text,
+					)}
+				>
+					Medssi Admin
+				</span>
+			)}
 		</div>
 	);
 };

@@ -1,13 +1,40 @@
 import { cn } from "../../lib/utils";
+import { MedssiIcon } from "./medssi-icon";
 
-interface Props {
+type ClientLogoSize = "sm" | "md" | "lg";
+
+interface ClientLogoProps {
+	size?: ClientLogoSize;
+	showText?: boolean;
 	className?: string;
 }
 
-export const ClientLogo = ({ className }: Props) => {
+const sizeConfig: Record<ClientLogoSize, { icon: "sm" | "md" | "lg"; text: string }> = {
+	sm: { icon: "sm", text: "text-base" },
+	md: { icon: "md", text: "text-lg" },
+	lg: { icon: "lg", text: "text-xl" },
+};
+
+export const ClientLogo = ({
+	size = "md",
+	showText = true,
+	className,
+}: ClientLogoProps) => {
+	const s = sizeConfig[size];
+
 	return (
-		<div className={cn("flex items-center gap-2 font-sans", className)}>
-			<span className="text-lg">Medssi</span>
+		<div className={cn("flex items-center gap-2", className)}>
+			<MedssiIcon size={s.icon} variant="dark" />
+			{showText && (
+				<span
+					className={cn(
+						"font-heading font-bold text-foreground",
+						s.text,
+					)}
+				>
+					Medssi
+				</span>
+			)}
 		</div>
 	);
 };
