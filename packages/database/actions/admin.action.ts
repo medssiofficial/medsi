@@ -11,3 +11,19 @@ export const createAdmin = (args: CreateAdminArgs) => {
 		},
 	});
 };
+
+export const getAllAdmins = () => {
+	return prisma.admin.findMany();
+};
+
+interface CreateManyAdminsArgs {
+	clerk_ids: string[];
+}
+
+export const createManyAdmins = (args: CreateManyAdminsArgs) => {
+	return prisma.admin.createMany({
+		data: args.clerk_ids.map((clerk_id) => ({
+			clerk_id,
+		})),
+	});
+};
