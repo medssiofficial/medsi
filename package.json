@@ -17,7 +17,7 @@
     "db:sync": "turbo run db:sync --filter=@repo/database"
   },
   "devDependencies": {
-    "prettier": "^3.6.0",
+    "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.7.1",
     "shadcn": "^4.2.0",
     "turbo": "^2.9.5"
