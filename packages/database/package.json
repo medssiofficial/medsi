@@ -7,7 +7,7 @@
 		"./types/server": "./types/server.ts",
 		"./types/*": "./types/*",
 		"./client": "./client.ts",
-		"./actions/*": "./actions/*"
+		"./actions/admin": "./actions/admin.action.ts"
 	},
 	"scripts": {
 		"db:generate": "prisma generate",
