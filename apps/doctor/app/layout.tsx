@@ -2,9 +2,9 @@ import "@repo/ui/styles.css";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Manrope, Space_Grotesk } from "next/font/google";
-import { ThemeProvider } from "next-themes";
-import { AuthProvider, QueryProvider } from "@repo/providers";
+import { AuthProvider, QueryProvider, ThemeProvider } from "@repo/providers";
 import { CLIENT_ENV } from "@/config/client-env";
+import { DesktopOnlyGate } from "@repo/ui/components/shells/desktop-only-gate";
 
 const spaceGrotesk = Space_Grotesk({
 	subsets: ["latin"],
@@ -39,7 +39,9 @@ export default function RootLayout({
 							CLIENT_ENV.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 						}
 					>
-						<QueryProvider>{children}</QueryProvider>
+						<QueryProvider>
+							<DesktopOnlyGate>{children}</DesktopOnlyGate>
+						</QueryProvider>
 					</AuthProvider>
 				</ThemeProvider>
 			</body>
