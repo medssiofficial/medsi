@@ -8,7 +8,7 @@ const LoginHero = () => {
 				<p className="text-muted-foreground 2xl:text-lg text-base">
 					Doctor Portal
 				</p>
-				<p className="text-muted-foreground font-semibold 2xl:text-4xl text-3xl">
+				<p className="text-muted-foreground font-semibold 2xl:text-4xl text-3xl font-heading">
 					Conneting medical expertise with patients worldwide
 				</p>
 			</div>
