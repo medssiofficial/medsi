@@ -17,7 +17,7 @@
       "name": "admin",
       "version": "0.1.0",
       "dependencies": {
-        "@clerk/nextjs": "^7.0.12",
+        "@clerk/nextjs": "^7.2.3",
         "@repo/database": "*",
         "@repo/env": "*",
         "@repo/providers": "*",
