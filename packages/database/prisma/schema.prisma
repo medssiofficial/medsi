@@ -1,214 +1,192 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+    provider = "prisma-client"
+    output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+    provider = "postgresql"
 }
 
 enum Gender {
-  male
-  female
-  other
+    male
+    female
+    other
 }
 
 enum MedicalCaseConversationStatus {
-  in_progress
-  completed
-  cancelled
+    in_progress
+    completed
+    cancelled
 }
 
 enum FileProcessingStataus {
-  pending
-  processing
-  completed
-  failed
+    pending
+    processing
+    completed
+    failed
 }
 
 enum FileType {
-  text_report
-  image_report
+    text_report
+    image_report
 }
 
 enum DoctorApplicationStatus {
-  pending
-  approved
-  rejected
+    pending
+    approved
+    rejected
 }
 
 model user {
-  id         String   @id @default(ulid())
-  clerk_id   String   @unique
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+    id         String   @id @default(ulid())
+    clerk_id   String   @unique
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 
-  profile        patient_profile?
-  mediccal_cases medical_case[]
-  files          file[]
+    profile        patient_profile?
+    mediccal_cases medical_case[]
+    files          file[]
 }
 
 model admin {
-  id         String   @id @default(ulid())
-  clerk_id   String   @unique
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+    id         String   @id @default(ulid())
+    clerk_id   String   @unique
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 }
 
 model doctor {
-  id         String   @id @default(ulid())
-  clerk_id   String   @unique
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+    id         String   @id @default(ulid())
+    clerk_id   String   @unique
+    verified   Boolean  @default(false)
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 
-  specializations doctor_specialization[]
-  experiences     doctor_experience[]
-  profile         doctor_profile?
-  expertises      doctor_expertise[]
+    specializations doctor_specialization[]
+    experiences     doctor_experience[]
+    profile         doctor_profile?
+    expertises      doctor_expertise[]
 }
 
 model doctor_profile {
-  id                  String   @id @default(ulid())
-  doctor_id           String   @unique
-  years_of_experience Decimal
-  name                String
-  dob                 DateTime
-  gender              Gender
-  email               String
-  mobile_number       String
-  country             String
-  created_at          DateTime @default(now())
-  updated_at          DateTime @updatedAt
+    id                  String   @id @default(ulid())
+    doctor_id           String   @unique
+    years_of_experience Decimal
+    name                String
+    dob                 DateTime
+    gender              Gender
+    email               String
+    mobile_number       String
+    country             String
+    created_at          DateTime @default(now())
+    updated_at          DateTime @updatedAt
 
-  doctor doctor @relation(fields: [doctor_id], references: [id])
-}
-
-model doctor_application {
-  id                  String                  @id @default(ulid())
-  application_status  DoctorApplicationStatus @default(pending)
-  name                String
-  dob                 DateTime
-  gender              Gender
-  email               String
-  mobile_number       String
-  country             String
-  years_of_experience Decimal
-  created_at          DateTime                @default(now())
-  updated_at          DateTime                @updatedAt
-
-  specializations doctor_specialization[]
-  experiences     doctor_experience[]
-  expertises      doctor_expertise[]
+    doctor doctor @relation(fields: [doctor_id], references: [id])
 }
 
 model doctor_expertise {
-  id                    String   @id @default(ulid())
-  expertise             String
-  doctor_id             String?
-  doctor_application_id String?
-  created_at            DateTime @default(now())
-  updated_at            DateTime @updatedAt
+    id         String   @id @default(ulid())
+    expertise  String
+    doctor_id  String
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 
-  doctor             doctor?             @relation(fields: [doctor_id], references: [id])
-  doctor_application doctor_application? @relation(fields: [doctor_application_id], references: [id])
+    doctor doctor @relation(fields: [doctor_id], references: [id])
 }
 
 model doctor_specialization {
-  id                    String   @id @default(ulid())
-  name                  String
-  certificate_file_key  String
-  doctor_id             String?
-  doctor_application_id String?
-  created_at            DateTime @default(now())
-  updated_at            DateTime @updatedAt
+    id                   String   @id @default(ulid())
+    name                 String
+    certificate_file_key String
+    doctor_id            String?
+    created_at           DateTime @default(now())
+    updated_at           DateTime @updatedAt
 
-  doctor             doctor?             @relation(fields: [doctor_id], references: [id])
-  doctor_application doctor_application? @relation(fields: [doctor_application_id], references: [id])
+    doctor doctor? @relation(fields: [doctor_id], references: [id])
 }
 
 model doctor_experience {
-  id                         String   @id @default(ulid())
-  start_date                 DateTime
-  end_date                   DateTime
-  hospital_name              String
-  description                String
-  experience_letter_file_key String?
-  doctor_id                  String?
-  doctor_application_id      String?
-  created_at                 DateTime @default(now())
-  updated_at                 DateTime @updatedAt
+    id                         String   @id @default(ulid())
+    start_date                 DateTime
+    end_date                   DateTime
+    hospital_name              String
+    description                String
+    experience_letter_file_key String?
+    doctor_id                  String?
+    doctor_application_id      String?
+    created_at                 DateTime @default(now())
+    updated_at                 DateTime @updatedAt
 
-  doctor             doctor?             @relation(fields: [doctor_id], references: [id])
-  doctor_application doctor_application? @relation(fields: [doctor_application_id], references: [id])
+    doctor doctor? @relation(fields: [doctor_id], references: [id])
 }
 
 model medical_case {
-  id                  String                        @id @default(ulid())
-  user_id             String
-  conversation_status MedicalCaseConversationStatus @default(in_progress)
+    id                  String                        @id @default(ulid())
+    user_id             String
+    conversation_status MedicalCaseConversationStatus @default(in_progress)
 
-  collected_data Json?
-  summary        String?
+    collected_data Json?
+    summary        String?
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 
-  user       user             @relation(fields: [user_id], references: [id])
-  files      case_file[]
-  info_state case_info_state?
+    user       user             @relation(fields: [user_id], references: [id])
+    files      case_file[]
+    info_state case_info_state?
 }
 
 model patient_profile {
-  id         String   @id @default(ulid())
-  user_id    String   @unique
-  name       String
-  age        Int
-  gender     Gender
-  email      String
-  phone      String
-  country    String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+    id         String   @id @default(ulid())
+    user_id    String   @unique
+    name       String
+    age        Int
+    gender     Gender
+    email      String
+    phone      String
+    country    String
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 
-  user user @relation(fields: [user_id], references: [id])
+    user user @relation(fields: [user_id], references: [id])
 }
 
 model file {
-  id                String                @id @default(ulid())
-  filename          String
-  mime_type         String
-  report_type       FileType
-  storage_key       String
-  processing_status FileProcessingStataus @default(pending)
-  metadata          Json?
-  processed_data    Json?
-  user_id           String
-  created_at        DateTime              @default(now())
-  updated_at        DateTime              @updatedAt
+    id                String                @id @default(ulid())
+    filename          String
+    mime_type         String
+    report_type       FileType
+    storage_key       String
+    processing_status FileProcessingStataus @default(pending)
+    metadata          Json?
+    processed_data    Json?
+    user_id           String
+    created_at        DateTime              @default(now())
+    updated_at        DateTime              @updatedAt
 
-  user            user        @relation(fields: [user_id], references: [id])
-  case_references case_file[]
+    user            user        @relation(fields: [user_id], references: [id])
+    case_references case_file[]
 }
 
 model case_file {
-  id              String   @id @default(ulid())
-  medical_case_id String
-  file_id         String
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+    id              String   @id @default(ulid())
+    medical_case_id String
+    file_id         String
+    created_at      DateTime @default(now())
+    updated_at      DateTime @updatedAt
 
-  medical_case medical_case @relation(fields: [medical_case_id], references: [id])
-  file         file         @relation(fields: [file_id], references: [id])
+    medical_case medical_case @relation(fields: [medical_case_id], references: [id])
+    file         file         @relation(fields: [file_id], references: [id])
 }
 
 model case_info_state {
-  id                     String   @id @default(ulid())
-  collected_fields       Json     @default("{}")
-  current_questions      String?
-  current_question_index Int      @default(0)
-  case_id                String   @unique
-  created_at             DateTime @default(now())
-  updated_at             DateTime @updatedAt
+    id                     String   @id @default(ulid())
+    collected_fields       Json     @default("{}")
+    current_questions      String?
+    current_question_index Int      @default(0)
+    case_id                String   @unique
+    created_at             DateTime @default(now())
+    updated_at             DateTime @updatedAt
 
-  case medical_case @relation(fields: [case_id], references: [id])
+    case medical_case @relation(fields: [case_id], references: [id])
 }
