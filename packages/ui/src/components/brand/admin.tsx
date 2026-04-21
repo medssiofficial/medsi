@@ -17,16 +17,17 @@ const sizeConfig: Record<AdminLogoSize, { icon: number; text: string }> = {
 	lg: { icon: 26, text: "text-lg" },
 };
 
-const variantConfig: Record<AdminLogoVariant, { icon: string; text: string }> = {
-	sidebar: {
-		icon: "text-sidebar-foreground",
-		text: "text-sidebar-foreground",
-	},
-	light: {
-		icon: "text-foreground",
-		text: "text-foreground",
-	},
-};
+const variantConfig: Record<AdminLogoVariant, { icon: string; text: string }> =
+	{
+		sidebar: {
+			icon: "text-sidebar-foreground",
+			text: "text-sidebar-foreground",
+		},
+		light: {
+			icon: "text-foreground",
+			text: "text-foreground",
+		},
+	};
 
 export const AdminLogo = ({
 	variant = "light",
@@ -39,8 +40,10 @@ export const AdminLogo = ({
 
 	return (
 		<div
-			className={cn("flex items-center gap-2", className)}
-			{...(!showText ? { role: "img", "aria-label": "Medssi Admin" } : {})}
+			className={cn("flex items-center gap-2 font-heading", className)}
+			{...(!showText
+				? { role: "img", "aria-label": "Medssi Admin" }
+				: {})}
 		>
 			<ShieldIcon size={s.icon} className={v.icon} aria-hidden="true" />
 			{showText && (
