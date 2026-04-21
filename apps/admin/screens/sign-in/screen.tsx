@@ -1,7 +1,5 @@
 "use client";
 
-import { DASHBOARD_URL, SIGN_IN_URL } from "@/config/client-constants";
-import { SignIn } from "@clerk/nextjs";
 import { AdminLogo } from "@repo/ui/components/brand/admin";
 import { Button } from "@repo/ui/components/ui/button";
 import { Card } from "@repo/ui/components/ui/card";
