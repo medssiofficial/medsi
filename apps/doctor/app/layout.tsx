@@ -5,6 +5,7 @@ import { Manrope, Space_Grotesk } from "next/font/google";
 import { QueryProvider, ThemeProvider } from "@repo/providers";
 import { ClerkProvider } from "@clerk/nextjs";
 import { DesktopOnlyGate } from "@repo/ui/components/shells/desktop-only-gate";
+import { Toaster } from "@/components/ui/sonner";
 
 const spaceGrotesk = Space_Grotesk({
 	subsets: ["latin"],
@@ -36,7 +37,14 @@ export default function RootLayout({
 				<ClerkProvider>
 					<ThemeProvider>
 						<QueryProvider>
-							<DesktopOnlyGate>{children}</DesktopOnlyGate>
+							<DesktopOnlyGate>
+								<Toaster
+									position="bottom-right"
+									closeButton
+									richColors
+								/>
+								{children}
+							</DesktopOnlyGate>
 						</QueryProvider>
 					</ThemeProvider>
 				</ClerkProvider>

@@ -4,6 +4,7 @@ import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import z from "zod";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const LoginFormSchema = z.object({
 	email: z.email({
@@ -48,14 +49,25 @@ export const useLoginSection = () => {
 
 		setIsLoading(true);
 
+		toast.success("Signing in...");
+
+		console.log(
+			"Attempting signIn.create with identifier:",
+			loginForm.getValues("email"),
+		);
 		const { error: signInCreateError } = await signIn.create({
 			identifier: loginForm.getValues("email"),
 		});
 
 		if (signInCreateError) {
+			console.log("signIn.create result:", signInCreateError);
 			setIsLoading(false);
 			// TODO: Implement Toaster here
-			console.error(signInCreateError.message);
+			console.log(
+				"Calling toast.error with message:",
+				signInCreateError.message,
+			);
+			toast.error(signInCreateError.message);
 			return;
 		}
 
