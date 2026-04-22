@@ -1,4 +1,7 @@
 import z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 
 const LoginFormSchema = z.object({
 	email: z.email({
@@ -18,4 +21,14 @@ const LoginFormSchema = z.object({
 		.optional(),
 });
 
-export const useLoginSection = () => {};
+export const useLoginSection = () => {
+	const [activeState, setActiveState] = useState<"email" | "otp">("email");
+
+	const form = useForm<z.infer<typeof LoginFormSchema>>({
+		resolver: zodResolver(LoginFormSchema),
+		defaultValues: {
+			email: "",
+			otp: "",
+		},
+	});
+};
