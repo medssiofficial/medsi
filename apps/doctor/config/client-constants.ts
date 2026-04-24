@@ -1,5 +1,17 @@
-export const SIGN_IN_URL = "/auth/sign-in";
-export const DASHBOARD_URL = "/";
+export const SIGN_IN_URL = "/auth/login";
+export const SIGN_UP_URL = "/auth/sign-up";
+export const DASHBOARD_URL = "/dashboard";
+export const ONBOARD_URL = "/onboard";
+
+export const API_ROUTES = {
+	DOCTOR: {
+		ME: {
+			key: "doctor.me",
+			path: "/api/doctor/me",
+			method: "GET",
+		},
+	},
+} as const;
 
 export const SIGN_UP_HERO_POINTERS = [
 	"Reach patients across borders",

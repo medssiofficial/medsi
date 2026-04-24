@@ -35,3 +35,23 @@ export const deleteDoctor = (args: DeleteDoctorArgs) => {
 		},
 	});
 };
+
+interface GetDoctorFullByClerkIdArgs {
+	clerk_id: string;
+}
+
+export const getDoctorFullByClerkId = async (
+	args: GetDoctorFullByClerkIdArgs,
+) => {
+	return prisma.doctor.findUnique({
+		where: {
+			clerk_id: args.clerk_id,
+		},
+		include: {
+			profile: true,
+			specializations: true,
+			experiences: true,
+			expertises: true,
+		},
+	});
+};

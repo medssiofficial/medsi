@@ -2,10 +2,12 @@ import "@repo/ui/styles.css";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Manrope, Space_Grotesk } from "next/font/google";
-import { QueryProvider, ThemeProvider } from "@repo/providers";
+import { ThemeProvider } from "@repo/providers";
 import { ClerkProvider } from "@clerk/nextjs";
 import { DesktopOnlyGate } from "@repo/ui/components/shells/desktop-only-gate";
 import { Toaster } from "@/components/ui/sonner";
+import { DoctorBootstrap } from "@/components/common";
+import { QueryProvider } from "@/components/providers";
 
 const spaceGrotesk = Space_Grotesk({
 	subsets: ["latin"],
@@ -43,6 +45,7 @@ export default function RootLayout({
 									closeButton
 									richColors
 								/>
+								<DoctorBootstrap />
 								{children}
 							</DesktopOnlyGate>
 						</QueryProvider>
