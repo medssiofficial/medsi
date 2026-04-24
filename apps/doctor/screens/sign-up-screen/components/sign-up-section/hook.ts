@@ -98,8 +98,7 @@ export const useSignUpSection = () => {
 			return;
 		}
 
-		// TODO: Redirect to dashboard after successful verification
-		router.push("/dashboard");
+		router.push("/onboard");
 	};
 
 	const handleFormSubmit = async () => {

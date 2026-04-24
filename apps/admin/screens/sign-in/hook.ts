@@ -1,6 +1,6 @@
 import z from "zod";
 
-const LoginForm = z.object({
+export const LoginFormSchema = z.object({
 	email: z.email({
 		error: "Please provide a valid email address",
 	}),
@@ -16,5 +16,7 @@ const LoginForm = z.object({
 			error: "Password must be at most 20 characters long",
 		}),
 });
+
+export type LoginFormValues = z.infer<typeof LoginFormSchema>;
 
 export const useSignInScreen = () => {};
