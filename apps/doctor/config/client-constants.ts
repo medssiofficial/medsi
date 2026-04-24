@@ -1,6 +1,6 @@
 export const SIGN_IN_URL = "/auth/login";
 export const SIGN_UP_URL = "/auth/sign-up";
-export const DASHBOARD_URL = "/dashboard";
+export const DASHBOARD_URL = "/";
 export const ONBOARD_URL = "/onboard";
 
 export const API_ROUTES = {

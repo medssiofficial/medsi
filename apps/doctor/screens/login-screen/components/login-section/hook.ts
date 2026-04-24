@@ -109,7 +109,7 @@ export const useLoginSection = () => {
 		}
 
 		toast.success("Signed in successfully.");
-		router.push("/dashboard");
+		router.push("/");
 	};
 
 	const handleFormSubmit = async () => {
