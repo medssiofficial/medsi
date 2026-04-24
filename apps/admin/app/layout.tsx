@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Manrope, Space_Grotesk } from "next/font/google";
 import { QueryProvider, AuthProvider, ThemeProvider } from "@repo/providers";
 import { CLIENT_ENV } from "@/config/client-env";
+import { Toaster } from "@repo/ui/components/ui/sonner";
 
 const spaceGrotesk = Space_Grotesk({
 	subsets: ["latin"],
@@ -37,7 +38,14 @@ export default function RootLayout({
 							CLIENT_ENV.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 						}
 					>
-						<QueryProvider>{children}</QueryProvider>
+						<QueryProvider>
+							<Toaster
+								position="bottom-right"
+								closeButton
+								richColors
+							/>
+							{children}
+						</QueryProvider>
 					</AuthProvider>
 				</ThemeProvider>
 			</body>

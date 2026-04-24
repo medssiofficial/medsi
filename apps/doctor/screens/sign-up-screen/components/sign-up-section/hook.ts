@@ -4,6 +4,7 @@ import { useSignUp } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import z from "zod";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const SignUpSchema = z.object({
 	email: z.email({
@@ -45,6 +46,10 @@ export const useSignUpSection = () => {
 
 	const handleEmailSubmit = async () => {
 		if (isLoading) return;
+		if (!signUp) {
+			toast.error("Authentication is not ready yet.");
+			return;
+		}
 
 		setIsLoading(true);
 
@@ -54,7 +59,7 @@ export const useSignUpSection = () => {
 
 		if (signUpCreateError) {
 			setIsLoading(false);
-			console.log(signUpCreateError.message);
+			toast.error(signUpCreateError.message);
 			return;
 		}
 
@@ -64,16 +69,20 @@ export const useSignUpSection = () => {
 		setIsLoading(false);
 
 		if (sendEmailCodeError) {
-			console.log(sendEmailCodeError.message);
+			toast.error(sendEmailCodeError.message);
 			return;
 		}
 
-		// TODO: Implement Toaster here
+		toast.success("OTP sent to your email.");
 		setStep("otp");
 	};
 
 	const handleOTPSubmit = async () => {
 		if (isLoading) return;
+		if (!signUp) {
+			toast.error("Authentication is not ready yet.");
+			return;
+		}
 
 		const otp = signUpForm.getValues("otp");
 
@@ -94,10 +103,11 @@ export const useSignUpSection = () => {
 		setIsLoading(false);
 
 		if (verifyEmailCodeError) {
-			console.log(verifyEmailCodeError.message);
+			toast.error(verifyEmailCodeError.message);
 			return;
 		}
 
+		toast.success("Account created successfully.");
 		router.push("/onboard");
 	};
 
@@ -115,6 +125,10 @@ export const useSignUpSection = () => {
 
 	const handleResendOTP = async () => {
 		if (isResendingOtp) return;
+		if (!signUp) {
+			toast.error("Authentication is not ready yet.");
+			return;
+		}
 
 		setIsResendingOtp(true);
 
@@ -123,12 +137,11 @@ export const useSignUpSection = () => {
 		setIsResendingOtp(false);
 
 		if (error) {
-			// TODO: Implement Toaster here
-			console.error(error.message);
+			toast.error(error.message);
 			return;
 		}
 
-		// TODO: Implement a success toast here
+		toast.success("OTP resent.");
 	};
 
 	const handleBack = () => {

@@ -46,27 +46,21 @@ export const useLoginSection = () => {
 
 	const handleEmailSubmit = async () => {
 		if (isLoading) return;
+		if (!signIn) {
+			toast.error("Authentication is not ready yet.");
+			return;
+		}
 
 		setIsLoading(true);
 
-		toast.success("Signing in...");
+		const email = loginForm.getValues("email");
 
-		console.log(
-			"Attempting signIn.create with identifier:",
-			loginForm.getValues("email"),
-		);
 		const { error: signInCreateError } = await signIn.create({
-			identifier: loginForm.getValues("email"),
+			identifier: email,
 		});
 
 		if (signInCreateError) {
-			console.log("signIn.create result:", signInCreateError);
 			setIsLoading(false);
-			// TODO: Implement Toaster here
-			console.log(
-				"Calling toast.error with message:",
-				signInCreateError.message,
-			);
 			toast.error(signInCreateError.message);
 			return;
 		}
@@ -76,16 +70,20 @@ export const useLoginSection = () => {
 		setIsLoading(false);
 
 		if (sendEmailCodeError) {
-			// TODO: Implement Toaster here
-			console.error(sendEmailCodeError.message);
+			toast.error(sendEmailCodeError.message);
 			return;
 		}
 
+		toast.success("OTP sent to your email.");
 		setStep("otp");
 	};
 
 	const handleOTPSubmit = async () => {
 		if (isLoading) return;
+		if (!signIn) {
+			toast.error("Authentication is not ready yet.");
+			return;
+		}
 
 		const otp = loginForm.getValues("otp");
 
@@ -106,12 +104,11 @@ export const useLoginSection = () => {
 		setIsLoading(false);
 
 		if (verifyEmailCodeError) {
-			// TODO: Implement Toaster here
-			console.error(verifyEmailCodeError.message);
+			toast.error(verifyEmailCodeError.message);
 			return;
 		}
 
-		// TODO: Redirect to dashboard after successful login
+		toast.success("Signed in successfully.");
 		router.push("/dashboard");
 	};
 
@@ -129,6 +126,10 @@ export const useLoginSection = () => {
 
 	const handleResendOTP = async () => {
 		if (isResendingOtp) return;
+		if (!signIn) {
+			toast.error("Authentication is not ready yet.");
+			return;
+		}
 
 		setIsResendingOtp(true);
 
@@ -137,12 +138,11 @@ export const useLoginSection = () => {
 		setIsResendingOtp(false);
 
 		if (error) {
-			// TODO: Implement Toaster here
-			console.error(error.message);
+			toast.error(error.message);
 			return;
 		}
 
-		// TODO: Implement a success toast here
+		toast.success("OTP resent.");
 	};
 
 	const handleBack = () => {
