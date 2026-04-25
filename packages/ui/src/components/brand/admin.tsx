@@ -20,8 +20,8 @@ const sizeConfig: Record<AdminLogoSize, { icon: number; text: string }> = {
 const variantConfig: Record<AdminLogoVariant, { icon: string; text: string }> =
 	{
 		sidebar: {
-			icon: "text-sidebar-foreground",
-			text: "text-sidebar-foreground",
+			icon: "text-white/90",
+			text: "text-white",
 		},
 		light: {
 			icon: "text-foreground",

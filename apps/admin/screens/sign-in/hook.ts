@@ -182,11 +182,6 @@ export const useSignInScreen = () => {
 		toast.success("Signed in successfully.");
 		router.replace(DASHBOARD_URL);
 		router.refresh();
-		if (typeof window !== "undefined") {
-			window.setTimeout(() => {
-				window.location.assign(DASHBOARD_URL);
-			}, 250);
-		}
 	};
 
 	const handleFormSubmit = async () => {

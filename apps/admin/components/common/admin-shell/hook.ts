@@ -27,6 +27,23 @@ const computeInitials = (args: {
 	return `${value[0] ?? "A"}`.toUpperCase();
 };
 
+const getPageTitleFromPathname = (pathname: string) => {
+	if (pathname === "/") return "Dashboard";
+
+	const segment = pathname
+		.split("/")
+		.filter(Boolean)
+		.at(0);
+
+	if (!segment) return "Dashboard";
+
+	return segment
+		.split("-")
+		.filter(Boolean)
+		.map((part) => `${part[0]?.toUpperCase() ?? ""}${part.slice(1)}`)
+		.join(" ");
+};
+
 export const useAdminShell = () => {
 	const pathname = usePathname();
 	const router = useRouter();
@@ -78,6 +95,13 @@ export const useAdminShell = () => {
 		});
 	}, [pathname]);
 
+	const currentPageTitle = useMemo(() => {
+		const activeNavItem = navItems.find((item) => item.isActive);
+		if (activeNavItem?.label) return activeNavItem.label;
+
+		return getPageTitleFromPathname(pathname ?? "/");
+	}, [navItems, pathname]);
+
 	const handleSignOut = async () => {
 		await signOut();
 		router.replace(SIGN_IN_URL);
@@ -87,6 +111,7 @@ export const useAdminShell = () => {
 		navItems,
 		user: adminUser,
 		isUserLoaded: isLoaded,
+		currentPageTitle,
 		handleSignOut,
 	};
 };

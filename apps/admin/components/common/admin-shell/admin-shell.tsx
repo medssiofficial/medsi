@@ -31,7 +31,7 @@ import { LogOut } from "lucide-react";
 
 export const AdminShell = (props: { children: React.ReactNode }) => {
 	const { children } = props;
-	const { navItems, user, handleSignOut } = useAdminShell();
+	const { navItems, user, currentPageTitle, handleSignOut } = useAdminShell();
 
 	return (
 		<div className="min-h-svh w-full">
@@ -39,7 +39,7 @@ export const AdminShell = (props: { children: React.ReactNode }) => {
 				<SidebarProvider className={cn("min-h-svh w-full", "font-heading")}>
 					<Sidebar collapsible="icon" className="sidebar-dark">
 						<SidebarHeader className="px-4 pb-5 pt-6 text-sidebar-foreground">
-							<AdminLogo size="md" />
+							<AdminLogo size="md" variant="sidebar" />
 						</SidebarHeader>
 
 					<SidebarContent>
@@ -94,26 +94,43 @@ export const AdminShell = (props: { children: React.ReactNode }) => {
 													{user?.initials ?? "A"}
 												</AvatarFallback>
 											</Avatar>
-											<div className="flex flex-col items-start leading-tight">
-												<span className="text-sm font-medium">
+											<div className="flex min-w-0 flex-1 flex-col items-start leading-tight">
+												<span className="w-full truncate text-sm font-medium">
 													{user?.name ?? "Admin"}
 												</span>
-												<span className="text-xs text-sidebar-foreground/60">
+												<span className="w-full truncate text-xs text-sidebar-foreground/60">
 													{user?.email ?? ""}
 												</span>
 											</div>
 										</SidebarMenuButton>
 									</DropdownMenuTrigger>
 
-									<DropdownMenuContent align="start" sideOffset={8}>
+									<DropdownMenuContent
+										align="start"
+										sideOffset={8}
+										className="w-64"
+									>
 										<DropdownMenuLabel>
-											<div className="flex flex-col gap-0.5">
-												<span className="text-sm">
-													{user?.name ?? "Admin"}
-												</span>
-												<span className="text-xs text-muted-foreground">
-													{user?.email ?? ""}
-												</span>
+											<div className="flex items-center gap-2.5">
+												<Avatar size="sm">
+													{user?.avatarUrl ? (
+														<AvatarImage
+															src={user.avatarUrl}
+															alt={user.name}
+														/>
+													) : null}
+													<AvatarFallback>
+														{user?.initials ?? "A"}
+													</AvatarFallback>
+												</Avatar>
+												<div className="flex min-w-0 flex-1 flex-col gap-0.5">
+													<span className="w-full truncate text-sm">
+														{user?.name ?? "Admin"}
+													</span>
+													<span className="w-full truncate text-xs text-muted-foreground">
+														{user?.email ?? ""}
+													</span>
+												</div>
 											</div>
 										</DropdownMenuLabel>
 										<DropdownMenuSeparator />
@@ -134,6 +151,11 @@ export const AdminShell = (props: { children: React.ReactNode }) => {
 					</Sidebar>
 
 					<SidebarInset className="bg-secondary">
+						<header className="flex h-14 items-center border-b bg-background px-6">
+							<h1 className="font-heading text-lg font-semibold text-foreground">
+								{currentPageTitle}
+							</h1>
+						</header>
 						<main className="flex-1 p-6">{children}</main>
 					</SidebarInset>
 				</SidebarProvider>
