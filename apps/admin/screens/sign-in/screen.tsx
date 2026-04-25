@@ -3,70 +3,195 @@
 import { AdminLogo } from "@repo/ui/components/brand/admin";
 import { Button } from "@repo/ui/components/ui/button";
 import { Card } from "@repo/ui/components/ui/card";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@repo/ui/components/ui/form";
 import { Input } from "@repo/ui/components/ui/input";
-import { Label } from "@repo/ui/components/ui/label";
+import {
+	InputOTP,
+	InputOTPGroup,
+	InputOTPSeparator,
+	InputOTPSlot,
+} from "@repo/ui/components/ui/input-otp";
+import { Separator } from "@repo/ui/components/ui/separator";
+import { Spinner } from "@repo/ui/components/ui/spinner";
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { useSignInScreen } from "./hook";
 
 const SignInScreen = () => {
-	const { email, password, setEmail, setPassword, isLoading, handleSignIn } =
-		useSignInScreen();
+	const {
+		signInForm,
+		currentStep,
+		isLoading,
+		isResendingOtp,
+		handleFormSubmit,
+		handleResendOtp,
+		handleChangeEmail,
+	} = useSignInScreen();
 
 	return (
 		<div className="w-full min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8 font-heading">
-			<Card className="bg-card px-7 py-10 flex flex-col md:min-w-60 w-full sm:max-w-100">
+			<Card className="bg-card w-full max-w-105 px-7 py-8 flex flex-col gap-6">
 				<AdminLogo size="lg" />
 
-				<p className="text-lg font-medium">Sign in to your account</p>
-				<p className="-mt-2 text-sm font-sans">
-					Enter your credentials to access the admin dashboard
-				</p>
-
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						void handleSignIn();
-					}}
-					className="flex flex-col gap-4"
-				>
-					<div className="flex flex-col gap-2 font-sans">
-						<Label htmlFor="email">Email Addess</Label>
-						<Input
-							id="email"
-							type="email"
-							placeholder="admin@medssi.com"
-							className="h-10 rounded-sm"
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							disabled={isLoading}
-						/>
-					</div>
-
-					<div className="flex flex-col gap-2 font-sans">
-						<Label htmlFor="password">Password</Label>
-						<Input
-							id="password"
-							type="password"
-							placeholder="●●●●●●●●"
-							className="h-10 rounded-sm"
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							disabled={isLoading}
-						/>
-					</div>
-
-					<Button
-						size="lg"
-						type="submit"
-						className="h-11 rounded-sm font-sans"
-						disabled={isLoading}
-					>
-						Sign In
-					</Button>
-				</form>
-
-				<div className="w-full flex justify-start">
-					<p className="text-muted-foreground">Forgot Password?</p>
+				<div className="flex flex-col gap-1">
+					<p className="text-2xl font-medium">
+						{currentStep === "email"
+							? "Admin Panel Access"
+							: "Verify your email"}
+					</p>
+					<p className="text-sm font-sans text-muted-foreground">
+						{currentStep === "email" ? (
+							"Enter your email address to receive a one-time login code."
+						) : (
+							<>
+								We sent a 6-digit code to{" "}
+								<span className="font-medium text-foreground">
+									{signInForm.getValues("email")}
+								</span>
+								.
+							</>
+						)}
+					</p>
 				</div>
+
+				<Separator />
+
+				<Form {...signInForm}>
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							void handleFormSubmit();
+						}}
+						className="flex flex-col gap-5"
+					>
+						<FormField
+							control={signInForm.control}
+							name="email"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Email Address</FormLabel>
+									<FormControl>
+										<Input
+											type="email"
+											placeholder="admin@medssi.com"
+											className="h-10 rounded-sm font-sans"
+											disabled={
+												isLoading ||
+												currentStep === "otp"
+											}
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						{currentStep === "otp" ? (
+							<FormField
+								control={signInForm.control}
+								name="otp"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>One-time Password</FormLabel>
+										<FormControl>
+											<InputOTP
+												maxLength={6}
+												value={field.value ?? ""}
+												onChange={field.onChange}
+											>
+												<InputOTPGroup>
+													<InputOTPSlot
+														index={0}
+														className="size-12 text-base"
+													/>
+													<InputOTPSlot
+														index={1}
+														className="size-12 text-base"
+													/>
+													<InputOTPSlot
+														index={2}
+														className="size-12 text-base"
+													/>
+												</InputOTPGroup>
+												<InputOTPSeparator />
+												<InputOTPGroup>
+													<InputOTPSlot
+														index={3}
+														className="size-12 text-base"
+													/>
+													<InputOTPSlot
+														index={4}
+														className="size-12 text-base"
+													/>
+													<InputOTPSlot
+														index={5}
+														className="size-12 text-base"
+													/>
+												</InputOTPGroup>
+											</InputOTP>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						) : null}
+						<Button
+							size="lg"
+							type="submit"
+							className="h-11 rounded-sm font-sans"
+							disabled={isLoading}
+						>
+							{isLoading ? (
+								<Spinner />
+							) : currentStep === "email" ? (
+								<>
+									Sign In
+									<ArrowRightIcon />
+								</>
+							) : (
+								"Verify Email"
+							)}
+						</Button>
+
+						{currentStep === "otp" ? (
+							<p className="text-center text-sm text-muted-foreground font-sans">
+								{"Didn't receive it? "}
+								<Button
+									variant="link"
+									type="button"
+									className="h-auto p-0 text-sm font-medium"
+									disabled={isResendingOtp}
+									onClick={() => {
+										void handleResendOtp();
+									}}
+								>
+									Resend OTP
+								</Button>
+							</p>
+						) : null}
+					</form>
+				</Form>
+
+				{currentStep === "otp" ? (
+					<Button
+						variant="ghost"
+						size="sm"
+						type="button"
+						className="-ml-2.5 self-start text-muted-foreground hover:text-foreground font-sans"
+						disabled={isLoading}
+						onClick={handleChangeEmail}
+					>
+						<ArrowLeftIcon />
+						Change email
+					</Button>
+				) : null}
 			</Card>
 		</div>
 	);

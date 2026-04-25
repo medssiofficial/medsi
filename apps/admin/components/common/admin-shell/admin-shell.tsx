@@ -26,6 +26,7 @@ import {
 	DropdownMenuTrigger,
 } from "@repo/ui/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/components/ui/avatar";
+import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
 import { LogOut } from "lucide-react";
 
 export const AdminShell = (props: { children: React.ReactNode }) => {
@@ -34,11 +35,12 @@ export const AdminShell = (props: { children: React.ReactNode }) => {
 
 	return (
 		<div className="min-h-svh w-full">
-			<SidebarProvider className={cn("min-h-svh w-full", "font-heading")}>
-				<Sidebar collapsible="icon" className="sidebar-dark">
-					<SidebarHeader className="px-4 pb-5 pt-6 text-sidebar-foreground">
-						<AdminLogo size="md" />
-					</SidebarHeader>
+			<TooltipProvider>
+				<SidebarProvider className={cn("min-h-svh w-full", "font-heading")}>
+					<Sidebar collapsible="icon" className="sidebar-dark">
+						<SidebarHeader className="px-4 pb-5 pt-6 text-sidebar-foreground">
+							<AdminLogo size="md" />
+						</SidebarHeader>
 
 					<SidebarContent>
 						<SidebarGroup>
@@ -129,12 +131,13 @@ export const AdminShell = (props: { children: React.ReactNode }) => {
 							</SidebarMenuItem>
 						</SidebarMenu>
 					</SidebarFooter>
-				</Sidebar>
+					</Sidebar>
 
-				<SidebarInset className="bg-secondary">
-					<main className="flex-1 p-6">{children}</main>
-				</SidebarInset>
-			</SidebarProvider>
+					<SidebarInset className="bg-secondary">
+						<main className="flex-1 p-6">{children}</main>
+					</SidebarInset>
+				</SidebarProvider>
+			</TooltipProvider>
 		</div>
 	);
 };
