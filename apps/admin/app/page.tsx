@@ -1,8 +1,7 @@
-export default function Home() {
-	return (
-		<main className="min-h-screen w-full flex flex-col">
-			<h1>Hello Admin</h1>
-		</main>
-	);
-}
+import { DashboardScreen } from "@/screens/dashboard";
 
+const HomePage = () => {
+	return <DashboardScreen />;
+};
+
+export default HomePage;
