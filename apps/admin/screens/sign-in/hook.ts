@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { ACCESS_DENIED_URL, DASHBOARD_URL } from "@/config/client-constants";
 
 export const LoginFormSchema = z.object({
 	email: z.email({
@@ -22,6 +23,24 @@ export const LoginFormSchema = z.object({
 });
 
 export type LoginFormValues = z.infer<typeof LoginFormSchema>;
+
+const getClerkErrorCode = (error: unknown) => {
+	if (
+		typeof error === "object" &&
+		error !== null &&
+		"errors" in error &&
+		Array.isArray((error as { errors: unknown }).errors)
+	) {
+		const first = (
+			error as { errors: Array<{ code?: unknown; message?: unknown }> }
+		).errors[0];
+		if (first && typeof first.code === "string") {
+			return first.code;
+		}
+	}
+
+	return null;
+};
 
 const getClerkErrorMessage = (error: unknown) => {
 	if (
@@ -74,19 +93,51 @@ export const useSignInScreen = () => {
 		setIsLoading(true);
 
 		try {
-			const { error } = await signIn.create({
+			const result = await signIn.create({
 				identifier: parsed.data.email,
 				password: parsed.data.password,
 			});
 
-			if (!error) {
+			if (
+				result &&
+				typeof result === "object" &&
+				"status" in result &&
+				result.status === "complete" &&
+				"createdSessionId" in result &&
+				typeof result.createdSessionId === "string"
+			) {
+				const meResponse = await fetch("/api/admin/me", {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+					},
+				});
+
+				if (meResponse.status === 403 || meResponse.status === 404) {
+					toast.error("Access denied.");
+					router.replace(ACCESS_DENIED_URL);
+					return;
+				}
+
+				if (!meResponse.ok) {
+					toast.error("Sign in failed.");
+					return;
+				}
+
 				toast.success("Signed in successfully.");
-				router.push("/");
+				router.replace(DASHBOARD_URL);
 				return;
 			}
 
-			toast.error(error.message);
+			toast.error("Sign in failed.");
 		} catch (error: unknown) {
+			const code = getClerkErrorCode(error);
+			if (code === "form_identifier_not_found") {
+				toast.error("Account not found.");
+				router.replace(ACCESS_DENIED_URL);
+				return;
+			}
+
 			toast.error(getClerkErrorMessage(error));
 		} finally {
 			setIsLoading(false);
