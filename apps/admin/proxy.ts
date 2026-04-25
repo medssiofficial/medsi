@@ -18,6 +18,7 @@ export const proxy = clerkMiddleware(
 		}
 	},
 	() => ({
+		// TODO: Implement the HOST URL!
 		signInUrl: SIGN_IN_URL,
 		afterSignInUrl: DASHBOARD_URL,
 	}),
@@ -29,4 +30,3 @@ export const config = {
 		"/(api|trpc)(.*)",
 	],
 };
-
