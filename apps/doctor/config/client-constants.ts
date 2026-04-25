@@ -10,6 +10,33 @@ export const API_ROUTES = {
 			path: "/api/doctor/me",
 			method: "GET",
 		},
+		ONBOARDING: {
+			PROFILE: {
+				key: "doctor.onboarding.profile",
+				path: "/api/doctor/onboarding/profile",
+				method: "PUT",
+			},
+			PROFILE_METADATA: {
+				key: "doctor.onboarding.profile-metadata",
+				path: "/api/doctor/onboarding/profile-metadata",
+				method: "PUT",
+			},
+			EXPERTISES: {
+				key: "doctor.onboarding.expertises",
+				path: "/api/doctor/onboarding/expertises",
+				method: "PUT",
+			},
+			SPECIALIZATIONS: {
+				key: "doctor.onboarding.specializations",
+				path: "/api/doctor/onboarding/specializations",
+				method: "PUT",
+			},
+			SUBMIT: {
+				key: "doctor.onboarding.submit",
+				path: "/api/doctor/onboarding/submit",
+				method: "POST",
+			},
+		},
 	},
 } as const;
 

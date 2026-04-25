@@ -66,20 +66,43 @@ model doctor {
     experiences     doctor_experience[]
     profile         doctor_profile?
     expertises      doctor_expertise[]
+    application     doctor_application?
+}
+
+model doctor_application {
+    id               String                  @id @default(ulid())
+    doctor_id        String                  @unique
+    status           DoctorApplicationStatus @default(pending)
+    rejection_reason String?
+    created_at       DateTime                @default(now())
+    updated_at       DateTime                @updatedAt
+
+    doctor doctor @relation(fields: [doctor_id], references: [id])
 }
 
 model doctor_profile {
-    id                  String   @id @default(ulid())
-    doctor_id           String   @unique
-    years_of_experience Decimal
-    name                String
-    dob                 DateTime
-    gender              Gender
-    email               String
-    mobile_number       String
-    country             String
-    created_at          DateTime @default(now())
-    updated_at          DateTime @updatedAt
+    id                          String   @id @default(ulid())
+    doctor_id                   String   @unique
+    years_of_experience         Decimal
+    name                        String
+    dob                         DateTime
+    gender                      Gender
+    email                       String
+    mobile_number               String
+    country                     String
+    address_line_1              String?
+    city                        String?
+    county                      String?
+    medical_registration_number String?
+    current_institution         String?
+    years_in_practice           Int?
+    type_of_doctor              String?
+    website_url                 String?
+    linkedin_url                String?
+    profile_statement           String?
+    metadata                    Json?
+    created_at                  DateTime @default(now())
+    updated_at                  DateTime @updatedAt
 
     doctor doctor @relation(fields: [doctor_id], references: [id])
 }
