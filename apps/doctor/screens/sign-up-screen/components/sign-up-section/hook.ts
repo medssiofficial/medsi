@@ -1,9 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { useSignUp } from "@clerk/nextjs";
+import { useForm, useWatch } from "react-hook-form";
+import { useAuth, useClerk, useSignUp } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import z from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const SignUpSchema = z.object({
@@ -25,24 +25,65 @@ const SignUpSchema = z.object({
 });
 
 type SignUpFormValues = z.infer<typeof SignUpSchema>;
+const SIGN_UP_FLOW_STORAGE_KEY = "doctor.auth.signup.flow";
+
+const getSavedSignUpFlow = () => {
+	if (typeof window === "undefined") return null;
+	try {
+		const raw = window.sessionStorage.getItem(SIGN_UP_FLOW_STORAGE_KEY);
+		if (!raw) return null;
+		return JSON.parse(raw) as {
+			step?: "email" | "otp";
+			email?: string;
+			otp?: string;
+		};
+	} catch {
+		return null;
+	}
+};
 
 export const useSignUpSection = () => {
 	const router = useRouter();
+	const { isSignedIn } = useAuth();
+	const { setActive } = useClerk();
+	const savedFlow = getSavedSignUpFlow();
 
-	const [step, setStep] = useState<"email" | "otp">("email");
+	const [step, setStep] = useState<"email" | "otp">(
+		savedFlow?.step === "otp" ? "otp" : "email",
+	);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isResendingOtp, setIsResendingOtp] = useState(false);
+	const [redirectTo, setRedirectTo] = useState<string | null>(null);
 
 	const signUpForm = useForm<SignUpFormValues>({
 		resolver: zodResolver(SignUpSchema),
 		defaultValues: {
-			email: "",
-			otp: "",
+			email: savedFlow?.email ?? "",
+			otp: savedFlow?.otp ?? "",
 		},
 		mode: "onBlur",
 	});
 
 	const { signUp } = useSignUp();
+	const emailValue = useWatch({ control: signUpForm.control, name: "email" });
+	const otpValue = useWatch({ control: signUpForm.control, name: "otp" });
+
+	useEffect(() => {
+		window.sessionStorage.setItem(
+			SIGN_UP_FLOW_STORAGE_KEY,
+			JSON.stringify({
+				step,
+				email: emailValue ?? "",
+				otp: otpValue ?? "",
+			}),
+		);
+	}, [emailValue, otpValue, step]);
+
+	useEffect(() => {
+		if (!redirectTo) return;
+		if (!isSignedIn) return;
+		router.replace(redirectTo);
+	}, [isSignedIn, redirectTo, router]);
 
 	const handleEmailSubmit = async () => {
 		if (isLoading) return;
@@ -95,9 +136,10 @@ export const useSignUpSection = () => {
 
 		setIsLoading(true);
 
-		const { error: verifyEmailCodeError } = await signUp.verifications.verifyEmailCode({
-				code: otp,
-			});
+		const verifyEmailCodeResult = await signUp.verifications.verifyEmailCode({
+			code: otp,
+		});
+		const { error: verifyEmailCodeError } = verifyEmailCodeResult;
 
 		setIsLoading(false);
 
@@ -106,12 +148,27 @@ export const useSignUpSection = () => {
 			return;
 		}
 
+		const createdSessionId =
+			(
+				verifyEmailCodeResult as {
+					createdSessionId?: string | null;
+				}
+			).createdSessionId ??
+			(
+				signUp as unknown as {
+					createdSessionId?: string | null;
+				}
+			).createdSessionId ??
+			null;
+
+		if (createdSessionId) {
+			await setActive({ session: createdSessionId });
+		}
+
 		toast.success("Account created successfully.");
+		window.sessionStorage.removeItem(SIGN_UP_FLOW_STORAGE_KEY);
+		setRedirectTo("/onboard");
 		router.replace("/onboard");
-		router.refresh();
-		window.setTimeout(() => {
-			window.location.assign("/onboard");
-		}, 120);
 	};
 
 	const handleFormSubmit = async () => {

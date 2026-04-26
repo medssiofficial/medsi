@@ -2,9 +2,10 @@
 
 import {
 	DASHBOARD_URL,
-	DOCTOR_APP_ROUTES,
 	ONBOARD_UNDER_REVIEW_URL,
 	ONBOARD_URL,
+	SIGN_IN_URL,
+	SIGN_UP_URL,
 } from "@/config/client-constants";
 import { useAPIErrorHandler } from "@/hooks/use-api-error-handler";
 import { useDoctorMe } from "@/services/api/doctor/get-me";
@@ -68,13 +69,11 @@ export const useDoctorBootstrap = () => {
 		if (!doctorMeQuery.isSuccess) return;
 
 		if (doctorMeQuery.data.verified) {
-			const isDoctorAppRoute = DOCTOR_APP_ROUTES.some((route) => {
-				return route === "/"
-					? pathname === "/"
-					: pathname === route || pathname.startsWith(`${route}/`);
-			});
+			const isAuthRoute = pathname === SIGN_IN_URL || pathname === SIGN_UP_URL;
+			const isOnboardRoute =
+				pathname === ONBOARD_URL || pathname.startsWith(`${ONBOARD_URL}/`);
 
-			if (!isDoctorAppRoute) {
+			if (isAuthRoute || isOnboardRoute) {
 				router.replace(DASHBOARD_URL);
 			}
 			return;
@@ -99,7 +98,7 @@ export const useDoctorBootstrap = () => {
 
 	const shouldShowLoader =
 		isLoaded && isSignedIn
-			? doctorMeQuery.isLoading || doctorMeQuery.isFetching
+			? doctorMeQuery.isLoading && !doctorMeQuery.data
 			: false;
 
 	return {

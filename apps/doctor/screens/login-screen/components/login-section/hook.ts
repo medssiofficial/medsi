@@ -1,9 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { useSignIn } from "@clerk/nextjs";
+import { useForm, useWatch } from "react-hook-form";
+import { useAuth, useClerk, useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import z from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const LoginFormSchema = z.object({
@@ -25,24 +25,65 @@ const LoginFormSchema = z.object({
 });
 
 type LoginFormValues = z.infer<typeof LoginFormSchema>;
+const LOGIN_FLOW_STORAGE_KEY = "doctor.auth.login.flow";
+
+const getSavedLoginFlow = () => {
+	if (typeof window === "undefined") return null;
+	try {
+		const raw = window.sessionStorage.getItem(LOGIN_FLOW_STORAGE_KEY);
+		if (!raw) return null;
+		return JSON.parse(raw) as {
+			step?: "email" | "otp";
+			email?: string;
+			otp?: string;
+		};
+	} catch {
+		return null;
+	}
+};
 
 export const useLoginSection = () => {
 	const router = useRouter();
+	const { isSignedIn } = useAuth();
+	const { setActive } = useClerk();
+	const savedFlow = getSavedLoginFlow();
 
-	const [step, setStep] = useState<"email" | "otp">("email");
+	const [step, setStep] = useState<"email" | "otp">(
+		savedFlow?.step === "otp" ? "otp" : "email",
+	);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isResendingOtp, setIsResendingOtp] = useState(false);
+	const [redirectTo, setRedirectTo] = useState<string | null>(null);
 
 	const loginForm = useForm<LoginFormValues>({
 		resolver: zodResolver(LoginFormSchema),
 		defaultValues: {
-			email: "",
-			otp: "",
+			email: savedFlow?.email ?? "",
+			otp: savedFlow?.otp ?? "",
 		},
 		mode: "onSubmit",
 	});
 
 	const { signIn } = useSignIn();
+	const emailValue = useWatch({ control: loginForm.control, name: "email" });
+	const otpValue = useWatch({ control: loginForm.control, name: "otp" });
+
+	useEffect(() => {
+		window.sessionStorage.setItem(
+			LOGIN_FLOW_STORAGE_KEY,
+			JSON.stringify({
+				step,
+				email: emailValue ?? "",
+				otp: otpValue ?? "",
+			}),
+		);
+	}, [emailValue, otpValue, step]);
+
+	useEffect(() => {
+		if (!redirectTo) return;
+		if (!isSignedIn) return;
+		router.replace(redirectTo);
+	}, [isSignedIn, redirectTo, router]);
 
 	const handleEmailSubmit = async () => {
 		if (isLoading) return;
@@ -96,9 +137,10 @@ export const useLoginSection = () => {
 
 		setIsLoading(true);
 
-		const { error: verifyEmailCodeError } = await signIn.emailCode.verifyCode({
-				code: otp,
-			});
+		const verifyEmailCodeResult = await signIn.emailCode.verifyCode({
+			code: otp,
+		});
+		const { error: verifyEmailCodeError } = verifyEmailCodeResult;
 
 		setIsLoading(false);
 
@@ -107,12 +149,27 @@ export const useLoginSection = () => {
 			return;
 		}
 
+		const createdSessionId =
+			(
+				verifyEmailCodeResult as {
+					createdSessionId?: string | null;
+				}
+			).createdSessionId ??
+			(
+				signIn as unknown as {
+					createdSessionId?: string | null;
+				}
+			).createdSessionId ??
+			null;
+
+		if (createdSessionId) {
+			await setActive({ session: createdSessionId });
+		}
+
 		toast.success("Signed in successfully.");
+		window.sessionStorage.removeItem(LOGIN_FLOW_STORAGE_KEY);
+		setRedirectTo("/");
 		router.replace("/");
-		router.refresh();
-		window.setTimeout(() => {
-			window.location.assign("/");
-		}, 120);
 	};
 
 	const handleFormSubmit = async () => {
