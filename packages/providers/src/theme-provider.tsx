@@ -10,9 +10,9 @@ export const ThemeProvider = (
 	return (
 		<NextThemesProvider
 			attribute="class"
-			defaultTheme="system"
-			storageKey="theme"
-			enableSystem
+		defaultTheme="light"
+		storageKey="theme"
+		enableSystem={false}
 			{...rest}
 		>
 			{children}
