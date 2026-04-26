@@ -4,9 +4,9 @@ const styles: Record<string, CSSProperties> = {
 	body: {
 		margin: 0,
 		padding: 0,
-		backgroundColor: "#f5f5f5",
+		backgroundColor: "#F0F2F5",
 		fontFamily: "Manrope, Arial, sans-serif",
-		color: "#0a0a0a",
+		color: "#0B1119",
 	},
 	container: {
 		maxWidth: "600px",
@@ -15,8 +15,8 @@ const styles: Record<string, CSSProperties> = {
 	},
 	card: {
 		backgroundColor: "#ffffff",
-		border: "1px solid #e5e5e5",
-		borderRadius: "12px",
+		border: "1px solid #E2E6EC",
+		borderRadius: "14px",
 		padding: "24px",
 	},
 	logo: {
@@ -24,6 +24,7 @@ const styles: Record<string, CSSProperties> = {
 		fontSize: "20px",
 		fontWeight: 700,
 		margin: "0 0 16px 0",
+		color: "#0F6E6E",
 	},
 	title: {
 		fontFamily: "Space Grotesk, Manrope, Arial, sans-serif",
@@ -35,20 +36,20 @@ const styles: Record<string, CSSProperties> = {
 		fontSize: "14px",
 		lineHeight: 1.6,
 		margin: "0 0 12px 0",
-		color: "#404040",
+		color: "#3D4654",
 	},
 	footer: {
 		fontSize: "12px",
 		lineHeight: 1.4,
-		color: "#737373",
+		color: "#8B95A4",
 		marginTop: "18px",
 	},
 	cta: {
 		display: "inline-block",
-		backgroundColor: "#000000",
+		backgroundColor: "#0F6E6E",
 		color: "#ffffff",
 		padding: "10px 14px",
-		borderRadius: "8px",
+		borderRadius: "10px",
 		textDecoration: "none",
 		fontSize: "13px",
 		fontWeight: 600,

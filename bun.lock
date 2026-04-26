@@ -64,6 +64,7 @@
         "@repo/email": "*",
         "@repo/env": "*",
         "@repo/providers": "*",
+        "@repo/supabase": "*",
         "@repo/ui": "*",
         "@repo/utils": "*",
         "@t3-oss/env-nextjs": "^0.13.11",
