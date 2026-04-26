@@ -233,6 +233,166 @@ export const DOCTOR_APPLICATION_STATUSES = [
 
 export type DoctorApplicationStatus = (typeof DOCTOR_APPLICATION_STATUSES)[number];
 
+interface GetDoctorsForAdminArgs {
+	page: number;
+	page_size: number;
+	search?: string;
+	verified?: "all" | "verified" | "unverified";
+}
+
+export const getDoctorsForAdmin = async (args: GetDoctorsForAdminArgs) => {
+	const page = Math.max(1, args.page);
+	const pageSize = Math.max(1, Math.min(50, args.page_size));
+	const skip = (page - 1) * pageSize;
+
+	const where: Prisma.doctorWhereInput = {};
+
+	if (args.verified === "verified") {
+		where.verified = true;
+	} else if (args.verified === "unverified") {
+		where.verified = false;
+	}
+
+	const searchTerm = args.search?.trim();
+	if (searchTerm) {
+		where.OR = [
+			{
+				id: {
+					contains: searchTerm,
+					mode: "insensitive",
+				},
+			},
+			{
+				clerk_id: {
+					contains: searchTerm,
+					mode: "insensitive",
+				},
+			},
+			{
+				profile: {
+					is: {
+						name: {
+							contains: searchTerm,
+							mode: "insensitive",
+						},
+					},
+				},
+			},
+			{
+				profile: {
+					is: {
+						email: {
+							contains: searchTerm,
+							mode: "insensitive",
+						},
+					},
+				},
+			},
+			{
+				profile: {
+					is: {
+						country: {
+							contains: searchTerm,
+							mode: "insensitive",
+						},
+					},
+				},
+			},
+			{
+				profile: {
+					is: {
+						city: {
+							contains: searchTerm,
+							mode: "insensitive",
+						},
+					},
+				},
+			},
+			{
+				profile: {
+					is: {
+						medical_registration_number: {
+							contains: searchTerm,
+							mode: "insensitive",
+						},
+					},
+				},
+			},
+			{
+				specializations: {
+					some: {
+						name: {
+							contains: searchTerm,
+							mode: "insensitive",
+						},
+					},
+				},
+			},
+		];
+	}
+
+	const [doctors, total] = await prisma.$transaction([
+		prisma.doctor.findMany({
+			where,
+			orderBy: {
+				created_at: "desc",
+			},
+			skip,
+			take: pageSize,
+			include: {
+				profile: true,
+				application: true,
+				specializations: true,
+				expertises: true,
+			},
+		}),
+		prisma.doctor.count({ where }),
+	]);
+
+	const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+	return {
+		items: doctors,
+		meta: {
+			total,
+			page,
+			page_size: pageSize,
+			total_pages: totalPages,
+			has_next_page: page < totalPages,
+			has_previous_page: page > 1,
+		},
+	};
+};
+
+export const getDoctorApplicationsPendingOrUnderReviewCountForAdmin = () => {
+	return prisma.doctor_application.count({
+		where: {
+			status: {
+				in: ["pending", "under_review"],
+			},
+		},
+	});
+};
+
+interface GetDoctorByIdForAdminArgs {
+	doctor_id: string;
+}
+
+export const getDoctorByIdForAdmin = (args: GetDoctorByIdForAdminArgs) => {
+	return prisma.doctor.findUnique({
+		where: {
+			id: args.doctor_id,
+		},
+		include: {
+			profile: true,
+			application: true,
+			specializations: true,
+			expertises: true,
+			experiences: true,
+		},
+	});
+};
+
 interface GetDoctorApplicationsForAdminArgs {
 	page: number;
 	page_size: number;

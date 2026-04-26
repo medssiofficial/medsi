@@ -25,6 +25,11 @@ export const API_ROUTES = {
 				path: "/api/admin/applications",
 				method: "GET",
 			},
+			COUNTS: {
+				key: "admin.applications.counts",
+				path: "/api/admin/applications/counts",
+				method: "GET",
+			},
 			DETAIL: {
 				key: "admin.applications.detail",
 				path: "/api/admin/applications",
@@ -34,6 +39,18 @@ export const API_ROUTES = {
 				key: "admin.applications.review",
 				path: "/api/admin/applications",
 				method: "PATCH",
+			},
+		},
+		DOCTORS: {
+			LIST: {
+				key: "admin.doctors.list",
+				path: "/api/admin/doctors",
+				method: "GET",
+			},
+			DETAIL: {
+				key: "admin.doctors.detail",
+				path: "/api/admin/doctors",
+				method: "GET",
 			},
 		},
 	},

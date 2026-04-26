@@ -1,12 +1,13 @@
 "use client";
 
 import { useAPIErrorHandler } from "@/hooks/use-api-error-handler";
+import { useApplicationCountsQuery } from "@/services/api/admin/applications/get-application-counts";
 import {
 	useAdminApplicationsQuery,
 	type AdminApplicationStatusFilter,
 } from "@/services/api/admin/applications/get-applications";
 import { useReviewDoctorApplicationMutation } from "@/services/api/admin/applications/review-application";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const PAGE_SIZE = 10;
@@ -39,6 +40,7 @@ export const useApplicationsScreen = () => {
 		search,
 		status,
 	});
+	const applicationCountsQuery = useApplicationCountsQuery();
 
 	const reviewMutation = useReviewDoctorApplicationMutation();
 
@@ -46,6 +48,11 @@ export const useApplicationsScreen = () => {
 		if (!applicationsQuery.isError) return;
 		APIErrorHandler()(applicationsQuery.error);
 	}, [APIErrorHandler, applicationsQuery.error, applicationsQuery.isError]);
+
+	useEffect(() => {
+		if (!applicationCountsQuery.isError) return;
+		APIErrorHandler()(applicationCountsQuery.error);
+	}, [APIErrorHandler, applicationCountsQuery.error, applicationCountsQuery.isError]);
 
 	const applications = applicationsQuery.data?.applications ?? [];
 	const meta = applicationsQuery.data?.meta ?? {
@@ -57,14 +64,7 @@ export const useApplicationsScreen = () => {
 		has_previous_page: false,
 	};
 
-	const pendingCount = useMemo(
-		() =>
-			applications.filter(
-				(item) =>
-					item.status === "pending" || item.status === "under_review",
-			).length,
-		[applications],
-	);
+	const pendingCount = applicationCountsQuery.data ?? 0;
 
 	const handleStatusChange = (nextStatus: AdminApplicationStatusFilter) => {
 		setStatus(nextStatus);
