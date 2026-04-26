@@ -17,8 +17,8 @@ const sizeMap: Record<MedssiIconSize, { box: string; icon: LucideProps["size"] }
 };
 
 const variantMap: Record<MedssiIconVariant, { box: string; icon: string }> = {
-	dark: { box: "bg-foreground", icon: "text-background" },
-	light: { box: "bg-background", icon: "text-foreground" },
+	dark: { box: "bg-primary", icon: "text-primary-foreground" },
+	light: { box: "bg-background", icon: "text-primary" },
 };
 
 export const MedssiIcon = ({

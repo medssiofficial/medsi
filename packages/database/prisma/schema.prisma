@@ -33,8 +33,18 @@ enum FileType {
 
 enum DoctorApplicationStatus {
     pending
+    under_review
     approved
     rejected
+}
+
+enum DoctorProofType {
+    medical_license
+    board_certification
+    government_id_front
+    government_id_back
+    specialization_supporting_document
+    experience_supporting_document
 }
 
 model user {
@@ -66,22 +76,58 @@ model doctor {
     experiences     doctor_experience[]
     profile         doctor_profile?
     expertises      doctor_expertise[]
+    application     doctor_application?
+    files           doctor_file[]
+}
+
+model doctor_application {
+    id               String                  @id @default(ulid())
+    doctor_id        String                  @unique
+    application_code String?                 @unique
+    status           DoctorApplicationStatus @default(pending)
+    rejection_reason String?
+    submitted_at     DateTime?
+    created_at       DateTime                @default(now())
+    updated_at       DateTime                @updatedAt
+
+    doctor doctor @relation(fields: [doctor_id], references: [id])
 }
 
 model doctor_profile {
-    id                  String   @id @default(ulid())
-    doctor_id           String   @unique
-    years_of_experience Decimal
-    name                String
-    dob                 DateTime
-    gender              Gender
-    email               String
-    mobile_number       String
-    country             String
-    created_at          DateTime @default(now())
-    updated_at          DateTime @updatedAt
+    id                          String   @id @default(ulid())
+    doctor_id                   String   @unique
+    years_of_experience         Decimal
+    name                        String
+    dob                         DateTime
+    gender                      Gender
+    email                       String
+    mobile_number               String
+    country                     String
+    address_line_1              String?
+    city                        String?
+    county                      String?
+    medical_registration_number String?
+    current_institution         String?
+    years_in_practice           Int?
+    type_of_doctor              String?
+    website_url                 String?
+    linkedin_url                String?
+    profile_statement           String?
+    medical_license_file_id     String?
+    board_certification_file_id String?
+    government_id_front_file_id String?
+    government_id_back_file_id  String?
+    experience_proof_file_id    String?
+    metadata                    Json?
+    created_at                  DateTime @default(now())
+    updated_at                  DateTime @updatedAt
 
-    doctor doctor @relation(fields: [doctor_id], references: [id])
+    doctor                     doctor      @relation(fields: [doctor_id], references: [id])
+    medical_license_file       doctor_file? @relation("doctor_profile_medical_license_file", fields: [medical_license_file_id], references: [id])
+    board_certification_file   doctor_file? @relation("doctor_profile_board_certification_file", fields: [board_certification_file_id], references: [id])
+    government_id_front_file   doctor_file? @relation("doctor_profile_government_id_front_file", fields: [government_id_front_file_id], references: [id])
+    government_id_back_file    doctor_file? @relation("doctor_profile_government_id_back_file", fields: [government_id_back_file_id], references: [id])
+    experience_proof_file      doctor_file? @relation("doctor_profile_experience_proof_file", fields: [experience_proof_file_id], references: [id])
 }
 
 model doctor_expertise {
@@ -98,11 +144,13 @@ model doctor_specialization {
     id                   String   @id @default(ulid())
     name                 String
     certificate_file_key String
+    certificate_file_id  String?
     doctor_id            String?
     created_at           DateTime @default(now())
     updated_at           DateTime @updatedAt
 
-    doctor doctor? @relation(fields: [doctor_id], references: [id])
+    doctor           doctor?      @relation(fields: [doctor_id], references: [id])
+    certificate_file doctor_file? @relation(fields: [certificate_file_id], references: [id])
 }
 
 model doctor_experience {
@@ -112,12 +160,40 @@ model doctor_experience {
     hospital_name              String
     description                String
     experience_letter_file_key String?
+    experience_letter_file_id  String?
     doctor_id                  String?
     doctor_application_id      String?
     created_at                 DateTime @default(now())
     updated_at                 DateTime @updatedAt
 
-    doctor doctor? @relation(fields: [doctor_id], references: [id])
+    doctor                 doctor?      @relation(fields: [doctor_id], references: [id])
+    experience_letter_file doctor_file? @relation(fields: [experience_letter_file_id], references: [id])
+}
+
+model doctor_file {
+    id            String         @id @default(ulid())
+    doctor_id     String
+    proof_type    DoctorProofType
+    filename      String
+    mime_type     String
+    bucket        String
+    storage_path  String
+    public_url    String
+    size_bytes    Int?
+    metadata      Json?
+    created_at    DateTime       @default(now())
+    updated_at    DateTime       @updatedAt
+
+    doctor                             doctor                 @relation(fields: [doctor_id], references: [id])
+    profile_medical_license_for        doctor_profile[]       @relation("doctor_profile_medical_license_file")
+    profile_board_certification_for    doctor_profile[]       @relation("doctor_profile_board_certification_file")
+    profile_government_id_front_for    doctor_profile[]       @relation("doctor_profile_government_id_front_file")
+    profile_government_id_back_for     doctor_profile[]       @relation("doctor_profile_government_id_back_file")
+    profile_experience_proof_for       doctor_profile[]       @relation("doctor_profile_experience_proof_file")
+    specialization_certificate_for     doctor_specialization[]
+    experience_letter_for              doctor_experience[]
+
+    @@index([doctor_id, proof_type])
 }
 
 model medical_case {

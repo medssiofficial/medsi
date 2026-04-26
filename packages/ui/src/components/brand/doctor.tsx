@@ -26,7 +26,7 @@ const variantConfig: Record<
 	},
 	sidebar: {
 		brand: "text-sidebar-foreground",
-		label: "text-sidebar-foreground/60",
+		label: "text-medssi-green-light",
 	},
 };
 

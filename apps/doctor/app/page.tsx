@@ -1,7 +1,14 @@
-export default function Home() {
-	return (
-		<main className="min-h-screen w-full flex flex-col">
-			<h1>Hello Doctor Dashboard</h1>
-		</main>
-	);
-}
+import type { Metadata } from "next";
+import { DashboardScreen } from "@/screens/dashboard-screen";
+
+export const metadata: Metadata = {
+	title: "Doctor Dashboard",
+	description: "Doctor workspace dashboard for Medssi.",
+};
+
+const HomePage = () => {
+	return <DashboardScreen />;
+};
+
+export default HomePage;
+

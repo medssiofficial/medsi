@@ -4,8 +4,10 @@ import z from "zod";
 export const SERVER_ENV = createEnv({
 	server: {
 		CLERK_SECRET_KEY: z.string(),
+		HOST: z.string(),
 	},
 	runtimeEnv: {
 		CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+		HOST: process.env.HOST,
 	},
 });

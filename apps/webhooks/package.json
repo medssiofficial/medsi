@@ -3,13 +3,16 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev": "next dev --port 3003",
+		"dev": "chmod +x ./dev.sh && ./dev.sh",
+		"dev:next": "next dev --port 3003",
 		"build": "next build",
 		"start": "next start",
 		"lint": "eslint --max-warnings 0",
 		"check-types": "next typegen && tsc --noEmit"
 	},
 	"dependencies": {
+		"@clerk/backend": "^3.3.0",
+		"@clerk/nextjs": "^7.2.5",
 		"@repo/utils": "*",
 		"@t3-oss/env-nextjs": "^0.13.11",
 		"inquirer": "^13.4.1",

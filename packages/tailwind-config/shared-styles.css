@@ -46,7 +46,7 @@
 	--color-sidebar-border: var(--sidebar-border);
 	--color-sidebar-ring: var(--sidebar-ring);
 
-	/* ── Medssi medical semantic colors ── */
+	/* ── Medical semantic colors ── */
 	--color-success: var(--success);
 	--color-success-foreground: var(--success-foreground);
 	--color-success-surface: var(--success-surface);
@@ -56,16 +56,27 @@
 	--color-error: var(--error);
 	--color-error-foreground: var(--error-foreground);
 	--color-error-surface: var(--error-surface);
+	--color-info: var(--info);
+	--color-info-foreground: var(--info-foreground);
+	--color-info-surface: var(--info-surface);
 
-	/* ── Medssi brand colors ── */
+	/* ── Medssi brand: teal green ── */
 	--color-medssi-green: var(--medssi-green);
 	--color-medssi-green-dark: var(--medssi-green-dark);
 	--color-medssi-green-light: var(--medssi-green-light);
 	--color-medssi-green-surface: var(--medssi-green-surface);
+
+	/* ── Medssi brand: gold / tertiary ── */
 	--color-medssi-gold: var(--medssi-gold);
 	--color-medssi-gold-light: var(--medssi-gold-light);
+	--color-medssi-gold-wash: var(--medssi-gold-wash);
 
-	/* ── Grey scale (direct access for precision layouts) ── */
+	/* ── Medssi brand: navy / secondary deep ── */
+	--color-medssi-navy: var(--medssi-navy);
+	--color-medssi-navy-deep: var(--medssi-navy-deep);
+	--color-medssi-navy-light: var(--medssi-navy-light);
+
+	/* ── Grey scale ── */
 	--color-grey-50: var(--grey-50);
 	--color-grey-100: var(--grey-100);
 	--color-grey-200: var(--grey-200);
@@ -80,107 +91,118 @@
 	--color-neutral-warm-dark: var(--neutral-warm-dark);
 	--color-neutral-warm-medium: var(--neutral-warm-medium);
 
-	/* ── Radius tokens ── */
-	--radius-sm: calc(var(--radius) * 0.6);
-	--radius-md: calc(var(--radius) * 0.8);
-	--radius-lg: var(--radius);
-	--radius-xl: calc(var(--radius) * 1.4);
-	--radius-2xl: calc(var(--radius) * 1.8);
-	--radius-3xl: calc(var(--radius) * 2.2);
-	--radius-4xl: calc(var(--radius) * 2.6);
+	/* ── Radius tokens (fixed pixel values from design) ── */
+	--radius-sm: 0.375rem;
+	--radius-md: 0.625rem;
+	--radius-lg: 0.875rem;
+	--radius-xl: 1.25rem;
+	--radius-2xl: 1.75rem;
+	--radius-3xl: 2.5rem;
+	--radius-4xl: 9999px;
 }
 
 /* ═══════════════════════════════════════════
    LIGHT MODE — Medssi Design System
-   Monochrome-forward with medical green accent
+   Teal-green primary · Cool-tinted greys
    ═══════════════════════════════════════════ */
 :root {
 	/* ── Core surfaces ── */
 	--background: #ffffff;
-	--foreground: #0a0a0a;
+	--foreground: #0B1119;
 	--card: #ffffff;
-	--card-foreground: #0a0a0a;
+	--card-foreground: #0B1119;
 	--popover: #ffffff;
-	--popover-foreground: #0a0a0a;
+	--popover-foreground: #0B1119;
 
-	/* ── Primary: near-black for buttons & CTAs ── */
-	--primary: #171717;
+	/* ── Primary: Medssi teal ── */
+	--primary: #0F6E6E;
 	--primary-foreground: #ffffff;
 
-	/* ── Secondary: subtle grey backgrounds ── */
-	--secondary: #f5f5f5;
-	--secondary-foreground: #1a1a1a;
+	/* ── Secondary: cool grey surfaces ── */
+	--secondary: #F0F2F5;
+	--secondary-foreground: #0B1119;
 
 	/* ── Muted: subdued backgrounds & text ── */
-	--muted: #f5f5f5;
-	--muted-foreground: #737373;
+	--muted: #F0F2F5;
+	--muted-foreground: #8B95A4;
 
-	/* ── Accent: interactive hover states ── */
-	--accent: #f5f5f5;
-	--accent-foreground: #1a1a1a;
+	/* ── Accent: primary surface tint for hover states ── */
+	--accent: #EBF6F5;
+	--accent-foreground: #0F6E6E;
 
 	/* ── Destructive ── */
-	--destructive: #c0392b;
+	--destructive: #DC2626;
 	--destructive-foreground: #ffffff;
 
 	/* ── Borders & inputs ── */
-	--border: #e5e5e5;
-	--input: #d4d4d4;
-	--ring: #a3a3a3;
+	--border: #E2E6EC;
+	--input: #C6CDD7;
+	--ring: #0F6E6E;
 
-	/* ── Chart palette (monochrome with green accent) ── */
-	--chart-1: #171717;
-	--chart-2: #4a6741;
-	--chart-3: #737373;
-	--chart-4: #a3a3a3;
-	--chart-5: #d4d4d4;
+	/* ── Chart palette ── */
+	--chart-1: #0F6E6E;
+	--chart-2: #0E3A5C;
+	--chart-3: #B8893E;
+	--chart-4: #2E9695;
+	--chart-5: #3B6B95;
 
-	/* ── Radius base ── */
-	--radius: 0.625rem;
+	/* ── Radius base (for any legacy calc references) ── */
+	--radius: 0.875rem;
 
-	/* ── Sidebar (default: admin dark sidebar) ── */
-	--sidebar: #262626;
+	/* ── Sidebar (default: admin dark) ── */
+	--sidebar: #0B1119;
 	--sidebar-foreground: #ffffff;
-	--sidebar-primary: #404040;
+	--sidebar-primary: #1A1F2C;
 	--sidebar-primary-foreground: #ffffff;
-	--sidebar-accent: #404040;
+	--sidebar-accent: #1A1F2C;
 	--sidebar-accent-foreground: #ffffff;
-	--sidebar-border: rgba(255, 255, 255, 0.1);
-	--sidebar-ring: #525252;
+	--sidebar-border: rgba(255, 255, 255, 0.08);
+	--sidebar-ring: #3D4654;
 
-	/* ── Medssi medical semantic ── */
-	--success: #4a6741;
-	--success-foreground: #ffffff;
-	--success-surface: #eaf0e8;
-	--warning: #d4a017;
-	--warning-foreground: #ffffff;
-	--warning-surface: #fff8e1;
-	--error: #c0392b;
-	--error-foreground: #ffffff;
-	--error-surface: #fdedeb;
+	/* ── Medical semantic ── */
+	--success: #16A34A;
+	--success-foreground: #14532D;
+	--success-surface: #DCFCE7;
+	--warning: #F59E0B;
+	--warning-foreground: #92400E;
+	--warning-surface: #FEF3C7;
+	--error: #DC2626;
+	--error-foreground: #991B1B;
+	--error-surface: #FEE2E2;
+	--info: #2563EB;
+	--info-foreground: #1E3A8A;
+	--info-surface: #DBEAFE;
 
-	/* ── Medssi brand ── */
-	--medssi-green: #4a6741;
-	--medssi-green-dark: #3a5233;
-	--medssi-green-light: #5c7d52;
-	--medssi-green-surface: #eaf0e8;
-	--medssi-gold: #c5a059;
-	--medssi-gold-light: #d4b574;
+	/* ── Medssi brand: teal green ── */
+	--medssi-green: #0F6E6E;
+	--medssi-green-dark: #06504F;
+	--medssi-green-light: #2E9695;
+	--medssi-green-surface: #EBF6F5;
 
-	/* ── Grey scale ── */
-	--grey-50: #f5f5f5;
-	--grey-100: #e5e5e5;
-	--grey-200: #d4d4d4;
-	--grey-300: #a3a3a3;
-	--grey-400: #737373;
-	--grey-500: #525252;
-	--grey-600: #404040;
-	--grey-700: #262626;
+	/* ── Medssi brand: gold / tertiary ── */
+	--medssi-gold: #B8893E;
+	--medssi-gold-light: #C8A35C;
+	--medssi-gold-wash: #F5EBD8;
 
-	/* ── Warm neutrals (used for neutral/organic backgrounds) ── */
-	--neutral-warm: #f9f8f6;
-	--neutral-warm-dark: #e8e6e1;
-	--neutral-warm-medium: #b0ada6;
+	/* ── Medssi brand: navy ── */
+	--medssi-navy: #0E3A5C;
+	--medssi-navy-deep: #0E2A45;
+	--medssi-navy-light: #3B6B95;
+
+	/* ── Grey scale (cool-tinted) ── */
+	--grey-50: #F0F2F5;
+	--grey-100: #E2E6EC;
+	--grey-200: #C6CDD7;
+	--grey-300: #8B95A4;
+	--grey-400: #5C6675;
+	--grey-500: #3D4654;
+	--grey-600: #1A1F2C;
+	--grey-700: #0B1119;
+
+	/* ── Warm neutrals ── */
+	--neutral-warm: #FAF7F2;
+	--neutral-warm-dark: #BFE0DF;
+	--neutral-warm-medium: #8B95A4;
 }
 
 /* ═══════════════════════════════════════════
@@ -188,127 +210,155 @@
    ═══════════════════════════════════════════ */
 .dark {
 	/* ── Core surfaces ── */
-	--background: #1a1a1a;
-	--foreground: #f5f5f5;
-	--card: #262626;
-	--card-foreground: #f5f5f5;
-	--popover: #262626;
-	--popover-foreground: #f5f5f5;
+	--background: #0B1119;
+	--foreground: #F0F2F5;
+	--card: #1A1F2C;
+	--card-foreground: #F0F2F5;
+	--popover: #1A1F2C;
+	--popover-foreground: #F0F2F5;
 
-	/* ── Primary: light grey for buttons in dark mode ── */
-	--primary: #e5e5e5;
-	--primary-foreground: #1a1a1a;
+	/* ── Primary ── */
+	--primary: #2E9695;
+	--primary-foreground: #ffffff;
 
 	/* ── Secondary ── */
-	--secondary: #2d2d2d;
-	--secondary-foreground: #f5f5f5;
+	--secondary: #1A1F2C;
+	--secondary-foreground: #F0F2F5;
 
 	/* ── Muted ── */
-	--muted: #2d2d2d;
-	--muted-foreground: #a3a3a3;
+	--muted: #1A1F2C;
+	--muted-foreground: #8B95A4;
 
 	/* ── Accent ── */
-	--accent: #2d2d2d;
-	--accent-foreground: #f5f5f5;
+	--accent: #0E2A45;
+	--accent-foreground: #2E9695;
 
 	/* ── Destructive ── */
-	--destructive: #e74c3c;
+	--destructive: #DC2626;
 	--destructive-foreground: #ffffff;
 
 	/* ── Borders & inputs ── */
 	--border: rgba(255, 255, 255, 0.1);
 	--input: rgba(255, 255, 255, 0.15);
-	--ring: #525252;
+	--ring: #2E9695;
 
 	/* ── Chart palette (dark mode) ── */
-	--chart-1: #e5e5e5;
-	--chart-2: #5c7d52;
-	--chart-3: #a3a3a3;
-	--chart-4: #737373;
-	--chart-5: #525252;
+	--chart-1: #2E9695;
+	--chart-2: #3B6B95;
+	--chart-3: #C8A35C;
+	--chart-4: #BFE0DF;
+	--chart-5: #5C6675;
 
-	/* ── Sidebar (stays dark in dark mode) ── */
-	--sidebar: #171717;
-	--sidebar-foreground: #f5f5f5;
-	--sidebar-primary: #2d2d2d;
-	--sidebar-primary-foreground: #f5f5f5;
-	--sidebar-accent: #2d2d2d;
-	--sidebar-accent-foreground: #f5f5f5;
-	--sidebar-border: rgba(255, 255, 255, 0.1);
-	--sidebar-ring: #525252;
+	/* ── Sidebar ── */
+	--sidebar: #060A10;
+	--sidebar-foreground: #F0F2F5;
+	--sidebar-primary: #0B1119;
+	--sidebar-primary-foreground: #F0F2F5;
+	--sidebar-accent: #0B1119;
+	--sidebar-accent-foreground: #F0F2F5;
+	--sidebar-border: rgba(255, 255, 255, 0.06);
+	--sidebar-ring: #3D4654;
 
-	/* ── Medssi medical semantic (dark mode) ── */
-	--success: #5c7d52;
+	/* ── Medical semantic (dark mode) ── */
+	--success: #22C55E;
 	--success-foreground: #ffffff;
-	--success-surface: #2a3a26;
-	--warning: #d4a017;
-	--warning-foreground: #1a1a1a;
-	--warning-surface: #3a3520;
-	--error: #e74c3c;
+	--success-surface: #14532D;
+	--warning: #F59E0B;
+	--warning-foreground: #0B1119;
+	--warning-surface: #422006;
+	--error: #EF4444;
 	--error-foreground: #ffffff;
-	--error-surface: #3a2020;
+	--error-surface: #450A0A;
+	--info: #3B82F6;
+	--info-foreground: #ffffff;
+	--info-surface: #1E3A8A;
 
 	/* ── Medssi brand (dark mode) ── */
-	--medssi-green: #5c7d52;
-	--medssi-green-dark: #4a6741;
-	--medssi-green-light: #6e9463;
-	--medssi-green-surface: #2a3a26;
-	--medssi-gold: #d4b574;
-	--medssi-gold-light: #e0c78a;
+	--medssi-green: #2E9695;
+	--medssi-green-dark: #0F6E6E;
+	--medssi-green-light: #5AB9B8;
+	--medssi-green-surface: #0A3D3C;
+	--medssi-gold: #C8A35C;
+	--medssi-gold-light: #D4B574;
+	--medssi-gold-wash: #3A3020;
+	--medssi-navy: #3B6B95;
+	--medssi-navy-deep: #0E3A5C;
+	--medssi-navy-light: #5A8AB5;
 
 	/* ── Grey scale (inverted for dark mode) ── */
-	--grey-50: #2d2d2d;
-	--grey-100: #3a3a3a;
-	--grey-200: #525252;
-	--grey-300: #737373;
-	--grey-400: #a3a3a3;
-	--grey-500: #d4d4d4;
-	--grey-600: #e5e5e5;
-	--grey-700: #f5f5f5;
+	--grey-50: #1A1F2C;
+	--grey-100: #252B3A;
+	--grey-200: #3D4654;
+	--grey-300: #5C6675;
+	--grey-400: #8B95A4;
+	--grey-500: #C6CDD7;
+	--grey-600: #E2E6EC;
+	--grey-700: #F0F2F5;
 
 	/* ── Warm neutrals (dark mode) ── */
-	--neutral-warm: #1e1d1b;
-	--neutral-warm-dark: #2a2825;
-	--neutral-warm-medium: #5a5650;
+	--neutral-warm: #131210;
+	--neutral-warm-dark: #0A3D3C;
+	--neutral-warm-medium: #5C6675;
 }
 
 /* ═══════════════════════════════════════════
    SIDEBAR VARIANTS
-   Apply these classes to switch sidebar themes
    ═══════════════════════════════════════════ */
 
-/* Doctor app: white/light sidebar */
-.sidebar-light {
-	--sidebar: #ffffff;
-	--sidebar-foreground: #0a0a0a;
-	--sidebar-primary: #f5f5f5;
-	--sidebar-primary-foreground: #0a0a0a;
-	--sidebar-accent: #f5f5f5;
-	--sidebar-accent-foreground: #1a1a1a;
-	--sidebar-border: #e5e5e5;
-	--sidebar-ring: #a3a3a3;
-}
-.dark .sidebar-light {
-	--sidebar: #262626;
-	--sidebar-foreground: #f5f5f5;
-	--sidebar-primary: #2d2d2d;
-	--sidebar-primary-foreground: #f5f5f5;
-	--sidebar-accent: #2d2d2d;
-	--sidebar-accent-foreground: #f5f5f5;
-	--sidebar-border: rgba(255, 255, 255, 0.1);
-	--sidebar-ring: #525252;
+/* Admin app: near-black sidebar */
+.sidebar-dark {
+	--sidebar: #0B1119;
+	--sidebar-foreground: #ffffff;
+	--sidebar-primary: #1A1F2C;
+	--sidebar-primary-foreground: #ffffff;
+	--sidebar-accent: #1A1F2C;
+	--sidebar-accent-foreground: #ffffff;
+	--sidebar-border: rgba(255, 255, 255, 0.08);
+	--sidebar-ring: #3D4654;
 }
 
-/* Admin app: dark sidebar (default in light mode, explicit for clarity) */
-.sidebar-dark {
-	--sidebar: #262626;
+/* Doctor app: deep navy sidebar */
+.sidebar-navy {
+	--sidebar: #0E2A45;
 	--sidebar-foreground: #ffffff;
-	--sidebar-primary: #404040;
+	--sidebar-primary: #0E3A5C;
 	--sidebar-primary-foreground: #ffffff;
-	--sidebar-accent: #404040;
+	--sidebar-accent: #0E3A5C;
 	--sidebar-accent-foreground: #ffffff;
 	--sidebar-border: rgba(255, 255, 255, 0.1);
-	--sidebar-ring: #525252;
+	--sidebar-ring: #3B6B95;
+}
+.dark .sidebar-navy {
+	--sidebar: #060A10;
+	--sidebar-foreground: #F0F2F5;
+	--sidebar-primary: #0B1119;
+	--sidebar-primary-foreground: #F0F2F5;
+	--sidebar-accent: #0B1119;
+	--sidebar-accent-foreground: #F0F2F5;
+	--sidebar-border: rgba(255, 255, 255, 0.06);
+	--sidebar-ring: #3D4654;
+}
+
+/* Light sidebar (fallback) */
+.sidebar-light {
+	--sidebar: #ffffff;
+	--sidebar-foreground: #0B1119;
+	--sidebar-primary: #F0F2F5;
+	--sidebar-primary-foreground: #0B1119;
+	--sidebar-accent: #EBF6F5;
+	--sidebar-accent-foreground: #0F6E6E;
+	--sidebar-border: #E2E6EC;
+	--sidebar-ring: #C6CDD7;
+}
+.dark .sidebar-light {
+	--sidebar: #1A1F2C;
+	--sidebar-foreground: #F0F2F5;
+	--sidebar-primary: #252B3A;
+	--sidebar-primary-foreground: #F0F2F5;
+	--sidebar-accent: #252B3A;
+	--sidebar-accent-foreground: #F0F2F5;
+	--sidebar-border: rgba(255, 255, 255, 0.1);
+	--sidebar-ring: #3D4654;
 }
 
 @layer base {

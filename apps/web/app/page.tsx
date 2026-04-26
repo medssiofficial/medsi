@@ -1,10 +1,13 @@
-import { Button } from "@repo/ui/components/ui/button";
+import type { Metadata } from "next";
+import { LandingScreen } from "@/screens/landing-screen";
 
-export default function Page() {
-	return (
-		<main className="flex min-h-screen w-full flex-col items-center justify-center gap-4">
-			<h1 className="text-2xl font-semibold">Hello</h1>
-			<Button type="button">ShadCN button</Button>
-		</main>
-	);
-}
+export const metadata: Metadata = {
+	title: "Medssi — Your Health, Simplified",
+	description: "AI-powered medical consultation platform.",
+};
+
+const HomePage = () => {
+	return <LandingScreen />;
+};
+
+export default HomePage;

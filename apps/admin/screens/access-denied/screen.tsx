@@ -18,7 +18,7 @@ const AccessDeniedScreen = () => {
 				</h1>
 
 				<p className="text-center">
-					You don't have permission to access the admin dashboard.
+					You don&apos;t have permission to access the admin dashboard.
 					Please contact your administrator if you believe this is an
 					error.
 				</p>
