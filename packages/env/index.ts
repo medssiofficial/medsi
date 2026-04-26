@@ -39,3 +39,19 @@ export const EMAIL_ENV = createEnv({
 		APP_BASE_URL: process.env.APP_BASE_URL,
 	},
 });
+
+export const SUPABASE_ENV = createEnv({
+	server: {
+		NEXT_PUBLIC_SUPABASE_URL: z.string().optional(),
+		NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().optional(),
+		SUPABASE_SECRET_KEY: z.string().optional(),
+		SUPABASE_STORAGE_BUCKET: z.string().optional(),
+	},
+	runtimeEnvStrict: {
+		NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+		NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+			process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+		SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
+		SUPABASE_STORAGE_BUCKET: process.env.SUPABASE_STORAGE_BUCKET,
+	},
+});
