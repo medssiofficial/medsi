@@ -2,6 +2,7 @@
 
 import {
 	DASHBOARD_URL,
+	DOCTOR_APP_ROUTES,
 	ONBOARD_UNDER_REVIEW_URL,
 	ONBOARD_URL,
 } from "@/config/client-constants";
@@ -66,14 +67,26 @@ export const useDoctorBootstrap = () => {
 		if (!isLoaded || !isSignedIn) return;
 		if (!doctorMeQuery.isSuccess) return;
 
-		const target = doctorMeQuery.data.verified
-			? DASHBOARD_URL
-			: doctorMeQuery.data.application?.status === "under_review"
+		if (doctorMeQuery.data.verified) {
+			const isDoctorAppRoute = DOCTOR_APP_ROUTES.some((route) => {
+				return route === "/"
+					? pathname === "/"
+					: pathname === route || pathname.startsWith(`${route}/`);
+			});
+
+			if (!isDoctorAppRoute) {
+				router.replace(DASHBOARD_URL);
+			}
+			return;
+		}
+
+		const onboardingTarget =
+			doctorMeQuery.data.application?.status === "under_review"
 				? ONBOARD_UNDER_REVIEW_URL
 				: ONBOARD_URL;
 
-		if (pathname !== target) {
-			router.replace(target);
+		if (pathname !== onboardingTarget) {
+			router.replace(onboardingTarget);
 		}
 	}, [
 		doctorMeQuery.data,

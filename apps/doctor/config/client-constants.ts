@@ -1,8 +1,20 @@
 export const SIGN_IN_URL = "/auth/login";
 export const SIGN_UP_URL = "/auth/sign-up";
 export const DASHBOARD_URL = "/";
+export const INBOX_URL = "/inbox";
+export const ACCEPTED_CASES_URL = "/accepted-cases";
+export const MY_PROFILE_URL = "/my-profile";
+export const SETTINGS_URL = "/settings";
 export const ONBOARD_URL = "/onboard";
 export const ONBOARD_UNDER_REVIEW_URL = "/onboard/under-review";
+
+export const DOCTOR_APP_ROUTES = [
+	DASHBOARD_URL,
+	INBOX_URL,
+	ACCEPTED_CASES_URL,
+	MY_PROFILE_URL,
+	SETTINGS_URL,
+] as const;
 
 export const API_ROUTES = {
 	DOCTOR: {
