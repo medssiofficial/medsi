@@ -60,6 +60,33 @@ export const getDoctorFullByClerkId = (args: GetDoctorFullByClerkIdArgs) => {
 		},
 	});
 };
+
+interface GetDoctorInboxPendingCountByClerkIdArgs {
+	clerk_id: string;
+}
+
+export const getDoctorInboxPendingCountByClerkId = async (
+	args: GetDoctorInboxPendingCountByClerkIdArgs,
+) => {
+	const doctor = await prisma.doctor.findUnique({
+		where: {
+			clerk_id: args.clerk_id,
+		},
+		select: {
+			id: true,
+		},
+	});
+
+	if (!doctor) return null;
+
+	// Current schema doesn't yet map cases to individual doctors.
+	// Until assignment exists, pending inbox count reflects global pending cases.
+	return prisma.medical_case.count({
+		where: {
+			conversation_status: "in_progress",
+		},
+	});
+};
 interface UpsertDoctorProfileByClerkIdArgs {
 	clerk_id: string;
 	profile: {

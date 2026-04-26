@@ -23,6 +23,11 @@ export const API_ROUTES = {
 			path: "/api/doctor/me",
 			method: "GET",
 		},
+		INBOX_COUNT: {
+			key: "doctor.inbox.count",
+			path: "/api/doctor/inbox/count",
+			method: "GET",
+		},
 		ONBOARDING: {
 			PROFILE: {
 				key: "doctor.onboarding.profile",

@@ -8,6 +8,7 @@ import {
 	SETTINGS_URL,
 	SIGN_IN_URL,
 } from "@/config/client-constants";
+import { useDoctorInboxCount } from "@/services/api/doctor/get-inbox-count";
 import { useDoctorStore } from "@/store/doctor.store";
 import { useClerk, useUser } from "@clerk/nextjs";
 import type { NavItem, ShellUser } from "@repo/ui/components/shells/types";
@@ -58,17 +59,28 @@ export const useDoctorSidebar = () => {
 	const { signOut } = useClerk();
 	const { user } = useUser();
 	const doctor = useDoctorStore((state) => state.doctor);
+	const inboxCountQuery = useDoctorInboxCount();
 
 	const navItems = useMemo<NavItem[]>(() => {
 		const current = pathname ?? "/";
+		const inboxCount =
+			typeof inboxCountQuery.data === "number"
+				? inboxCountQuery.data
+				: inboxCountQuery.isError
+					? 0
+					: 0;
 		return NAV_ITEMS.map((item) => {
 			const isActive =
 				item.href === "/"
 					? current === "/"
 					: current === item.href || current.startsWith(`${item.href}/`);
-			return { ...item, isActive };
+			return {
+				...item,
+				isActive,
+				badge: item.href === INBOX_URL ? inboxCount : item.badge,
+			};
 		});
-	}, [pathname]);
+	}, [inboxCountQuery.data, inboxCountQuery.isError, pathname]);
 
 	const shellUser = useMemo<ShellUser>(() => {
 		const name = doctor?.profile?.name?.trim() || user?.fullName?.trim() || "Doctor";
