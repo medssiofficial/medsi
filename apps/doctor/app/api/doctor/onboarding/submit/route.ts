@@ -1,4 +1,6 @@
 import { submitDoctorApplicationByClerkId } from "@repo/database/actions/doctor";
+import { sendApplicationSubmittedEmail } from "@repo/email";
+import { ApiError } from "@repo/types/error";
 import { createApi, sendJsonApiResponse } from "@repo/utils/server";
 
 export const POST = createApi({
@@ -7,6 +9,17 @@ export const POST = createApi({
 		const doctor = await submitDoctorApplicationByClerkId({
 			clerk_id: user.id,
 		});
+		if (!doctor) {
+			throw new ApiError("Doctor not found", 404);
+		}
+
+		const doctorEmail = doctor.profile?.email?.trim();
+		if (doctorEmail) {
+			await sendApplicationSubmittedEmail({
+				to: doctorEmail,
+				doctorName: doctor.profile?.name ?? "Doctor",
+			});
+		}
 
 		return sendJsonApiResponse({
 			success: true,

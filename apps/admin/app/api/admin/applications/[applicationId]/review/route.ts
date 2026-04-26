@@ -1,5 +1,9 @@
 import { getAdminByClerkId } from "@repo/database/actions/admin";
 import { reviewDoctorApplicationByAdmin } from "@repo/database/actions/doctor";
+import {
+	sendApplicationAcceptedEmail,
+	sendApplicationRejectedEmail,
+} from "@repo/email";
 import { ApiError } from "@repo/types/error";
 import { createApi, sendJsonApiResponse } from "@repo/utils/server";
 import z from "zod";
@@ -44,6 +48,22 @@ export const PATCH = createApi({
 
 		if (!application) {
 			throw new ApiError("Application not found", 404);
+		}
+
+		const doctorEmail = application.doctor.profile?.email?.trim();
+		if (doctorEmail) {
+			if (body.action === "approve") {
+				await sendApplicationAcceptedEmail({
+					to: doctorEmail,
+					doctorName: application.doctor.profile?.name ?? "Doctor",
+				});
+			} else if (body.action === "reject" && body.rejection_reason) {
+				await sendApplicationRejectedEmail({
+					to: doctorEmail,
+					doctorName: application.doctor.profile?.name ?? "Doctor",
+					reason: body.rejection_reason,
+				});
+			}
 		}
 
 		return sendJsonApiResponse({

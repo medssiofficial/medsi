@@ -24,3 +24,18 @@ export const CLI_ENV = createEnv({
 		ENV: process.env.ENV,
 	},
 });
+
+export const EMAIL_ENV = createEnv({
+	server: {
+		RESEND_API_KEY: z.string().optional(),
+		EMAIL_FROM: z.string().optional(),
+		EMAIL_REPLY_TO: z.string().optional(),
+		APP_BASE_URL: z.string().optional(),
+	},
+	runtimeEnvStrict: {
+		RESEND_API_KEY: process.env.RESEND_API_KEY,
+		EMAIL_FROM: process.env.EMAIL_FROM,
+		EMAIL_REPLY_TO: process.env.EMAIL_REPLY_TO,
+		APP_BASE_URL: process.env.APP_BASE_URL,
+	},
+});
