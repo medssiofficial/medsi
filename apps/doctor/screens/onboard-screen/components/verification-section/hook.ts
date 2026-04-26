@@ -21,13 +21,13 @@ export const useVerificationSection = (args: {
 		const identityStatus =
 			completionPercent >= 50 ? "completed" : "pending";
 		const licenseStatus =
-			applicationStatus === "pending"
+			applicationStatus === "under_review"
 				? "in_progress"
 				: completionPercent === 100
 					? "ready"
 					: "pending";
 		const practiceStatus =
-			applicationStatus === "pending" ? "waiting_review" : "pending";
+			applicationStatus === "under_review" ? "waiting_review" : "pending";
 
 		return [
 			{

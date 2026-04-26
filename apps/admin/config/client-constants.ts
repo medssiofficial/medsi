@@ -12,6 +12,33 @@ export const SIGN_IN_URL = "/auth/sign-in";
 export const ACCESS_DENIED_URL = "/auth/access-denied";
 export const DASHBOARD_URL = "/";
 
+export const API_ROUTES = {
+	ADMIN: {
+		ME: {
+			key: "admin.me",
+			path: "/api/admin/me",
+			method: "GET",
+		},
+		APPLICATIONS: {
+			LIST: {
+				key: "admin.applications.list",
+				path: "/api/admin/applications",
+				method: "GET",
+			},
+			DETAIL: {
+				key: "admin.applications.detail",
+				path: "/api/admin/applications",
+				method: "GET",
+			},
+			REVIEW: {
+				key: "admin.applications.review",
+				path: "/api/admin/applications",
+				method: "PATCH",
+			},
+		},
+	},
+} as const;
+
 export const NAV_ITEMS: NavItem[] = [
 	{ label: "Dashboard", href: "/", icon: LayoutDashboard },
 	{ label: "Doctors", href: "/doctors", icon: Users },

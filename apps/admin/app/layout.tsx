@@ -2,7 +2,8 @@ import "@repo/ui/styles.css";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Manrope, Space_Grotesk } from "next/font/google";
-import { QueryProvider, AuthProvider, ThemeProvider } from "@repo/providers";
+import { AuthProvider, ThemeProvider } from "@repo/providers";
+import { QueryProvider } from "@/components/providers";
 import { CLIENT_ENV } from "@/config/client-env";
 import { Toaster } from "@repo/ui/components/ui/sonner";
 

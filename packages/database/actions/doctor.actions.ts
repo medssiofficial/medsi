@@ -224,6 +224,234 @@ interface SubmitDoctorApplicationByClerkIdArgs {
 	clerk_id: string;
 }
 
+export const DOCTOR_APPLICATION_STATUSES = [
+	"pending",
+	"under_review",
+	"approved",
+	"rejected",
+] as const;
+
+export type DoctorApplicationStatus = (typeof DOCTOR_APPLICATION_STATUSES)[number];
+
+interface GetDoctorApplicationsForAdminArgs {
+	page: number;
+	page_size: number;
+	search?: string;
+	status?: DoctorApplicationStatus | "all";
+}
+
+export const getDoctorApplicationsForAdmin = async (
+	args: GetDoctorApplicationsForAdminArgs,
+) => {
+	const page = Math.max(1, args.page);
+	const pageSize = Math.max(1, Math.min(50, args.page_size));
+	const skip = (page - 1) * pageSize;
+
+	const where: Prisma.doctor_applicationWhereInput = {};
+
+	if (args.status && args.status !== "all") {
+		where.status = args.status;
+	}
+
+	const searchTerm = args.search?.trim();
+	if (searchTerm) {
+		where.OR = [
+			{
+				id: {
+					contains: searchTerm,
+					mode: "insensitive",
+				},
+			},
+			{
+				doctor_id: {
+					contains: searchTerm,
+					mode: "insensitive",
+				},
+			},
+			{
+				doctor: {
+					is: {
+						clerk_id: {
+							contains: searchTerm,
+							mode: "insensitive",
+						},
+					},
+				},
+			},
+			{
+				doctor: {
+					is: {
+						profile: {
+							is: {
+								name: {
+									contains: searchTerm,
+									mode: "insensitive",
+								},
+							},
+						},
+					},
+				},
+			},
+			{
+				doctor: {
+					is: {
+						profile: {
+							is: {
+								email: {
+									contains: searchTerm,
+									mode: "insensitive",
+								},
+							},
+						},
+					},
+				},
+			},
+			{
+				doctor: {
+					is: {
+						profile: {
+							is: {
+								mobile_number: {
+									contains: searchTerm,
+									mode: "insensitive",
+								},
+							},
+						},
+					},
+				},
+			},
+			{
+				doctor: {
+					is: {
+						profile: {
+							is: {
+								country: {
+									contains: searchTerm,
+									mode: "insensitive",
+								},
+							},
+						},
+					},
+				},
+			},
+		];
+	}
+
+	const [applications, total] = await prisma.$transaction([
+		prisma.doctor_application.findMany({
+			where,
+			orderBy: {
+				created_at: "desc",
+			},
+			skip,
+			take: pageSize,
+			include: {
+				doctor: {
+					include: {
+						profile: true,
+					},
+				},
+			},
+		}),
+		prisma.doctor_application.count({ where }),
+	]);
+
+	const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+	return {
+		items: applications,
+		meta: {
+			total,
+			page,
+			page_size: pageSize,
+			total_pages: totalPages,
+			has_next_page: page < totalPages,
+			has_previous_page: page > 1,
+		},
+	};
+};
+
+interface GetDoctorApplicationForAdminArgs {
+	application_id: string;
+}
+
+export const getDoctorApplicationForAdmin = (
+	args: GetDoctorApplicationForAdminArgs,
+) => {
+	return prisma.doctor_application.findUnique({
+		where: {
+			id: args.application_id,
+		},
+		include: {
+			doctor: {
+				include: {
+					profile: true,
+					expertises: true,
+					specializations: true,
+					experiences: true,
+				},
+			},
+		},
+	});
+};
+
+interface ReviewDoctorApplicationByAdminArgs {
+	application_id: string;
+	action: "approve" | "reject";
+	rejection_reason?: string;
+}
+
+export const reviewDoctorApplicationByAdmin = async (
+	args: ReviewDoctorApplicationByAdminArgs,
+) => {
+	return prisma.$transaction(async (tx) => {
+		const application = await tx.doctor_application.findUnique({
+			where: {
+				id: args.application_id,
+			},
+		});
+
+		if (!application) return null;
+
+		const isApprove = args.action === "approve";
+
+		await tx.doctor_application.update({
+			where: {
+				id: application.id,
+			},
+			data: {
+				status: isApprove ? "approved" : "rejected",
+				rejection_reason: isApprove ? null : args.rejection_reason ?? null,
+			},
+		});
+
+		await tx.doctor.update({
+			where: {
+				id: application.doctor_id,
+			},
+			data: {
+				verified: isApprove,
+			},
+		});
+
+		return tx.doctor_application.findUnique({
+			where: {
+				id: application.id,
+			},
+			include: {
+				doctor: {
+					include: {
+						profile: true,
+						expertises: true,
+						specializations: true,
+						experiences: true,
+					},
+				},
+			},
+		});
+	});
+};
+
 export const submitDoctorApplicationByClerkId = async (
 	args: SubmitDoctorApplicationByClerkIdArgs,
 ) => {
@@ -235,10 +463,10 @@ export const submitDoctorApplicationByClerkId = async (
 		},
 		create: {
 			doctor_id: doctor.id,
-			status: "pending",
+			status: "under_review",
 		},
 		update: {
-			status: "pending",
+			status: "under_review",
 			rejection_reason: null,
 		},
 	});

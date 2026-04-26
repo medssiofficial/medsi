@@ -70,10 +70,12 @@ export const useOnboardForm = () => {
 	const applicationStatus = doctor?.application?.status ?? null;
 
 	const isUnderReview =
-		applicationStatus === "pending" && completionPercent === 100;
+		applicationStatus === "under_review" && completionPercent === 100;
 
 	const canSubmit =
-		completionPercent === 100 && applicationStatus !== "pending";
+		completionPercent === 100 &&
+		applicationStatus !== "under_review" &&
+		applicationStatus !== "approved";
 
 	return {
 		doctor,

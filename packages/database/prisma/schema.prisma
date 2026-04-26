@@ -33,6 +33,7 @@ enum FileType {
 
 enum DoctorApplicationStatus {
     pending
+    under_review
     approved
     rejected
 }
