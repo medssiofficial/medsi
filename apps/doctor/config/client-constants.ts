@@ -2,6 +2,7 @@ export const SIGN_IN_URL = "/auth/login";
 export const SIGN_UP_URL = "/auth/sign-up";
 export const DASHBOARD_URL = "/";
 export const ONBOARD_URL = "/onboard";
+export const ONBOARD_UNDER_REVIEW_URL = "/onboard/under-review";
 
 export const API_ROUTES = {
 	DOCTOR: {
@@ -35,6 +36,16 @@ export const API_ROUTES = {
 				key: "doctor.onboarding.submit",
 				path: "/api/doctor/onboarding/submit",
 				method: "POST",
+			},
+			UPLOAD_PROOF: {
+				key: "doctor.onboarding.upload-proof",
+				path: "/api/doctor/onboarding/proofs/upload",
+				method: "POST",
+			},
+			REVIEW_STATUS: {
+				key: "doctor.onboarding.review-status",
+				path: "/api/doctor/onboarding/review-status",
+				method: "GET",
 			},
 		},
 	},

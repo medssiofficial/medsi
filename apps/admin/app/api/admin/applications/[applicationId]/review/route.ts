@@ -7,14 +7,15 @@ import {
 import { ApiError } from "@repo/types/error";
 import { createApi, sendJsonApiResponse } from "@repo/utils/server";
 import z from "zod";
+import { DOCTOR_APPLICATION_STATUSES } from "@repo/database/actions/doctor";
 
 const BodySchema = z
 	.object({
-		action: z.enum(["approve", "reject"]),
+		status: z.enum(DOCTOR_APPLICATION_STATUSES),
 		rejection_reason: z.string().trim().optional(),
 	})
 	.superRefine((value, ctx) => {
-		if (value.action !== "reject") return;
+		if (value.status !== "rejected") return;
 		if (value.rejection_reason && value.rejection_reason.length > 0) return;
 		ctx.addIssue({
 			code: "custom",
@@ -42,7 +43,7 @@ export const PATCH = createApi({
 
 		const application = await reviewDoctorApplicationByAdmin({
 			application_id: applicationId,
-			action: body.action,
+			status: body.status,
 			rejection_reason: body.rejection_reason,
 		});
 
@@ -52,12 +53,12 @@ export const PATCH = createApi({
 
 		const doctorEmail = application.doctor.profile?.email?.trim();
 		if (doctorEmail) {
-			if (body.action === "approve") {
+			if (body.status === "approved") {
 				await sendApplicationAcceptedEmail({
 					to: doctorEmail,
 					doctorName: application.doctor.profile?.name ?? "Doctor",
 				});
-			} else if (body.action === "reject" && body.rejection_reason) {
+			} else if (body.status === "rejected" && body.rejection_reason) {
 				await sendApplicationRejectedEmail({
 					to: doctorEmail,
 					doctorName: application.doctor.profile?.name ?? "Doctor",

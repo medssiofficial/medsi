@@ -96,8 +96,7 @@ export const useLoginSection = () => {
 
 		setIsLoading(true);
 
-		const { error: verifyEmailCodeError } =
-			await signIn.emailCode.verifyCode({
+		const { error: verifyEmailCodeError } = await signIn.emailCode.verifyCode({
 				code: otp,
 			});
 
@@ -109,7 +108,11 @@ export const useLoginSection = () => {
 		}
 
 		toast.success("Signed in successfully.");
-		router.push("/");
+		router.replace("/");
+		router.refresh();
+		window.setTimeout(() => {
+			window.location.assign("/");
+		}, 120);
 	};
 
 	const handleFormSubmit = async () => {

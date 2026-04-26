@@ -16,7 +16,14 @@ import { useWorkDetailsSection } from "./hook";
 
 export const WorkDetailsSection = (props: { doctor: DoctorMe | null }) => {
 	const { doctor } = props;
-	const { form, isSaving, handleSave } = useWorkDetailsSection({ doctor });
+	const {
+		form,
+		isSaving,
+		handleSave,
+		handleUploadExperienceProof,
+		isUploadingExperienceProof,
+		experienceProofFileName,
+	} = useWorkDetailsSection({ doctor });
 
 	const practiceTypes: Array<{
 		value: "telehealth" | "hospital" | "private" | "hybrid";
@@ -130,6 +137,40 @@ export const WorkDetailsSection = (props: { doctor: DoctorMe | null }) => {
 							</FormItem>
 						)}
 					/>
+
+					<div className="flex flex-col gap-2">
+						<p className="text-sm font-medium">Experience proof (optional)</p>
+						<Input
+							id="experience-proof-upload"
+							type="file"
+							accept=".pdf,.jpg,.jpeg,.png,.webp"
+							className="hidden"
+							onChange={(event) => {
+								void handleUploadExperienceProof(
+									event.target.files?.[0] ?? null,
+								);
+								event.target.value = "";
+							}}
+						/>
+						<div className="flex items-center gap-2">
+							<Button
+								type="button"
+								variant="outline"
+								onClick={() => {
+									const input = document.getElementById(
+										"experience-proof-upload",
+									) as HTMLInputElement | null;
+									input?.click();
+								}}
+								disabled={isUploadingExperienceProof}
+							>
+								{experienceProofFileName ? "Replace proof" : "Upload proof"}
+							</Button>
+							<p className="text-xs text-muted-foreground">
+								{experienceProofFileName ?? "No file uploaded"}
+							</p>
+						</div>
+					</div>
 				</form>
 			</Form>
 		</div>

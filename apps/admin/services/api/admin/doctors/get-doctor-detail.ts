@@ -104,5 +104,8 @@ export const useAdminDoctorDetailQuery = (args: {
 			}),
 		enabled: Boolean(args.doctor_id) && (args.enabled ?? true),
 		retry: false,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: false,
+		staleTime: 60 * 1000,
 	});
 };

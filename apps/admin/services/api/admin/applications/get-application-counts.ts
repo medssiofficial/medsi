@@ -61,5 +61,8 @@ export const useApplicationCountsQuery = () => {
 	return useQuery({
 		queryKey: [API_ROUTES.ADMIN.APPLICATIONS.COUNTS.key],
 		queryFn: getApplicationCounts,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: false,
+		staleTime: 60 * 1000,
 	});
 };

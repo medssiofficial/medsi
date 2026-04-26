@@ -6,8 +6,10 @@ const bodySchema = z.object({
 	specializations: z
 		.array(
 			z.object({
+				id: z.string().optional(),
 				name: z.string().min(1),
 				certificate_file_key: z.string().optional(),
+				certificate_file_id: z.string().optional(),
 			}),
 		)
 		.default([]),

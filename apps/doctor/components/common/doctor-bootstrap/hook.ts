@@ -1,6 +1,10 @@
 "use client";
 
-import { DASHBOARD_URL, ONBOARD_URL } from "@/config/client-constants";
+import {
+	DASHBOARD_URL,
+	ONBOARD_UNDER_REVIEW_URL,
+	ONBOARD_URL,
+} from "@/config/client-constants";
 import { useAPIErrorHandler } from "@/hooks/use-api-error-handler";
 import { useDoctorMe } from "@/services/api/doctor/get-me";
 import { HttpError } from "@/services/api/http-error";
@@ -62,7 +66,11 @@ export const useDoctorBootstrap = () => {
 		if (!isLoaded || !isSignedIn) return;
 		if (!doctorMeQuery.isSuccess) return;
 
-		const target = doctorMeQuery.data.verified ? DASHBOARD_URL : ONBOARD_URL;
+		const target = doctorMeQuery.data.verified
+			? DASHBOARD_URL
+			: doctorMeQuery.data.application?.status === "under_review"
+				? ONBOARD_UNDER_REVIEW_URL
+				: ONBOARD_URL;
 
 		if (pathname !== target) {
 			router.replace(target);

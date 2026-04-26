@@ -106,5 +106,8 @@ export const useAdminApplicationsQuery = (args: GetAdminApplicationsArgs) => {
 		],
 		queryFn: () => getAdminApplications(args),
 		placeholderData: (previous) => previous,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: false,
+		staleTime: 60 * 1000,
 	});
 };

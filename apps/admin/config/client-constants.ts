@@ -1,9 +1,12 @@
 import type { NavItem } from "@repo/ui/components/shells/types";
 import {
-	Calendar,
+	BriefcaseMedical,
 	FileText,
+	Folder,
+	GitMerge,
 	LayoutDashboard,
 	Settings,
+	Stethoscope,
 	User,
 	Users,
 } from "lucide-react";
@@ -58,9 +61,12 @@ export const API_ROUTES = {
 
 export const NAV_ITEMS: NavItem[] = [
 	{ label: "Dashboard", href: "/", icon: LayoutDashboard },
+	{ label: "Doctor Applications", href: "/applications", icon: FileText },
 	{ label: "Doctors", href: "/doctors", icon: Users },
 	{ label: "Patients", href: "/patients", icon: User },
-	{ label: "Appointments", href: "/appointments", icon: Calendar },
-	{ label: "Applications", href: "/applications", icon: FileText },
+	{ label: "Medical Cases", href: "/medical-cases", icon: BriefcaseMedical },
+	{ label: "Matches", href: "/matches", icon: GitMerge },
+	{ label: "Files", href: "/files", icon: Folder },
+	{ label: "Appointments", href: "/appointments", icon: Stethoscope },
 	{ label: "Settings", href: "/settings", icon: Settings },
 ];

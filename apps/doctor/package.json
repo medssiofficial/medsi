@@ -16,6 +16,7 @@
 		"@repo/email": "*",
 		"@repo/env": "*",
 		"@repo/providers": "*",
+		"@repo/supabase": "*",
 		"@repo/ui": "*",
 		"@repo/utils": "*",
 		"@tanstack/react-query": "^5.99.0",

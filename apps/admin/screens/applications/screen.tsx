@@ -2,7 +2,11 @@
 
 import { AdminShell } from "@/components/common/admin-shell";
 import { useAdminApplicationDetailQuery } from "@/services/api/admin/applications/get-application-detail";
-import { ApplicationReviewSheet, ApplicationsTable, ApplicationsToolbar } from "./components";
+import {
+	ApplicationReviewSheet,
+	ApplicationsTable,
+	ApplicationsToolbar,
+} from "./components";
 import { useApplicationsScreen } from "./hook";
 
 const ApplicationsScreen = () => {
@@ -24,8 +28,7 @@ const ApplicationsScreen = () => {
 		handleCloseReview,
 		selectedApplicationId,
 		isReviewOpen,
-		handleApproveApplication,
-		handleRejectApplication,
+		handleUpdateApplicationStatus,
 	} = useApplicationsScreen();
 
 	const applicationDetailQuery = useAdminApplicationDetailQuery({
@@ -58,26 +61,21 @@ const ApplicationsScreen = () => {
 					onPageChange={setPage}
 					onReview={handleOpenReview}
 				/>
-			</div>
 
-			<ApplicationReviewSheet
-				open={isReviewOpen}
-				onOpenChange={(open) => {
-					if (!open) {
-						handleCloseReview();
+				<ApplicationReviewSheet
+					open={isReviewOpen}
+					onClose={handleCloseReview}
+					application={applicationDetailQuery.data ?? null}
+					isLoading={
+						applicationDetailQuery.isLoading ||
+						applicationDetailQuery.isFetching
 					}
-				}}
-				application={applicationDetailQuery.data ?? null}
-				isLoading={
-					applicationDetailQuery.isLoading || applicationDetailQuery.isFetching
-				}
-				isSubmitting={isReviewLoading}
-				onApprove={handleApproveApplication}
-				onReject={handleRejectApplication}
-			/>
+					isSubmitting={isReviewLoading}
+					onUpdateStatus={handleUpdateApplicationStatus}
+				/>
+			</div>
 		</AdminShell>
 	);
 };
 
 export default ApplicationsScreen;
-

@@ -35,11 +35,28 @@ export const getDoctorFullByClerkId = (args: GetDoctorFullByClerkIdArgs) => {
 			clerk_id: args.clerk_id,
 		},
 		include: {
-			profile: true,
+			profile: {
+				include: {
+					medical_license_file: true,
+					board_certification_file: true,
+					government_id_front_file: true,
+					government_id_back_file: true,
+					experience_proof_file: true,
+				},
+			},
 			application: true,
 			expertises: true,
-			specializations: true,
-			experiences: true,
+			specializations: {
+				include: {
+					certificate_file: true,
+				},
+			},
+			experiences: {
+				include: {
+					experience_letter_file: true,
+				},
+			},
+			files: true,
 		},
 	});
 };
@@ -184,8 +201,10 @@ export const replaceDoctorExpertisesByClerkId = async (
 interface ReplaceDoctorSpecializationsByClerkIdArgs {
 	clerk_id: string;
 	specializations: Array<{
+		id?: string;
 		name: string;
 		certificate_file_key?: string;
+		certificate_file_id?: string;
 	}>;
 }
 
@@ -207,12 +226,14 @@ export const replaceDoctorSpecializationsByClerkId = async (
 					certificate_file_key: (
 						s.certificate_file_key ?? "pending"
 					).trim(),
+					certificate_file_id: s.certificate_file_id,
 				}))
 				.filter((s) => Boolean(s.name))
 				.map((s) => ({
 					doctor_id: doctor.id,
 					name: s.name,
 					certificate_file_key: s.certificate_file_key,
+					certificate_file_id: s.certificate_file_id,
 				})),
 		}),
 	]);
@@ -231,7 +252,223 @@ export const DOCTOR_APPLICATION_STATUSES = [
 	"rejected",
 ] as const;
 
+export const DOCTOR_REQUIRED_PROFILE_PROOF_FIELDS = [
+	"medical_license_file_id",
+	"board_certification_file_id",
+	"government_id_front_file_id",
+	"government_id_back_file_id",
+] as const;
+
 export type DoctorApplicationStatus = (typeof DOCTOR_APPLICATION_STATUSES)[number];
+export type DoctorRequiredProfileProofField =
+	(typeof DOCTOR_REQUIRED_PROFILE_PROOF_FIELDS)[number];
+
+export type DoctorProfileProofField =
+	| DoctorRequiredProfileProofField
+	| "experience_proof_file_id";
+
+interface DoctorFileMetadataInput {
+	proof_type:
+		| "medical_license"
+		| "board_certification"
+		| "government_id_front"
+		| "government_id_back"
+		| "specialization_supporting_document"
+		| "experience_supporting_document";
+	filename: string;
+	mime_type: string;
+	bucket: string;
+	storage_path: string;
+	public_url: string;
+	size_bytes?: number | null;
+	metadata?: Prisma.InputJsonValue;
+}
+
+interface SaveDoctorProfileProofFileByClerkIdArgs {
+	clerk_id: string;
+	proof_field: DoctorProfileProofField;
+	file: DoctorFileMetadataInput;
+}
+
+interface SaveDoctorSpecializationProofFileByClerkIdArgs {
+	clerk_id: string;
+	specialization_id: string;
+	file: DoctorFileMetadataInput;
+}
+
+interface DeleteDoctorFileByIdArgs {
+	doctor_file_id: string;
+}
+
+const generateApplicationCode = async (
+	tx: Prisma.TransactionClient,
+): Promise<string> => {
+	const year = new Date().getUTCFullYear();
+
+	for (let attempt = 0; attempt < 8; attempt += 1) {
+		const suffix = String(Math.floor(1000 + Math.random() * 9000));
+		const code = `MED-APP-${year}-${suffix}`;
+		const existing = await tx.doctor_application.findUnique({
+			where: {
+				application_code: code,
+			},
+			select: {
+				id: true,
+			},
+		});
+		if (!existing) {
+			return code;
+		}
+	}
+
+	throw new Error("Unable to generate application code.");
+};
+
+export const saveDoctorProfileProofFileByClerkId = async (
+	args: SaveDoctorProfileProofFileByClerkIdArgs,
+) => {
+	const doctor = await upsertDoctor({ clerk_id: args.clerk_id });
+
+	const result = await prisma.$transaction(async (tx) => {
+		const profile = await tx.doctor_profile.findUnique({
+			where: {
+				doctor_id: doctor.id,
+			},
+		});
+
+		if (!profile) {
+			throw new Error("Doctor profile not found. Save profile details first.");
+		}
+
+		const createdFile = await tx.doctor_file.create({
+			data: {
+				doctor_id: doctor.id,
+				proof_type: args.file.proof_type,
+				filename: args.file.filename,
+				mime_type: args.file.mime_type,
+				bucket: args.file.bucket,
+				storage_path: args.file.storage_path,
+				public_url: args.file.public_url,
+				size_bytes: args.file.size_bytes ?? null,
+				metadata: args.file.metadata,
+			},
+		});
+
+		const previousFileId = profile[args.proof_field];
+		await tx.doctor_profile.update({
+			where: {
+				doctor_id: doctor.id,
+			},
+			data: {
+				[args.proof_field]: createdFile.id,
+			},
+		});
+
+		const previousFile = previousFileId
+			? await tx.doctor_file.findUnique({
+					where: {
+						id: previousFileId,
+					},
+				})
+			: null;
+
+		if (previousFileId) {
+			await tx.doctor_file.delete({
+				where: {
+					id: previousFileId,
+				},
+			});
+		}
+
+		return {
+			created_file: createdFile,
+			replaced_file: previousFile,
+		};
+	});
+
+	return {
+		doctor: await getDoctorFullByClerkId({ clerk_id: args.clerk_id }),
+		...result,
+	};
+};
+
+export const saveDoctorSpecializationProofFileByClerkId = async (
+	args: SaveDoctorSpecializationProofFileByClerkIdArgs,
+) => {
+	const doctor = await upsertDoctor({ clerk_id: args.clerk_id });
+
+	const result = await prisma.$transaction(async (tx) => {
+		const specialization = await tx.doctor_specialization.findFirst({
+			where: {
+				id: args.specialization_id,
+				doctor_id: doctor.id,
+			},
+		});
+
+		if (!specialization) {
+			throw new Error("Specialization not found.");
+		}
+
+		const createdFile = await tx.doctor_file.create({
+			data: {
+				doctor_id: doctor.id,
+				proof_type: args.file.proof_type,
+				filename: args.file.filename,
+				mime_type: args.file.mime_type,
+				bucket: args.file.bucket,
+				storage_path: args.file.storage_path,
+				public_url: args.file.public_url,
+				size_bytes: args.file.size_bytes ?? null,
+				metadata: args.file.metadata,
+			},
+		});
+
+		const previousFileId = specialization.certificate_file_id;
+		await tx.doctor_specialization.update({
+			where: {
+				id: specialization.id,
+			},
+			data: {
+				certificate_file_id: createdFile.id,
+				certificate_file_key: args.file.storage_path,
+			},
+		});
+
+		const previousFile = previousFileId
+			? await tx.doctor_file.findUnique({
+					where: {
+						id: previousFileId,
+					},
+				})
+			: null;
+
+		if (previousFileId) {
+			await tx.doctor_file.delete({
+				where: {
+					id: previousFileId,
+				},
+			});
+		}
+
+		return {
+			created_file: createdFile,
+			replaced_file: previousFile,
+		};
+	});
+
+	return {
+		doctor: await getDoctorFullByClerkId({ clerk_id: args.clerk_id }),
+		...result,
+	};
+};
+
+export const deleteDoctorFileById = (args: DeleteDoctorFileByIdArgs) => {
+	return prisma.doctor_file.delete({
+		where: {
+			id: args.doctor_file_id,
+		},
+	});
+};
 
 interface GetDoctorsForAdminArgs {
 	page: number;
@@ -384,11 +621,27 @@ export const getDoctorByIdForAdmin = (args: GetDoctorByIdForAdminArgs) => {
 			id: args.doctor_id,
 		},
 		include: {
-			profile: true,
+			profile: {
+				include: {
+					medical_license_file: true,
+					board_certification_file: true,
+					government_id_front_file: true,
+					government_id_back_file: true,
+					experience_proof_file: true,
+				},
+			},
 			application: true,
-			specializations: true,
+			specializations: {
+				include: {
+					certificate_file: true,
+				},
+			},
 			expertises: true,
-			experiences: true,
+			experiences: {
+				include: {
+					experience_letter_file: true,
+				},
+			},
 		},
 	});
 };
@@ -508,7 +761,15 @@ export const getDoctorApplicationsForAdmin = async (
 			include: {
 				doctor: {
 					include: {
-						profile: true,
+						profile: {
+							include: {
+								medical_license_file: true,
+								board_certification_file: true,
+								government_id_front_file: true,
+								government_id_back_file: true,
+								experience_proof_file: true,
+							},
+						},
 					},
 				},
 			},
@@ -545,10 +806,26 @@ export const getDoctorApplicationForAdmin = (
 		include: {
 			doctor: {
 				include: {
-					profile: true,
+					profile: {
+						include: {
+							medical_license_file: true,
+							board_certification_file: true,
+							government_id_front_file: true,
+							government_id_back_file: true,
+							experience_proof_file: true,
+						},
+					},
 					expertises: true,
-					specializations: true,
-					experiences: true,
+					specializations: {
+						include: {
+							certificate_file: true,
+						},
+					},
+					experiences: {
+						include: {
+							experience_letter_file: true,
+						},
+					},
 				},
 			},
 		},
@@ -557,7 +834,7 @@ export const getDoctorApplicationForAdmin = (
 
 interface ReviewDoctorApplicationByAdminArgs {
 	application_id: string;
-	action: "approve" | "reject";
+	status: DoctorApplicationStatus;
 	rejection_reason?: string;
 }
 
@@ -573,15 +850,16 @@ export const reviewDoctorApplicationByAdmin = async (
 
 		if (!application) return null;
 
-		const isApprove = args.action === "approve";
+		const isApprove = args.status === "approved";
+		const isRejected = args.status === "rejected";
 
 		await tx.doctor_application.update({
 			where: {
 				id: application.id,
 			},
 			data: {
-				status: isApprove ? "approved" : "rejected",
-				rejection_reason: isApprove ? null : args.rejection_reason ?? null,
+				status: args.status,
+				rejection_reason: isRejected ? args.rejection_reason ?? null : null,
 			},
 		});
 
@@ -601,10 +879,26 @@ export const reviewDoctorApplicationByAdmin = async (
 			include: {
 				doctor: {
 					include: {
-						profile: true,
+						profile: {
+							include: {
+								medical_license_file: true,
+								board_certification_file: true,
+								government_id_front_file: true,
+								government_id_back_file: true,
+								experience_proof_file: true,
+							},
+						},
 						expertises: true,
-						specializations: true,
-						experiences: true,
+						specializations: {
+							include: {
+								certificate_file: true,
+							},
+						},
+						experiences: {
+							include: {
+								experience_letter_file: true,
+							},
+						},
 					},
 				},
 			},
@@ -617,18 +911,79 @@ export const submitDoctorApplicationByClerkId = async (
 ) => {
 	const doctor = await upsertDoctor({ clerk_id: args.clerk_id });
 
-	await prisma.doctor_application.upsert({
+	const doctorWithProfile = await prisma.doctor.findUnique({
 		where: {
-			doctor_id: doctor.id,
+			id: doctor.id,
 		},
-		create: {
-			doctor_id: doctor.id,
-			status: "under_review",
+		include: {
+			profile: true,
+			expertises: true,
+			specializations: true,
 		},
-		update: {
-			status: "under_review",
-			rejection_reason: null,
-		},
+	});
+
+	if (!doctorWithProfile?.profile) {
+		throw new Error("Doctor profile not found. Complete your profile first.");
+	}
+
+	if (doctorWithProfile.expertises.length === 0) {
+		throw new Error("Please add at least one expertise before submitting.");
+	}
+
+	if (doctorWithProfile.specializations.length === 0) {
+		throw new Error("Please add at least one specialization before submitting.");
+	}
+
+	const hasRequiredWorkDetails =
+		Boolean(doctorWithProfile.profile.medical_registration_number?.trim()) &&
+		Boolean(doctorWithProfile.profile.current_institution?.trim()) &&
+		typeof doctorWithProfile.profile.years_in_practice === "number" &&
+		doctorWithProfile.profile.years_in_practice >= 0 &&
+		Boolean(doctorWithProfile.profile.type_of_doctor?.trim());
+
+	if (!hasRequiredWorkDetails) {
+		throw new Error(
+			"Please complete required work details before submitting your application.",
+		);
+	}
+
+	const hasAllRequiredProofs = DOCTOR_REQUIRED_PROFILE_PROOF_FIELDS.every(
+		(field) => Boolean(doctorWithProfile.profile?.[field]),
+	);
+
+	if (!hasAllRequiredProofs) {
+		throw new Error(
+			"Please upload Medical License, Board Certification, and both Government ID files before submitting.",
+		);
+	}
+
+	await prisma.$transaction(async (tx) => {
+		const existing = await tx.doctor_application.findUnique({
+			where: {
+				doctor_id: doctor.id,
+			},
+		});
+
+		const applicationCode =
+			existing?.application_code ?? (await generateApplicationCode(tx));
+
+		await tx.doctor_application.upsert({
+			where: {
+				doctor_id: doctor.id,
+			},
+			create: {
+				doctor_id: doctor.id,
+				status: "under_review",
+				application_code: applicationCode,
+				submitted_at: new Date(),
+			},
+			update: {
+				status: "under_review",
+				rejection_reason: null,
+				application_code: applicationCode,
+				submitted_at: new Date(),
+			},
+		});
 	});
 
 	return getDoctorFullByClerkId({ clerk_id: args.clerk_id });
@@ -655,6 +1010,7 @@ export const deleteDoctor = async (args: DeleteDoctorArgs) => {
 		}),
 		prisma.doctor_experience.deleteMany({ where: { doctor_id: doctor.id } }),
 		prisma.doctor_application.deleteMany({ where: { doctor_id: doctor.id } }),
+		prisma.doctor_file.deleteMany({ where: { doctor_id: doctor.id } }),
 		prisma.doctor.delete({ where: { id: doctor.id } }),
 	]);
 };

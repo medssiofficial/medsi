@@ -3,6 +3,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { DoctorMe } from "../get-me";
 import { HttpError } from "../../http-error";
 
+export type UploadDoctorProofType =
+	| "medical_license"
+	| "board_certification"
+	| "government_id_front"
+	| "government_id_back"
+	| "specialization_supporting_document"
+	| "experience_supporting_document";
+
 type ApiSuccess = {
 	success: true;
 	code: number;
@@ -11,26 +19,26 @@ type ApiSuccess = {
 	};
 };
 
-export type DoctorOnboardingSpecializationInput = {
-	id?: string;
-	name: string;
-	certificate_file_key?: string;
-	certificate_file_id?: string;
-};
+export interface UploadDoctorProofInput {
+	file: File;
+	proof_type: UploadDoctorProofType;
+	specialization_id?: string;
+}
 
-export const updateDoctorOnboardingSpecializations = async (
-	specializations: DoctorOnboardingSpecializationInput[],
+export const uploadDoctorProof = async (
+	args: UploadDoctorProofInput,
 ): Promise<DoctorMe> => {
-	const response = await fetch(
-		API_ROUTES.DOCTOR.ONBOARDING.SPECIALIZATIONS.path,
-		{
-			method: API_ROUTES.DOCTOR.ONBOARDING.SPECIALIZATIONS.method,
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ specializations }),
-		},
-	);
+	const formData = new FormData();
+	formData.append("file", args.file);
+	formData.append("proof_type", args.proof_type);
+	if (args.specialization_id) {
+		formData.append("specialization_id", args.specialization_id);
+	}
+
+	const response = await fetch(API_ROUTES.DOCTOR.ONBOARDING.UPLOAD_PROOF.path, {
+		method: API_ROUTES.DOCTOR.ONBOARDING.UPLOAD_PROOF.method,
+		body: formData,
+	});
 
 	let json: unknown = null;
 	try {
@@ -74,12 +82,12 @@ export const updateDoctorOnboardingSpecializations = async (
 	throw new Error("Invalid response.");
 };
 
-export const useUpdateDoctorOnboardingSpecializations = () => {
+export const useUploadDoctorProof = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationKey: [API_ROUTES.DOCTOR.ONBOARDING.SPECIALIZATIONS.key],
-		mutationFn: updateDoctorOnboardingSpecializations,
+		mutationKey: [API_ROUTES.DOCTOR.ONBOARDING.UPLOAD_PROOF.key],
+		mutationFn: uploadDoctorProof,
 		onSuccess: (doctor) => {
 			queryClient.setQueryData([API_ROUTES.DOCTOR.ME.key], doctor);
 		},

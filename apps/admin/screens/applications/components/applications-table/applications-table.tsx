@@ -43,6 +43,7 @@ interface ApplicationsTableProps {
 }
 
 const TABLE_HEADERS = ["ID", "Email", "Mobile", "Country", "Status", "Date", "Action"];
+const SKELETON_ROWS = ["row-1", "row-2", "row-3", "row-4", "row-5", "row-6"];
 
 export const ApplicationsTable = (props: ApplicationsTableProps) => {
 	const {
@@ -80,10 +81,10 @@ export const ApplicationsTable = (props: ApplicationsTableProps) => {
 				</TableHeader>
 				<TableBody>
 					{isLoading ? (
-						Array.from({ length: 6 }, (_, index) => (
-							<TableRow key={index}>
-								{Array.from({ length: TABLE_HEADERS.length }).map((_, i) => (
-									<TableCell key={i}>
+						SKELETON_ROWS.map((rowKey) => (
+							<TableRow key={rowKey}>
+								{TABLE_HEADERS.map((header) => (
+									<TableCell key={`${rowKey}-${header}`}>
 										<Skeleton className="h-4 w-full max-w-24" />
 									</TableCell>
 								))}

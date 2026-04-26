@@ -3,8 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { JsonApiResponse } from "@repo/types/api";
 import { HttpError } from "../../http-error";
 import type { AdminApplicationDetail } from "./types";
-
-type ReviewAction = "approve" | "reject";
+import type { DoctorApplicationStatus } from "@repo/database/actions/doctor";
 
 type ApiSuccess = JsonApiResponse<{
 	application: AdminApplicationDetail;
@@ -12,7 +11,7 @@ type ApiSuccess = JsonApiResponse<{
 
 interface ReviewDoctorApplicationArgs {
 	application_id: string;
-	action: ReviewAction;
+	status: DoctorApplicationStatus;
 	rejection_reason?: string;
 }
 
@@ -27,7 +26,7 @@ export const reviewDoctorApplication = async (
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				action: args.action,
+				status: args.status,
 				rejection_reason: args.rejection_reason,
 			}),
 		},

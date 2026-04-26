@@ -72,5 +72,8 @@ export const useDoctorMe = (args?: { enabled?: boolean }) => {
 		queryFn: getDoctorMe,
 		enabled: args?.enabled ?? true,
 		retry: false,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: false,
+		staleTime: 60 * 1000,
 	});
 };

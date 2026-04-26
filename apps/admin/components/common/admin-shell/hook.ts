@@ -1,6 +1,7 @@
 "use client";
 
 import { NAV_ITEMS, SIGN_IN_URL } from "@/config/client-constants";
+import { useApplicationCountsQuery } from "@/services/api/admin/applications/get-application-counts";
 import { useClerk, useUser } from "@clerk/nextjs";
 import type { NavItem, ShellUser } from "@repo/ui/components/shells/types";
 import { usePathname, useRouter } from "next/navigation";
@@ -49,6 +50,7 @@ export const useAdminShell = () => {
 	const router = useRouter();
 	const { signOut } = useClerk();
 	const { user, isLoaded } = useUser();
+	const applicationCountsQuery = useApplicationCountsQuery();
 
 	const adminUser = useMemo<ShellUser | null>(() => {
 		if (!isLoaded) return null;
@@ -91,9 +93,13 @@ export const useAdminShell = () => {
 			return {
 				...item,
 				isActive,
+				badge:
+					item.href === "/applications"
+						? (applicationCountsQuery.data ?? 0)
+						: item.badge,
 			};
 		});
-	}, [pathname]);
+	}, [applicationCountsQuery.data, pathname]);
 
 	const currentPageTitle = useMemo(() => {
 		const activeNavItem = navItems.find((item) => item.isActive);

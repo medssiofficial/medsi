@@ -59,9 +59,17 @@ export const AdminShell = (props: { children: React.ReactNode }) => {
 														"bg-sidebar-accent text-sidebar-foreground font-medium",
 												)}
 											>
-												<Link href={item.href}>
+												<Link
+													href={item.href}
+													prefetch={false}
+												>
 													<item.icon size={18} />
-													<span>{item.label}</span>
+													<span className="flex-1">{item.label}</span>
+													{typeof item.badge !== "undefined" ? (
+														<span className="rounded-full bg-sidebar-foreground px-1.5 py-0.5 text-[10px] leading-none text-sidebar">
+															{item.badge}
+														</span>
+													) : null}
 												</Link>
 											</SidebarMenuButton>
 										</SidebarMenuItem>

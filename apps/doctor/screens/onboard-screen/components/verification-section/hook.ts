@@ -5,6 +5,8 @@ import type { DoctorMe } from "@/services/api/doctor/get-me";
 import { useSubmitDoctorOnboarding } from "@/services/api/doctor/onboarding/submit";
 import { useMemo } from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { ONBOARD_UNDER_REVIEW_URL } from "@/config/client-constants";
 
 export const useVerificationSection = (args: {
 	doctor: DoctorMe | null;
@@ -14,6 +16,7 @@ export const useVerificationSection = (args: {
 	const { doctor, completionPercent, canSubmit } = args;
 	const { APIErrorHandler } = useAPIErrorHandler();
 	const submitMutation = useSubmitDoctorOnboarding();
+	const router = useRouter();
 
 	const applicationStatus = doctor?.application?.status ?? null;
 
@@ -77,6 +80,7 @@ export const useVerificationSection = (args: {
 		try {
 			await submitMutation.mutateAsync();
 			toast.success("Submitted for verification.");
+			router.push(ONBOARD_UNDER_REVIEW_URL);
 		} catch (e) {
 			APIErrorHandler()(e);
 		}

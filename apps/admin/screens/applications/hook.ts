@@ -9,6 +9,7 @@ import {
 import { useReviewDoctorApplicationMutation } from "@/services/api/admin/applications/review-application";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import type { DoctorApplicationStatus } from "@repo/database/actions/doctor";
 
 const PAGE_SIZE = 10;
 
@@ -66,6 +67,14 @@ export const useApplicationsScreen = () => {
 
 	const pendingCount = applicationCountsQuery.data ?? 0;
 
+	useEffect(() => {
+		if (!applicationsQuery.data) return;
+		const totalPages = applicationsQuery.data.meta.total_pages;
+		if (page > totalPages) {
+			setPage(totalPages);
+		}
+	}, [applicationsQuery.data, page]);
+
 	const handleStatusChange = (nextStatus: AdminApplicationStatusFilter) => {
 		setStatus(nextStatus);
 		setPage(1);
@@ -81,29 +90,19 @@ export const useApplicationsScreen = () => {
 		setSelectedApplicationId(null);
 	};
 
-	const handleApproveApplication = async (applicationId: string) => {
-		try {
-			await reviewMutation.mutateAsync({
-				application_id: applicationId,
-				action: "approve",
-			});
-			toast.success("Application approved.");
-		} catch (error) {
-			APIErrorHandler()(error);
-		}
-	};
-
-	const handleRejectApplication = async (args: {
+	const handleUpdateApplicationStatus = async (args: {
 		application_id: string;
-		rejection_reason: string;
+		status: DoctorApplicationStatus;
+		rejection_reason?: string;
 	}) => {
 		try {
 			await reviewMutation.mutateAsync({
 				application_id: args.application_id,
-				action: "reject",
+				status: args.status,
 				rejection_reason: args.rejection_reason,
 			});
-			toast.success("Application rejected.");
+			toast.success("Application status updated.");
+			handleCloseReview();
 		} catch (error) {
 			APIErrorHandler()(error);
 		}
@@ -141,8 +140,7 @@ export const useApplicationsScreen = () => {
 		handleCloseReview,
 		selectedApplicationId,
 		isReviewOpen,
-		handleApproveApplication,
-		handleRejectApplication,
+		handleUpdateApplicationStatus,
 	};
 };
 

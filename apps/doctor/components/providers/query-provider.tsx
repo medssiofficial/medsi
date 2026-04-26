@@ -10,7 +10,19 @@ interface Props {
 export const QueryProvider = (props: Props) => {
 	const { children } = props;
 
-	const [queryClient] = useState(() => new QueryClient());
+	const [queryClient] = useState(
+		() =>
+			new QueryClient({
+				defaultOptions: {
+					queries: {
+						// Keep forms stable and avoid refetch spikes on tab focus/reconnect.
+						refetchOnWindowFocus: false,
+						refetchOnReconnect: false,
+						staleTime: 60 * 1000,
+					},
+				},
+			}),
+	);
 
 	return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 };

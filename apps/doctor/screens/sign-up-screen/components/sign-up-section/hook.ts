@@ -95,8 +95,7 @@ export const useSignUpSection = () => {
 
 		setIsLoading(true);
 
-		const { error: verifyEmailCodeError } =
-			await signUp.verifications.verifyEmailCode({
+		const { error: verifyEmailCodeError } = await signUp.verifications.verifyEmailCode({
 				code: otp,
 			});
 
@@ -108,7 +107,11 @@ export const useSignUpSection = () => {
 		}
 
 		toast.success("Account created successfully.");
-		router.push("/onboard");
+		router.replace("/onboard");
+		router.refresh();
+		window.setTimeout(() => {
+			window.location.assign("/onboard");
+		}, 120);
 	};
 
 	const handleFormSubmit = async () => {

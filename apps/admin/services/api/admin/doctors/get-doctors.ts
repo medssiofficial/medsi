@@ -120,6 +120,9 @@ export const useAdminDoctorsQuery = (args: GetAdminDoctorsArgs) => {
 		],
 		queryFn: () => getAdminDoctors(args),
 		placeholderData: (previous) => previous,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: false,
+		staleTime: 60 * 1000,
 	});
 };
 

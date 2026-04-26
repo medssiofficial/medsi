@@ -2,6 +2,7 @@
 
 import { useAPIErrorHandler } from "@/hooks/use-api-error-handler";
 import type { DoctorMe } from "@/services/api/doctor/get-me";
+import { useUploadDoctorProof } from "@/services/api/doctor/onboarding/upload-proof";
 import { useUpdateDoctorOnboardingProfileMetadata } from "@/services/api/doctor/onboarding/update-profile-metadata";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo } from "react";
@@ -31,6 +32,7 @@ export const useWorkDetailsSection = (args: { doctor: DoctorMe | null }) => {
 	const { APIErrorHandler } = useAPIErrorHandler();
 
 	const mutation = useUpdateDoctorOnboardingProfileMetadata();
+	const uploadProofMutation = useUploadDoctorProof();
 
 	const defaultValues = useMemo<WorkDetailsFormValues>(() => {
 		return {
@@ -68,9 +70,26 @@ export const useWorkDetailsSection = (args: { doctor: DoctorMe | null }) => {
 		}
 	};
 
+	const handleUploadExperienceProof = async (file: File | null) => {
+		if (!file) return;
+
+		try {
+			await uploadProofMutation.mutateAsync({
+				proof_type: "experience_supporting_document",
+				file,
+			});
+			toast.success("Experience proof uploaded.");
+		} catch (error) {
+			APIErrorHandler()(error);
+		}
+	};
+
 	return {
 		form,
 		isSaving: mutation.isPending,
 		handleSave,
+		handleUploadExperienceProof,
+		isUploadingExperienceProof: uploadProofMutation.isPending,
+		experienceProofFileName: doctor?.profile?.experience_proof_file?.filename ?? null,
 	};
 };

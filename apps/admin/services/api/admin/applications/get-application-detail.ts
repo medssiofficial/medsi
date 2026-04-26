@@ -75,5 +75,8 @@ export const useAdminApplicationDetailQuery = (args: {
 			}),
 		enabled: Boolean(args.application_id) && (args.enabled ?? true),
 		retry: false,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: false,
+		staleTime: 60 * 1000,
 	});
 };

@@ -15,9 +15,11 @@ export const POST = createApi({
 
 		const doctorEmail = doctor.profile?.email?.trim();
 		if (doctorEmail) {
-			await sendApplicationSubmittedEmail({
+			sendApplicationSubmittedEmail({
 				to: doctorEmail,
 				doctorName: doctor.profile?.name ?? "Doctor",
+			}).catch((error) => {
+				console.error("Failed to send submitted email", error);
 			});
 		}
 
