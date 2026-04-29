@@ -27,7 +27,6 @@ const LandingScreen = () => {
 		<div className="flex min-h-svh w-full flex-col items-center bg-neutral-warm">
 			<div className="flex w-full max-w-[430px] flex-1 flex-col justify-center px-6 pb-8 pt-safe-top">
 				<div className="flex flex-1 flex-col justify-center gap-0">
-					{/* Logo area */}
 					<div className="mb-8 flex flex-col items-center gap-3">
 						<div className="flex size-16 items-center justify-center rounded-2xl bg-primary">
 							<HeartPulseIcon className="size-8 text-white" />
@@ -37,7 +36,6 @@ const LandingScreen = () => {
 						</span>
 					</div>
 
-					{/* Headlines */}
 					<div className="mb-12 space-y-2 text-center">
 						<h1 className="text-[28px] font-bold leading-tight text-font-primary">
 							Your Health, Simplified
@@ -48,7 +46,6 @@ const LandingScreen = () => {
 					</div>
 				</div>
 
-				{/* CTA buttons */}
 				<div className="space-y-3">
 					<Link
 						href={SIGN_UP_URL}
@@ -64,7 +61,6 @@ const LandingScreen = () => {
 					</Link>
 				</div>
 
-				{/* Trust row */}
 				<div className="mt-6 flex items-center justify-center gap-6">
 					<TrustItem
 						icon={<ShieldCheckIcon className="size-4" />}
@@ -80,7 +76,6 @@ const LandingScreen = () => {
 					/>
 				</div>
 
-				{/* Support row */}
 				<div className="mt-3 flex items-center justify-center gap-1.5">
 					<PhoneIcon className="size-3.5 text-font-tertiary" />
 					<span className="text-xs text-font-tertiary">

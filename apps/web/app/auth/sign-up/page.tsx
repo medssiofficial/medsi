@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SignUpScreen } from "@/screens/sign-up-screen";
 
 export const metadata: Metadata = {
 	title: "Create Account | Medssi",
@@ -6,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 const SignUpPage = () => {
-	return null;
+	return <SignUpScreen />;
 };
 
 export default SignUpPage;

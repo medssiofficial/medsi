@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LoginScreen } from "@/screens/login-screen";
 
 export const metadata: Metadata = {
 	title: "Sign In | Medssi",
@@ -6,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 const LoginPage = () => {
-	return null;
+	return <LoginScreen />;
 };
 
 export default LoginPage;
