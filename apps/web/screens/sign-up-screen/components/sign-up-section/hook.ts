@@ -1,10 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth, useClerk, useSignUp } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+import { ONBOARD_URL } from "@/config/client-constants";
 
 const RESEND_SECONDS = 42;
+const SIGN_UP_FLOW_STORAGE_KEY = "web.auth.signup.flow";
 
 const SignUpSchema = z.object({
 	email: z.email({
@@ -24,19 +28,73 @@ const SignUpSchema = z.object({
 
 export type SignUpFormValues = z.infer<typeof SignUpSchema>;
 
+const getSavedSignUpFlow = () => {
+	if (typeof window === "undefined") return null;
+
+	try {
+		const raw = window.sessionStorage.getItem(SIGN_UP_FLOW_STORAGE_KEY);
+		if (!raw) return null;
+
+		return JSON.parse(raw) as {
+			step?: "email" | "otp";
+			email?: string;
+			otp?: string;
+		};
+	} catch {
+		return null;
+	}
+};
+
+const getClerkErrorMessage = (error: unknown) => {
+	if (!error || typeof error !== "object") return null;
+	if (!("errors" in error)) return null;
+
+	const errors = (error as { errors?: unknown }).errors;
+	if (!Array.isArray(errors) || errors.length === 0) return null;
+
+	const first = errors[0];
+	if (!first || typeof first !== "object") return null;
+	if (!("message" in first)) return null;
+
+	const message = (first as { message?: unknown }).message;
+	return typeof message === "string" ? message : null;
+};
+
 export const useSignUpSection = () => {
-	const [step, setStep] = useState<"email" | "otp">("email");
+	const router = useRouter();
+	const { isSignedIn } = useAuth();
+	const { setActive } = useClerk();
+	const { signUp } = useSignUp();
+	const savedFlow = getSavedSignUpFlow();
+
+	const [step, setStep] = useState<"email" | "otp">(
+		savedFlow?.step === "otp" ? "otp" : "email",
+	);
 	const [resendCountdown, setResendCountdown] = useState(RESEND_SECONDS);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const signUpForm = useForm<SignUpFormValues>({
 		resolver: zodResolver(SignUpSchema),
 		defaultValues: {
-			email: "",
-			otp: "",
+			email: savedFlow?.email ?? "",
+			otp: savedFlow?.otp ?? "",
 		},
 		mode: "onSubmit",
 	});
+
+	const emailValue = useWatch({ control: signUpForm.control, name: "email" });
+	const otpValue = useWatch({ control: signUpForm.control, name: "otp" });
+
+	useEffect(() => {
+		window.sessionStorage.setItem(
+			SIGN_UP_FLOW_STORAGE_KEY,
+			JSON.stringify({
+				step,
+				email: emailValue ?? "",
+				otp: otpValue ?? "",
+			}),
+		);
+	}, [emailValue, otpValue, step]);
 
 	useEffect(() => {
 		if (step !== "otp") return;
@@ -58,8 +116,44 @@ export const useSignUpSection = () => {
 	}, [resendCountdown]);
 
 	const handleContinue = async () => {
+		if (!signUp) {
+			toast.error("Authentication is not ready yet.");
+			return;
+		}
+
 		const isValid = await signUpForm.trigger("email");
 		if (!isValid) return;
+
+		setIsSubmitting(true);
+
+		const { error: signUpCreateError } = await signUp.create({
+			emailAddress: signUpForm.getValues("email"),
+		});
+
+		if (signUpCreateError) {
+			setIsSubmitting(false);
+			const message =
+				getClerkErrorMessage(signUpCreateError) ??
+				signUpCreateError.message ??
+				"Unable to continue with this email.";
+			signUpForm.setError("email", { message });
+			toast.error(message);
+			return;
+		}
+
+		const { error: sendEmailCodeError } =
+			await signUp.verifications.sendEmailCode();
+		setIsSubmitting(false);
+
+		if (sendEmailCodeError) {
+			const message =
+				getClerkErrorMessage(sendEmailCodeError) ??
+				sendEmailCodeError.message ??
+				"Unable to send OTP to this email.";
+			signUpForm.setError("email", { message });
+			toast.error(message);
+			return;
+		}
 
 		setStep("otp");
 		setResendCountdown(RESEND_SECONDS);
@@ -68,13 +162,41 @@ export const useSignUpSection = () => {
 	};
 
 	const handleVerify = async () => {
+		if (!signUp) {
+			toast.error("Authentication is not ready yet.");
+			return;
+		}
+
 		const isValid = await signUpForm.trigger("otp");
 		if (!isValid) return;
 
 		setIsSubmitting(true);
-		await new Promise((resolve) => window.setTimeout(resolve, 500));
+		const verifyResult = await signUp.verifications.verifyEmailCode({
+			code: signUpForm.getValues("otp") ?? "",
+		});
 		setIsSubmitting(false);
-		toast.success("Account verified. Auth flow will be connected next.");
+
+		if (verifyResult.error) {
+			const message =
+				getClerkErrorMessage(verifyResult.error) ??
+				verifyResult.error.message ??
+				"Invalid OTP. Please try again.";
+			signUpForm.setError("otp", { message });
+			toast.error(message);
+			return;
+		}
+
+		const createdSessionId =
+			(verifyResult as { createdSessionId?: string | null }).createdSessionId ??
+			null;
+
+		if (createdSessionId) {
+			await setActive({ session: createdSessionId });
+		}
+
+		window.sessionStorage.removeItem(SIGN_UP_FLOW_STORAGE_KEY);
+		toast.success("Account created successfully.");
+		router.replace(ONBOARD_URL);
 	};
 
 	const handlePrimaryAction = async () => {
@@ -86,8 +208,25 @@ export const useSignUpSection = () => {
 		await handleVerify();
 	};
 
-	const handleResend = () => {
+	const handleResend = async () => {
+		if (!signUp) {
+			toast.error("Authentication is not ready yet.");
+			return;
+		}
+
 		if (resendCountdown > 0) return;
+
+		const { error } = await signUp.verifications.sendEmailCode();
+		if (error) {
+			const message =
+				getClerkErrorMessage(error) ??
+				error.message ??
+				"Unable to resend OTP right now.";
+			signUpForm.setError("email", { message });
+			toast.error(message);
+			return;
+		}
+
 		setResendCountdown(RESEND_SECONDS);
 		toast.success("New OTP sent.");
 	};
@@ -100,6 +239,7 @@ export const useSignUpSection = () => {
 
 	return {
 		signUpForm,
+		emailValue,
 		currentStep: step,
 		isSubmitting,
 		handlePrimaryAction,
@@ -107,5 +247,6 @@ export const useSignUpSection = () => {
 		handleResend,
 		resendLabel,
 		canResend: resendCountdown <= 0,
+		isSignedIn,
 	};
 };

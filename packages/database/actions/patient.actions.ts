@@ -1,10 +1,10 @@
 import { prisma } from "../client";
 
-interface UpsertPatientArgs {
+interface UpsertPatientByClerkIdArgs {
 	clerk_id: string;
 }
 
-export const upsertPatient = (args: UpsertPatientArgs) => {
+export const upsertPatientByClerkId = (args: UpsertPatientByClerkIdArgs) => {
 	return prisma.user.upsert({
 		where: {
 			clerk_id: args.clerk_id,
@@ -13,6 +13,23 @@ export const upsertPatient = (args: UpsertPatientArgs) => {
 			clerk_id: args.clerk_id,
 		},
 		update: {},
+	});
+};
+
+export const upsertPatient = upsertPatientByClerkId;
+
+interface GetPatientFullByClerkIdArgs {
+	clerk_id: string;
+}
+
+export const getPatientFullByClerkId = (args: GetPatientFullByClerkIdArgs) => {
+	return prisma.user.findUnique({
+		where: {
+			clerk_id: args.clerk_id,
+		},
+		include: {
+			profile: true,
+		},
 	});
 };
 
@@ -58,6 +75,71 @@ export const syncPatientProfileByClerkId = async (
 			profile: true,
 		},
 	});
+};
+
+interface UpsertPatientProfileByClerkIdArgs {
+	clerk_id: string;
+	profile: {
+		name: string;
+		age: number;
+		gender: "male" | "female" | "other";
+		email: string;
+		phone: string;
+		country: string;
+	};
+}
+
+export const upsertPatientProfileByClerkId = async (
+	args: UpsertPatientProfileByClerkIdArgs,
+) => {
+	const patient = await upsertPatientByClerkId({ clerk_id: args.clerk_id });
+
+	await prisma.patient_profile.upsert({
+		where: {
+			user_id: patient.id,
+		},
+		create: {
+			user_id: patient.id,
+			name: args.profile.name,
+			age: args.profile.age,
+			gender: args.profile.gender,
+			email: args.profile.email,
+			phone: args.profile.phone,
+			country: args.profile.country,
+		},
+		update: {
+			name: args.profile.name,
+			age: args.profile.age,
+			gender: args.profile.gender,
+			email: args.profile.email,
+			phone: args.profile.phone,
+			country: args.profile.country,
+		},
+	});
+
+	return getPatientFullByClerkId({ clerk_id: args.clerk_id });
+};
+
+interface IsPatientOnboardingCompleteByClerkIdArgs {
+	clerk_id: string;
+}
+
+export const isPatientOnboardingCompleteByClerkId = async (
+	args: IsPatientOnboardingCompleteByClerkIdArgs,
+) => {
+	const patient = await getPatientFullByClerkId({ clerk_id: args.clerk_id });
+	const profile = patient?.profile;
+
+	if (!profile) return false;
+
+	return Boolean(
+		profile.name.trim() &&
+			profile.age > 0 &&
+			profile.gender &&
+			profile.email.trim() &&
+			profile.phone.trim() &&
+			profile.country.trim(),
+	);
 };
 
 interface DeletePatientArgs {

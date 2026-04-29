@@ -12,6 +12,7 @@
 	"dependencies": {
 		"@clerk/nextjs": "^7.2.3",
 		"@hookform/resolvers": "^5.2.2",
+		"@repo/database": "*",
 		"@repo/providers": "*",
 		"@repo/types": "*",
 		"@repo/ui": "*",
@@ -35,7 +36,6 @@
 	},
 	"devDependencies": {
 		"@next/eslint-plugin-next": "^16.2.3",
-		"@repo/database": "*",
 		"@repo/eslint-config": "*",
 		"@repo/tailwind-config": "*",
 		"@repo/typescript-config": "*",

@@ -24,6 +24,7 @@ export const SignUpSection = (props: { title: string }) => {
 	const { title } = props;
 	const {
 		signUpForm,
+		emailValue,
 		currentStep,
 		isSubmitting,
 		handlePrimaryAction,
@@ -32,8 +33,6 @@ export const SignUpSection = (props: { title: string }) => {
 		resendLabel,
 		canResend,
 	} = useSignUpSection();
-
-	const emailValue = signUpForm.watch("email");
 
 	return (
 		<div className="flex min-h-svh w-full justify-center bg-neutral-warm">
@@ -126,7 +125,7 @@ export const SignUpSection = (props: { title: string }) => {
 										<Button
 											variant="link"
 											type="button"
-											onClick={handleResend}
+											onClick={() => void handleResend()}
 											disabled={!canResend}
 											className="h-auto p-0 text-sm font-semibold text-foreground no-underline"
 										>
@@ -141,7 +140,13 @@ export const SignUpSection = (props: { title: string }) => {
 								className="h-13 w-full rounded-lg text-base"
 								disabled={isSubmitting}
 							>
-								{isSubmitting ? <Spinner className="size-4" /> : currentStep === "email" ? "Sign Up" : "Verify"}
+								{isSubmitting ? (
+									<Spinner className="size-4" />
+								) : currentStep === "email" ? (
+									"Sign Up"
+								) : (
+									"Verify"
+								)}
 							</Button>
 						</form>
 					</Form>
@@ -153,6 +158,8 @@ export const SignUpSection = (props: { title: string }) => {
 						Sign In
 					</Link>
 				</div>
+
+				<div id="clerk-captcha" />
 			</div>
 		</div>
 	);

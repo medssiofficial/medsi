@@ -30,6 +30,7 @@ export const LoginSection = (props: { title: string }) => {
 	const { title } = props;
 	const {
 		loginForm,
+		emailValue,
 		currentStep,
 		isSubmitting,
 		handlePrimaryAction,
@@ -39,14 +40,13 @@ export const LoginSection = (props: { title: string }) => {
 		handleAppleSignIn,
 		resendLabel,
 		canResend,
+		isGoogleSubmitting,
 	} = useLoginSection();
-
-	const emailValue = loginForm.watch("email");
 
 	return (
 		<div className="flex min-h-svh w-full justify-center bg-neutral-warm">
 			<div className="flex w-full max-w-[430px] flex-col px-6 pb-8 pt-safe-top">
-				{currentStep == "otp" ? (
+				{currentStep === "otp" ? (
 					<div className="mb-6 pt-3">
 						<Button
 							variant="ghost"
@@ -65,10 +65,10 @@ export const LoginSection = (props: { title: string }) => {
 				<div className="flex flex-1 flex-col">
 					<div className="mb-6 space-y-2">
 						<h1 className="text-[28px] font-bold text-font-primary">
-							{currentStep == "email" ? title : "Verify Your Email"}
+							{currentStep === "email" ? title : "Verify Your Email"}
 						</h1>
 						<p className="text-sm text-font-secondary">
-							{currentStep == "email"
+							{currentStep === "email"
 								? "Sign in to continue with Medssi"
 								: `We've sent a 6-digit code to ${emailValue || "your email"}`}
 						</p>
@@ -82,7 +82,7 @@ export const LoginSection = (props: { title: string }) => {
 							}}
 							className="flex flex-col gap-6"
 						>
-							{currentStep == "email" ? (
+							{currentStep === "email" ? (
 								<FormField
 									control={loginForm.control}
 									name="email"
@@ -134,7 +134,7 @@ export const LoginSection = (props: { title: string }) => {
 										<Button
 											variant="link"
 											type="button"
-											onClick={handleResend}
+											onClick={() => void handleResend()}
 											disabled={!canResend}
 											className="h-auto p-0 text-sm font-semibold text-foreground no-underline"
 										>
@@ -151,14 +151,14 @@ export const LoginSection = (props: { title: string }) => {
 							>
 								{isSubmitting ? (
 									<Spinner className="size-4" />
-								) : currentStep == "email" ? (
+								) : currentStep === "email" ? (
 									"Continue"
 								) : (
 									"Verify"
 								)}
 							</Button>
 
-							{currentStep == "email" ? (
+							{currentStep === "email" ? (
 								<>
 									<div className="flex items-center gap-3">
 										<div className="h-px flex-1 bg-border" />
@@ -170,10 +170,17 @@ export const LoginSection = (props: { title: string }) => {
 										type="button"
 										variant="outline"
 										className="h-12 w-full rounded-lg bg-white"
-										onClick={handleGoogleSignIn}
+										onClick={() => void handleGoogleSignIn()}
+										disabled={isGoogleSubmitting}
 									>
-										<GoogleMark />
-										Continue with Google
+										{isGoogleSubmitting ? (
+											<Spinner className="size-4" />
+										) : (
+											<>
+												<GoogleMark />
+												Continue with Google
+											</>
+										)}
 									</Button>
 									<Button
 										type="button"
@@ -191,11 +198,13 @@ export const LoginSection = (props: { title: string }) => {
 				</div>
 
 				<div className="pt-4 text-center text-sm text-font-tertiary">
-					Don't have an account?
+					Don&apos;t have an account?
 					<Link href={SIGN_UP_URL} className="ml-1 font-semibold text-primary">
 						Sign Up
 					</Link>
 				</div>
+
+				<div id="clerk-captcha" />
 			</div>
 		</div>
 	);

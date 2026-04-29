@@ -4,8 +4,9 @@ import type { Metadata, Viewport } from "next";
 import { Manrope, Space_Grotesk } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@repo/providers";
-import { Toaster } from "@repo/ui/components/ui/sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "@/components/providers";
+import { PatientBootstrap } from "@/components/common";
 import { CLIENT_ENV } from "@/config/client-env";
 
 const spaceGrotesk = Space_Grotesk({
@@ -59,6 +60,7 @@ export default function RootLayout({
 					<ThemeProvider>
 						<QueryProvider>
 							<Toaster position="bottom-center" closeButton richColors />
+							<PatientBootstrap />
 							{children}
 						</QueryProvider>
 					</ThemeProvider>
