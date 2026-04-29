@@ -72,6 +72,7 @@ export const useSignUpSection = () => {
 	);
 	const [resendCountdown, setResendCountdown] = useState(RESEND_SECONDS);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [redirectTo, setRedirectTo] = useState<string | null>(null);
 
 	const signUpForm = useForm<SignUpFormValues>({
 		resolver: zodResolver(SignUpSchema),
@@ -84,6 +85,12 @@ export const useSignUpSection = () => {
 
 	const emailValue = useWatch({ control: signUpForm.control, name: "email" });
 	const otpValue = useWatch({ control: signUpForm.control, name: "otp" });
+
+	useEffect(() => {
+		if (!redirectTo) return;
+		if (!isSignedIn) return;
+		router.replace(redirectTo);
+	}, [isSignedIn, redirectTo, router]);
 
 	useEffect(() => {
 		window.sessionStorage.setItem(
@@ -188,14 +195,17 @@ export const useSignUpSection = () => {
 
 		const createdSessionId =
 			(verifyResult as { createdSessionId?: string | null }).createdSessionId ??
+			(signUp as unknown as { createdSessionId?: string | null })
+				.createdSessionId ??
 			null;
 
 		if (createdSessionId) {
 			await setActive({ session: createdSessionId });
 		}
 
-		window.sessionStorage.removeItem(SIGN_UP_FLOW_STORAGE_KEY);
 		toast.success("Account created successfully.");
+		window.sessionStorage.removeItem(SIGN_UP_FLOW_STORAGE_KEY);
+		setRedirectTo(ONBOARD_URL);
 		router.replace(ONBOARD_URL);
 	};
 

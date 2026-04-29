@@ -92,6 +92,7 @@ export const useLoginSection = () => {
 	const [resendCountdown, setResendCountdown] = useState(RESEND_SECONDS);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
+	const [redirectTo, setRedirectTo] = useState<string | null>(null);
 
 	const loginForm = useForm<LoginFormValues>({
 		resolver: zodResolver(LoginSchema),
@@ -104,6 +105,12 @@ export const useLoginSection = () => {
 
 	const emailValue = useWatch({ control: loginForm.control, name: "email" });
 	const otpValue = useWatch({ control: loginForm.control, name: "otp" });
+
+	useEffect(() => {
+		if (!redirectTo) return;
+		if (!isSignedIn) return;
+		router.replace(redirectTo);
+	}, [isSignedIn, redirectTo, router]);
 
 	useEffect(() => {
 		window.sessionStorage.setItem(
@@ -207,14 +214,17 @@ export const useLoginSection = () => {
 
 		const createdSessionId =
 			(verifyResult as { createdSessionId?: string | null }).createdSessionId ??
+			(signIn as unknown as { createdSessionId?: string | null })
+				.createdSessionId ??
 			null;
 
 		if (createdSessionId) {
 			await setActive({ session: createdSessionId });
 		}
 
-		window.sessionStorage.removeItem(LOGIN_FLOW_STORAGE_KEY);
 		toast.success("Signed in successfully.");
+		window.sessionStorage.removeItem(LOGIN_FLOW_STORAGE_KEY);
+		setRedirectTo(DASHBOARD_URL);
 		router.replace(DASHBOARD_URL);
 	};
 
