@@ -1,16 +1,16 @@
 "use client";
 
 import { ComingSoon, PatientAppShell } from "@/components/common";
-import { useDashboardScreen } from "./hook";
+import { useCasesScreen } from "./hook";
 
-const DashboardScreen = () => {
-	const screen = useDashboardScreen();
+const CasesScreen = () => {
+	const screen = useCasesScreen();
 
 	return (
-		<PatientAppShell title="Dashboard">
+		<PatientAppShell title="Cases">
 			<ComingSoon title={screen.title} description={screen.description} />
 		</PatientAppShell>
 	);
 };
 
-export default DashboardScreen;
+export default CasesScreen;

@@ -1,8 +1,10 @@
 "use client";
 
 import {
+	APP_TAB_ROUTES,
 	DASHBOARD_URL,
 	ONBOARD_URL,
+	SETTINGS_URL,
 	SIGN_IN_URL,
 	SIGN_UP_URL,
 } from "@/config/client-constants";
@@ -33,12 +35,26 @@ export const usePatientBootstrap = () => {
 		if (!isLoaded || !isSignedIn) return;
 		if (!patientMeQuery.isSuccess) return;
 
-		const target = patientMeQuery.data.is_onboarding_complete
-			? DASHBOARD_URL
-			: ONBOARD_URL;
+		const isAppRoute = [
+			...APP_TAB_ROUTES,
+			SETTINGS_URL,
+		].includes(pathname as typeof DASHBOARD_URL);
+		const isAuthOrLandingRoute = pathname === "/" || pathname === SIGN_IN_URL || pathname === SIGN_UP_URL;
 
-		if (pathname !== target) {
-			router.replace(target);
+		if (!patientMeQuery.data.is_onboarding_complete) {
+			if (pathname !== ONBOARD_URL) {
+				router.replace(ONBOARD_URL);
+			}
+			return;
+		}
+
+		if (pathname === ONBOARD_URL || isAuthOrLandingRoute) {
+			router.replace(DASHBOARD_URL);
+			return;
+		}
+
+		if (!isAppRoute) {
+			router.replace(DASHBOARD_URL);
 		}
 	}, [isLoaded, isSignedIn, pathname, patientMeQuery.data, patientMeQuery.isSuccess, router]);
 

@@ -161,3 +161,110 @@ export const deletePatient = async (args: DeletePatientArgs) => {
 		},
 	});
 };
+
+interface UpdatePatientProfileByClerkIdArgs {
+	clerk_id: string;
+	profile: {
+		name: string;
+		age: number;
+		gender: "male" | "female" | "other";
+		email: string;
+		phone: string;
+		country: string;
+	};
+}
+
+export const updatePatientProfileByClerkId = async (
+	args: UpdatePatientProfileByClerkIdArgs,
+) => {
+	const patient = await upsertPatientByClerkId({ clerk_id: args.clerk_id });
+
+	await prisma.patient_profile.upsert({
+		where: {
+			user_id: patient.id,
+		},
+		create: {
+			user_id: patient.id,
+			name: args.profile.name,
+			age: args.profile.age,
+			gender: args.profile.gender,
+			email: args.profile.email,
+			phone: args.profile.phone,
+			country: args.profile.country,
+		},
+		update: {
+			name: args.profile.name,
+			age: args.profile.age,
+			gender: args.profile.gender,
+			email: args.profile.email,
+			phone: args.profile.phone,
+			country: args.profile.country,
+		},
+	});
+
+	return getPatientFullByClerkId({ clerk_id: args.clerk_id });
+};
+
+export interface PatientSettingsRecord {
+	notifications_enabled: boolean;
+	language: string;
+	data_sharing: "limited" | "full";
+}
+
+interface GetPatientSettingsByClerkIdArgs {
+	clerk_id: string;
+}
+
+export const getPatientSettingsByClerkId = async (
+	args: GetPatientSettingsByClerkIdArgs,
+): Promise<PatientSettingsRecord> => {
+	const patient = await upsertPatientByClerkId({ clerk_id: args.clerk_id });
+	const settings = await prisma.patient_settings.upsert({
+		where: {
+			user_id: patient.id,
+		},
+		create: {
+			user_id: patient.id,
+		},
+		update: {},
+	});
+
+	return {
+		notifications_enabled: settings.notifications_enabled,
+		language: settings.language,
+		data_sharing: settings.data_sharing,
+	};
+};
+
+interface UpsertPatientSettingsByClerkIdArgs {
+	clerk_id: string;
+	settings: PatientSettingsRecord;
+}
+
+export const upsertPatientSettingsByClerkId = async (
+	args: UpsertPatientSettingsByClerkIdArgs,
+): Promise<PatientSettingsRecord> => {
+	const patient = await upsertPatientByClerkId({ clerk_id: args.clerk_id });
+	const settings = await prisma.patient_settings.upsert({
+		where: {
+			user_id: patient.id,
+		},
+		create: {
+			user_id: patient.id,
+			notifications_enabled: args.settings.notifications_enabled,
+			language: args.settings.language,
+			data_sharing: args.settings.data_sharing,
+		},
+		update: {
+			notifications_enabled: args.settings.notifications_enabled,
+			language: args.settings.language,
+			data_sharing: args.settings.data_sharing,
+		},
+	});
+
+	return {
+		notifications_enabled: settings.notifications_enabled,
+		language: settings.language,
+		data_sharing: settings.data_sharing,
+	};
+};

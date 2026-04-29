@@ -47,6 +47,11 @@ enum DoctorProofType {
     experience_supporting_document
 }
 
+enum PatientDataSharing {
+    limited
+    full
+}
+
 model user {
     id         String   @id @default(ulid())
     clerk_id   String   @unique
@@ -54,6 +59,7 @@ model user {
     updated_at DateTime @updatedAt
 
     profile        patient_profile?
+    settings       patient_settings?
     mediccal_cases medical_case[]
     files          file[]
 }
@@ -225,6 +231,18 @@ model patient_profile {
     updated_at DateTime @updatedAt
 
     user user @relation(fields: [user_id], references: [id])
+}
+
+model patient_settings {
+    id                     String             @id @default(ulid())
+    user_id                String             @unique
+    notifications_enabled  Boolean            @default(true)
+    language               String             @default("English")
+    data_sharing           PatientDataSharing @default(limited)
+    created_at             DateTime           @default(now())
+    updated_at             DateTime           @updatedAt
+
+    user user @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model file {
