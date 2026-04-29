@@ -56,6 +56,13 @@ export const API_ROUTES = {
 				method: "GET",
 			},
 		},
+		PATIENTS: {
+			LIST: {
+				key: "admin.patients.list",
+				path: "/api/admin/patients",
+				method: "GET",
+			},
+		},
 	},
 } as const;
 

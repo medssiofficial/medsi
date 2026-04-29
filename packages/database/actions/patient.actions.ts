@@ -1,4 +1,5 @@
 import { prisma } from "../client";
+import type { Prisma } from "../types/server";
 
 interface UpsertPatientByClerkIdArgs {
 	clerk_id: string;
@@ -268,3 +269,120 @@ export const upsertPatientSettingsByClerkId = async (
 		data_sharing: settings.data_sharing,
 	};
 };
+
+interface GetPatientsForAdminArgs {
+	page: number;
+	page_size: number;
+	search?: string;
+}
+
+export interface AdminPatientListItem {
+	profile_id: string;
+	user_id: string;
+	name: string;
+	email: string;
+	account_status: "active";
+	join_date: Date;
+	cases_count: number;
+}
+
+export const getPatientsForAdmin = async (args: GetPatientsForAdminArgs) => {
+	const page = Math.max(1, args.page);
+	const pageSize = Math.max(1, Math.min(50, args.page_size));
+	const skip = (page - 1) * pageSize;
+
+	const where: Prisma.patient_profileWhereInput = {};
+	const searchTerm = args.search?.trim();
+
+	if (searchTerm) {
+		where.OR = [
+			{ name: { contains: searchTerm, mode: "insensitive" } },
+			{ email: { contains: searchTerm, mode: "insensitive" } },
+			{ phone: { contains: searchTerm, mode: "insensitive" } },
+			{ country: { contains: searchTerm, mode: "insensitive" } },
+			{ id: { contains: searchTerm, mode: "insensitive" } },
+			{ user_id: { contains: searchTerm, mode: "insensitive" } },
+		];
+	}
+
+	const [rows, total] = await prisma.$transaction([
+		prisma.patient_profile.findMany({
+			where,
+			orderBy: {
+				user: {
+					created_at: "desc",
+				},
+			},
+			skip,
+			take: pageSize,
+			include: {
+				user: {
+					select: {
+						id: true,
+						created_at: true,
+						_count: {
+							select: {
+								mediccal_cases: true,
+							},
+						},
+					},
+				},
+			},
+		}),
+		prisma.patient_profile.count({ where }),
+	]);
+
+	const items: AdminPatientListItem[] = rows.map((row) => ({
+		profile_id: row.id,
+		user_id: row.user_id,
+		name: row.name,
+		email: row.email,
+		account_status: "active",
+		join_date: row.user.created_at,
+		cases_count: row.user._count.mediccal_cases,
+	}));
+
+	const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+	return {
+		items,
+		meta: {
+			total,
+			page,
+			page_size: pageSize,
+			total_pages: totalPages,
+			has_next_page: page < totalPages,
+			has_previous_page: page > 1,
+		},
+	};
+};
+
+export interface PatientRegistrySummary {
+	active_patients: number;
+	urgent_cases: number;
+	pending_reviews: number;
+}
+
+export const getPatientRegistrySummaryForAdmin =
+	async (): Promise<PatientRegistrySummary> => {
+		const [activePatients, urgentCases, pendingReviews] =
+			await prisma.$transaction([
+				prisma.patient_profile.count(),
+				prisma.medical_case.count({
+					where: { conversation_status: "in_progress" },
+				}),
+				prisma.file.count({
+					where: {
+						processing_status: {
+							in: ["pending", "processing"],
+						},
+					},
+				}),
+			]);
+
+		return {
+			active_patients: activePatients,
+			urgent_cases: urgentCases,
+			pending_reviews: pendingReviews,
+		};
+	};
