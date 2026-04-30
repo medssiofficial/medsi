@@ -2,11 +2,13 @@
 
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useAPIErrorHandler } from "@/hooks/use-api-error-handler";
+import { NEW_CONSULTATION_URL } from "@/config/client-constants";
 import { usePatientCasesInfinite } from "@/services/api/patient/get-cases";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
 
 export const useCasesScreen = () => {
+	const router = useRouter();
 	const { APIErrorHandler } = useAPIErrorHandler();
 	const [searchInput, setSearchInput] = useState("");
 	const [search, setSearch] = useState("");
@@ -41,7 +43,7 @@ export const useCasesScreen = () => {
 	});
 
 	const handleStartConsultation = () => {
-		toast.info("Create new consultation is coming soon.");
+		router.push(NEW_CONSULTATION_URL);
 	};
 
 	return {

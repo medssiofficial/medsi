@@ -1,7 +1,7 @@
 "use client";
 
 import { PatientAppShell } from "@/components/common";
-import { FilesContent } from "./components";
+import { FilesContent, FilesUpload } from "./components";
 import { useFilesScreen } from "./hook";
 
 const FilesScreen = () => {
@@ -14,20 +14,28 @@ const FilesScreen = () => {
 		isLoading,
 		isFetchingNextPage,
 		handleLoadMore,
+		handleUploadFile,
+		isUploading,
 	} = useFilesScreen();
 
 	return (
 		<PatientAppShell title="Files">
-			<FilesContent
-				searchInput={searchInput}
-				onSearchInputChange={setSearchInput}
-				items={items}
-				isLoading={isLoading}
-				isFetchingNextPage={isFetchingNextPage}
-				hasNextPage={hasNextPage}
-				onLoadMore={handleLoadMore}
-				setSentinelRef={setSentinelRef}
-			/>
+			<div className="space-y-4">
+				<FilesUpload
+					isUploading={isUploading}
+					onUploadFile={(file) => void handleUploadFile(file)}
+				/>
+				<FilesContent
+					searchInput={searchInput}
+					onSearchInputChange={setSearchInput}
+					items={items}
+					isLoading={isLoading}
+					isFetchingNextPage={isFetchingNextPage}
+					hasNextPage={hasNextPage}
+					onLoadMore={handleLoadMore}
+					setSentinelRef={setSentinelRef}
+				/>
+			</div>
 		</PatientAppShell>
 	);
 };

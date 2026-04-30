@@ -1,5 +1,10 @@
 import { prisma } from "../client";
 import type { Prisma } from "../types/server";
+import {
+	getDefaultStorageBucket,
+	getSupabaseAnonClient,
+	uploadPublicFile,
+} from "@repo/supabase";
 
 interface UpsertPatientByClerkIdArgs {
 	clerk_id: string;
@@ -478,12 +483,31 @@ export const getPatientCasesByClerkId = async (
 export interface PatientFileListItem {
 	id: string;
 	filename: string;
+	mime_type: string;
 	report_type: "text_report" | "image_report";
 	processing_status: "pending" | "processing" | "completed" | "failed";
 	created_at: Date;
+	public_url: string | null;
 	related_case_ids: string[];
 	used_in_cases_count: number;
 }
+
+const toPatientReportType = (
+	mimeType: string,
+): "text_report" | "image_report" => {
+	return mimeType.toLowerCase().startsWith("image/")
+		? "image_report"
+		: "text_report";
+};
+
+const resolvePublicUrlFromStorageKey = (storageKey: string) => {
+	const bucket = getDefaultStorageBucket();
+	const supabase = getSupabaseAnonClient();
+
+	if (!bucket || !supabase) return null;
+
+	return supabase.storage.from(bucket).getPublicUrl(storageKey).data.publicUrl;
+};
 
 interface GetPatientFilesByClerkIdArgs {
 	clerk_id: string;
@@ -550,14 +574,74 @@ export const getPatientFilesByClerkId = async (
 		items: slicedRows.map((row) => ({
 			id: row.id,
 			filename: row.filename,
+			mime_type: row.mime_type,
 			report_type: row.report_type,
 			processing_status: row.processing_status,
 			created_at: row.created_at,
+			public_url: resolvePublicUrlFromStorageKey(row.storage_key),
 			related_case_ids: row.case_references.map((r) => r.medical_case_id),
 			used_in_cases_count: row.case_references.length,
 		})),
 		next_cursor: hasMore ? slicedRows[slicedRows.length - 1]?.id ?? null : null,
 		has_more: hasMore,
+	};
+};
+
+interface UploadPatientFileByClerkIdArgs {
+	clerk_id: string;
+	file: File;
+}
+
+export const uploadPatientFileByClerkId = async (
+	args: UploadPatientFileByClerkIdArgs,
+) => {
+	const patient = await getPatientUserByClerkId(args.clerk_id);
+	if (!patient) {
+		throw new Error("Patient not found.");
+	}
+
+	const originalName = args.file.name?.trim() || `upload-${Date.now()}.bin`;
+	const mimeType = args.file.type?.trim() || "application/octet-stream";
+	const reportType = toPatientReportType(mimeType);
+
+	const uploadResult = await uploadPublicFile({
+		file: args.file,
+		fileName: originalName,
+		folder: `patient_${patient.id}`,
+		contentType: mimeType,
+	});
+
+	if (!uploadResult.success) {
+		throw new Error(uploadResult.error);
+	}
+
+	const fileRow = await prisma.file.create({
+		data: {
+			filename: originalName,
+			mime_type: mimeType,
+			report_type: reportType,
+			storage_key: uploadResult.data.path,
+			processing_status: "pending",
+			user_id: patient.id,
+			metadata: {
+				public_url: uploadResult.data.publicUrl,
+				size: uploadResult.data.size,
+				uploaded_at: uploadResult.data.uploadedAt,
+				bucket: uploadResult.data.bucket,
+			},
+		},
+	});
+
+	return {
+		id: fileRow.id,
+		filename: fileRow.filename,
+		mime_type: fileRow.mime_type,
+		report_type: fileRow.report_type,
+		processing_status: fileRow.processing_status,
+		created_at: fileRow.created_at,
+		public_url: uploadResult.data.publicUrl,
+		related_case_ids: [] as string[],
+		used_in_cases_count: 0,
 	};
 };
 

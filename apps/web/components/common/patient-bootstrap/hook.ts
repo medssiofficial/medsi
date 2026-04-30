@@ -3,6 +3,7 @@
 import {
 	APP_TAB_ROUTES,
 	DASHBOARD_URL,
+	NEW_CONSULTATION_URL,
 	ONBOARD_URL,
 	SETTINGS_URL,
 	SIGN_IN_URL,
@@ -38,6 +39,7 @@ export const usePatientBootstrap = () => {
 		const isAppRoute = [
 			...APP_TAB_ROUTES,
 			SETTINGS_URL,
+			NEW_CONSULTATION_URL,
 		].includes(pathname as typeof DASHBOARD_URL);
 		const isAuthOrLandingRoute = pathname === "/" || pathname === SIGN_IN_URL || pathname === SIGN_UP_URL;
 

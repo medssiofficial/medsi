@@ -5,6 +5,7 @@ import { Badge } from "@repo/ui/components/ui/badge";
 import { Button } from "@repo/ui/components/ui/button";
 import { Input } from "@repo/ui/components/ui/input";
 import { Skeleton } from "@repo/ui/components/ui/skeleton";
+import Link from "next/link";
 import { SearchIcon } from "lucide-react";
 import { useFilesContent } from "./hook";
 
@@ -89,6 +90,17 @@ export const FilesContent = (props: FilesContentProps) => {
 												.join(", ")}`
 										: ""}
 								</p>
+								{item.public_url ? (
+									<Button asChild type="button" size="sm" variant="outline">
+										<Link href={item.public_url} target="_blank" rel="noreferrer">
+											View document
+										</Link>
+									</Button>
+								) : (
+									<Button type="button" size="sm" variant="outline" disabled>
+										View unavailable
+									</Button>
+								)}
 							</div>
 						))}
 					</div>

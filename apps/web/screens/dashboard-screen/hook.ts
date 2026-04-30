@@ -1,11 +1,13 @@
 "use client";
 
 import { useAPIErrorHandler } from "@/hooks/use-api-error-handler";
+import { NEW_CONSULTATION_URL } from "@/config/client-constants";
 import { usePatientDashboardOverview } from "@/services/api/patient/get-dashboard";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { toast } from "sonner";
 
 export const useDashboardScreen = () => {
+	const router = useRouter();
 	const { APIErrorHandler } = useAPIErrorHandler();
 	const dashboardQuery = usePatientDashboardOverview();
 
@@ -15,7 +17,7 @@ export const useDashboardScreen = () => {
 	}, [APIErrorHandler, dashboardQuery.error, dashboardQuery.isError]);
 
 	const handleStartConsultation = () => {
-		toast.info("Start new consultation is coming soon.");
+		router.push(NEW_CONSULTATION_URL);
 	};
 
 	return {

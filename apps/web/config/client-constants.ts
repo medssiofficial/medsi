@@ -8,6 +8,7 @@ export const SETTINGS_URL = "/settings";
 export const CASES_URL = "/cases";
 export const FILES_URL = "/files";
 export const CHAT_URL = "/chat";
+export const NEW_CONSULTATION_URL = "/consultation/new";
 
 export const APP_TAB_ROUTES = [
 	DASHBOARD_URL,
@@ -65,6 +66,11 @@ export const API_ROUTES = {
 			key: "patient.files",
 			path: "/api/patient/files",
 			method: "GET",
+		},
+		FILES_UPLOAD: {
+			key: "patient.files.upload",
+			path: "/api/patient/files",
+			method: "POST",
 		},
 		CHATS: {
 			key: "patient.chats",
