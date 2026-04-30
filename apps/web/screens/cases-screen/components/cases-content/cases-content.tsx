@@ -1,47 +1,28 @@
 "use client";
 
-import type { PatientChatsPage } from "@/services/api/patient/get-chats";
+import type { PatientCasesPage } from "@/services/api/patient/get-cases";
 import { Badge } from "@repo/ui/components/ui/badge";
 import { Button } from "@repo/ui/components/ui/button";
 import { Input } from "@repo/ui/components/ui/input";
 import { Skeleton } from "@repo/ui/components/ui/skeleton";
-import { MessageCircleIcon, SearchIcon } from "lucide-react";
+import { SearchIcon, StethoscopeIcon } from "lucide-react";
+import { useCasesContent } from "./hook";
 
-type ChatItem = PatientChatsPage["items"][number];
+type CaseItem = PatientCasesPage["items"][number];
 
-interface ChatContentProps {
+interface CasesContentProps {
 	searchInput: string;
 	onSearchInputChange: (value: string) => void;
-	items: ChatItem[];
+	items: CaseItem[];
 	isLoading: boolean;
 	isFetchingNextPage: boolean;
 	hasNextPage: boolean;
 	onLoadMore: () => void;
+	onStartConsultation: () => void;
 	setSentinelRef: (node: HTMLDivElement | null) => void;
 }
 
-const formatDate = (value: Date | string) => {
-	const date = value instanceof Date ? value : new Date(value);
-	return new Intl.DateTimeFormat("en-US", {
-		month: "short",
-		day: "numeric",
-		year: "numeric",
-	}).format(date);
-};
-
-const toStatusTone = (status: string) => {
-	if (status === "completed") return "bg-emerald-100 text-emerald-800";
-	if (status === "cancelled") return "bg-rose-100 text-rose-800";
-	return "bg-blue-100 text-blue-800";
-};
-
-const toStatusLabel = (status: string) => {
-	if (status === "completed") return "Completed";
-	if (status === "cancelled") return "Cancelled";
-	return "In progress";
-};
-
-export const ChatContent = (props: ChatContentProps) => {
+export const CasesContent = (props: CasesContentProps) => {
 	const {
 		searchInput,
 		onSearchInputChange,
@@ -50,19 +31,31 @@ export const ChatContent = (props: ChatContentProps) => {
 		isFetchingNextPage,
 		hasNextPage,
 		onLoadMore,
+		onStartConsultation,
 		setSentinelRef,
 	} = props;
+	const { formatDate, toStatusLabel, toStatusTone } = useCasesContent();
 
 	return (
 		<div className="space-y-4">
-			<div className="relative">
-				<SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-font-secondary" />
-				<Input
-					value={searchInput}
-					onChange={(event) => onSearchInputChange(event.target.value)}
-					placeholder="Search chats..."
-					className="h-10 pl-9"
-				/>
+			<div className="flex items-center gap-3">
+				<div className="relative flex-1">
+					<SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-font-secondary" />
+					<Input
+						value={searchInput}
+						onChange={(event) => onSearchInputChange(event.target.value)}
+						placeholder="Search cases..."
+						className="h-10 pl-9"
+					/>
+				</div>
+				<Button
+					type="button"
+					onClick={onStartConsultation}
+					className="h-10 rounded-xl px-4"
+				>
+					<StethoscopeIcon className="mr-1 size-4" />
+					Create New
+				</Button>
 			</div>
 
 			{isLoading ? (
@@ -79,7 +72,7 @@ export const ChatContent = (props: ChatContentProps) => {
 				<div className="rounded-2xl border border-dashed bg-background p-8 text-center">
 					<p className="text-sm font-medium text-font-primary">No records found.</p>
 					<p className="mt-1 text-xs text-font-secondary">
-						No chats match your current search.
+						No cases match your current search.
 					</p>
 				</div>
 			) : (
@@ -89,17 +82,19 @@ export const ChatContent = (props: ChatContentProps) => {
 							<div key={item.id} className="space-y-3 rounded-2xl border bg-background p-4">
 								<div className="flex items-center justify-between gap-2">
 									<p className="text-sm font-semibold text-font-primary">
-										Chat #{item.id.slice(0, 8).toUpperCase()}
+										#{item.id.slice(0, 10).toUpperCase()}
 									</p>
-									<Badge className={`rounded-full px-2.5 py-1 text-xs ${toStatusTone(item.status)}`}>
-										{toStatusLabel(item.status)}
+									<Badge className={`rounded-full px-2.5 py-1 text-xs ${toStatusTone(item.conversation_status)}`}>
+										{toStatusLabel(item.conversation_status)}
 									</Badge>
 								</div>
-								<div className="flex items-start gap-2">
-									<MessageCircleIcon className="mt-0.5 size-4 text-font-secondary" />
-									<p className="line-clamp-2 text-sm text-font-secondary">{item.preview}</p>
+								<p className="line-clamp-2 text-sm text-font-secondary">
+									{item.summary?.trim() || "No summary available yet."}
+								</p>
+								<div className="flex items-center justify-between text-xs text-font-secondary">
+									<span>{formatDate(item.created_at)}</span>
+									<span>{item.file_count} files</span>
 								</div>
-								<p className="text-xs text-font-secondary">Updated {formatDate(item.updated_at)}</p>
 							</div>
 						))}
 					</div>

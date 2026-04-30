@@ -6,6 +6,7 @@ import { Button } from "@repo/ui/components/ui/button";
 import { Input } from "@repo/ui/components/ui/input";
 import { Skeleton } from "@repo/ui/components/ui/skeleton";
 import { SearchIcon } from "lucide-react";
+import { useFilesContent } from "./hook";
 
 type FileItem = PatientFilesPage["items"][number];
 
@@ -20,22 +21,6 @@ interface FilesContentProps {
 	setSentinelRef: (node: HTMLDivElement | null) => void;
 }
 
-const formatDate = (value: Date | string) => {
-	const date = value instanceof Date ? value : new Date(value);
-	return new Intl.DateTimeFormat("en-US", {
-		month: "short",
-		day: "numeric",
-		year: "numeric",
-	}).format(date);
-};
-
-const toProcessingTone = (status: string) => {
-	if (status === "completed") return "bg-emerald-100 text-emerald-800";
-	if (status === "failed") return "bg-rose-100 text-rose-800";
-	if (status === "processing") return "bg-amber-100 text-amber-800";
-	return "bg-slate-100 text-slate-700";
-};
-
 export const FilesContent = (props: FilesContentProps) => {
 	const {
 		searchInput,
@@ -47,6 +32,7 @@ export const FilesContent = (props: FilesContentProps) => {
 		onLoadMore,
 		setSentinelRef,
 	} = props;
+	const { formatDate, toProcessingTone } = useFilesContent();
 
 	return (
 		<div className="space-y-4">

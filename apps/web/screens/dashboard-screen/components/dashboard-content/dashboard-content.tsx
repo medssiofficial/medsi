@@ -5,6 +5,7 @@ import { Badge } from "@repo/ui/components/ui/badge";
 import { Button } from "@repo/ui/components/ui/button";
 import { Skeleton } from "@repo/ui/components/ui/skeleton";
 import { FileTextIcon, StethoscopeIcon } from "lucide-react";
+import { useDashboardContent } from "./hook";
 
 interface DashboardContentProps {
 	overview: PatientDashboardOverview | undefined;
@@ -13,29 +14,9 @@ interface DashboardContentProps {
 	onStartConsultation: () => void;
 }
 
-const formatDate = (value: Date | string) => {
-	const date = value instanceof Date ? value : new Date(value);
-	return new Intl.DateTimeFormat("en-US", {
-		month: "short",
-		day: "numeric",
-		year: "numeric",
-	}).format(date);
-};
-
-const toStatusTone = (status: string) => {
-	if (status === "completed") return "bg-emerald-100 text-emerald-800";
-	if (status === "cancelled") return "bg-rose-100 text-rose-800";
-	return "bg-blue-100 text-blue-800";
-};
-
-const toStatusLabel = (status: string) => {
-	if (status === "completed") return "Completed";
-	if (status === "cancelled") return "Cancelled";
-	return "In progress";
-};
-
 export const DashboardContent = (props: DashboardContentProps) => {
 	const { overview, isLoading, isRefreshing, onStartConsultation } = props;
+	const { formatDate, toStatusLabel, toStatusTone } = useDashboardContent();
 
 	return (
 		<div className="space-y-5">
