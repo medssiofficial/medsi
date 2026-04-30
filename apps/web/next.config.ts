@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
+import { withSentryNextConfig } from "@repo/sentry/next-config";
 
 const nextConfig: NextConfig = {
-	transpilePackages: ["@repo/ui", "@repo/providers"],
+	transpilePackages: ["@repo/ui", "@repo/providers", "@repo/sentry"],
 	typescript: {
 		ignoreBuildErrors: true,
 	},
@@ -39,4 +40,4 @@ const nextConfig: NextConfig = {
 	},
 };
 
-export default nextConfig;
+export default withSentryNextConfig(nextConfig);
