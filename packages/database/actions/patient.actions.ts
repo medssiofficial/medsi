@@ -392,6 +392,147 @@ export const getPatientRegistrySummaryForAdmin =
 		};
 	};
 
+interface GetPatientFileFoldersForAdminArgs {
+	page: number;
+	page_size: number;
+	search?: string;
+}
+
+export interface AdminPatientFileFolderItem {
+	profile_id: string;
+	user_id: string;
+	name: string;
+	email: string;
+	file_count: number;
+	last_file_at: Date | null;
+}
+
+export const getPatientFileFoldersForAdmin = async (
+	args: GetPatientFileFoldersForAdminArgs,
+) => {
+	const page = Math.max(1, args.page);
+	const pageSize = Math.max(1, Math.min(50, args.page_size));
+	const skip = (page - 1) * pageSize;
+	const where: Prisma.patient_profileWhereInput = {};
+	const searchTerm = args.search?.trim();
+
+	if (searchTerm) {
+		where.OR = [
+			{ name: { contains: searchTerm, mode: "insensitive" } },
+			{ email: { contains: searchTerm, mode: "insensitive" } },
+			{ user_id: { contains: searchTerm, mode: "insensitive" } },
+		];
+	}
+
+	const [rows, total] = await prisma.$transaction([
+		prisma.patient_profile.findMany({
+			where,
+			orderBy: {
+				user: {
+					created_at: "desc",
+				},
+			},
+			skip,
+			take: pageSize,
+			include: {
+				user: {
+					select: {
+						files: {
+							select: { created_at: true },
+							orderBy: { created_at: "desc" },
+							take: 1,
+						},
+						_count: {
+							select: { files: true },
+						},
+					},
+				},
+			},
+		}),
+		prisma.patient_profile.count({ where }),
+	]);
+
+	const items: AdminPatientFileFolderItem[] = rows.map((row) => ({
+		profile_id: row.id,
+		user_id: row.user_id,
+		name: row.name,
+		email: row.email,
+		file_count: row.user._count.files,
+		last_file_at: row.user.files[0]?.created_at ?? null,
+	}));
+
+	const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+	return {
+		items,
+		meta: {
+			total,
+			page,
+			page_size: pageSize,
+			total_pages: totalPages,
+			has_next_page: page < totalPages,
+			has_previous_page: page > 1,
+		},
+	};
+};
+
+interface GetPatientFilesForAdminByUserIdArgs {
+	user_id: string;
+}
+
+export interface AdminPatientFolderFileItem {
+	id: string;
+	filename: string;
+	mime_type: string;
+	report_type: "text_report" | "image_report";
+	processing_status: "pending" | "processing" | "completed" | "failed";
+	created_at: Date;
+	public_url: string | null;
+}
+
+export const getPatientFilesForAdminByUserId = async (
+	args: GetPatientFilesForAdminByUserIdArgs,
+) => {
+	const patient = await prisma.patient_profile.findUnique({
+		where: {
+			user_id: args.user_id,
+		},
+		select: {
+			user_id: true,
+			name: true,
+			email: true,
+		},
+	});
+
+	if (!patient) return null;
+
+	const files = await prisma.file.findMany({
+		where: {
+			user_id: args.user_id,
+		},
+		orderBy: {
+			created_at: "desc",
+		},
+	});
+
+	return {
+		patient: {
+			user_id: patient.user_id,
+			name: patient.name,
+			email: patient.email,
+		},
+		files: files.map((file) => ({
+			id: file.id,
+			filename: file.filename,
+			mime_type: file.mime_type,
+			report_type: file.report_type,
+			processing_status: file.processing_status,
+			created_at: file.created_at,
+			public_url: resolvePublicUrlFromStorageKey(file.storage_key),
+		} satisfies AdminPatientFolderFileItem)),
+	};
+};
+
 const DEFAULT_LIST_LIMIT = 12;
 const MAX_LIST_LIMIT = 30;
 

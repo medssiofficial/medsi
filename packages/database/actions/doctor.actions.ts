@@ -1041,3 +1041,156 @@ export const deleteDoctor = async (args: DeleteDoctorArgs) => {
 		prisma.doctor.delete({ where: { id: doctor.id } }),
 	]);
 };
+
+interface GetDoctorFileFoldersForAdminArgs {
+	page: number;
+	page_size: number;
+	search?: string;
+}
+
+export interface AdminDoctorFileFolderItem {
+	doctor_id: string;
+	name: string;
+	email: string;
+	file_count: number;
+	last_file_at: Date | null;
+}
+
+export const getDoctorFileFoldersForAdmin = async (
+	args: GetDoctorFileFoldersForAdminArgs,
+) => {
+	const page = Math.max(1, args.page);
+	const pageSize = Math.max(1, Math.min(50, args.page_size));
+	const skip = (page - 1) * pageSize;
+	const searchTerm = args.search?.trim();
+	const where: Prisma.doctorWhereInput = {};
+
+	if (searchTerm) {
+		where.OR = [
+			{ id: { contains: searchTerm, mode: "insensitive" } },
+			{ clerk_id: { contains: searchTerm, mode: "insensitive" } },
+			{
+				profile: {
+					is: {
+						name: { contains: searchTerm, mode: "insensitive" },
+					},
+				},
+			},
+			{
+				profile: {
+					is: {
+						email: { contains: searchTerm, mode: "insensitive" },
+					},
+				},
+			},
+		];
+	}
+
+	const [rows, total] = await prisma.$transaction([
+		prisma.doctor.findMany({
+			where,
+			orderBy: { created_at: "desc" },
+			skip,
+			take: pageSize,
+			include: {
+				profile: {
+					select: {
+						name: true,
+						email: true,
+					},
+				},
+				files: {
+					select: {
+						created_at: true,
+					},
+					orderBy: {
+						created_at: "desc",
+					},
+					take: 1,
+				},
+				_count: {
+					select: {
+						files: true,
+					},
+				},
+			},
+		}),
+		prisma.doctor.count({ where }),
+	]);
+
+	const items: AdminDoctorFileFolderItem[] = rows.map((row) => ({
+		doctor_id: row.id,
+		name: row.profile?.name?.trim() || "Unnamed doctor",
+		email: row.profile?.email?.trim() || "No email",
+		file_count: row._count.files,
+		last_file_at: row.files[0]?.created_at ?? null,
+	}));
+
+	const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+	return {
+		items,
+		meta: {
+			total,
+			page,
+			page_size: pageSize,
+			total_pages: totalPages,
+			has_next_page: page < totalPages,
+			has_previous_page: page > 1,
+		},
+	};
+};
+
+interface GetDoctorFilesForAdminByDoctorIdArgs {
+	doctor_id: string;
+}
+
+export interface AdminDoctorFolderFileItem {
+	id: string;
+	filename: string;
+	mime_type: string;
+	proof_type: string;
+	public_url: string;
+	size_bytes: number | null;
+	created_at: Date;
+}
+
+export const getDoctorFilesForAdminByDoctorId = async (
+	args: GetDoctorFilesForAdminByDoctorIdArgs,
+) => {
+	const doctor = await prisma.doctor.findUnique({
+		where: { id: args.doctor_id },
+		include: {
+			profile: {
+				select: {
+					name: true,
+					email: true,
+				},
+			},
+			files: {
+				orderBy: {
+					created_at: "desc",
+				},
+			},
+		},
+	});
+
+	if (!doctor) return null;
+
+	return {
+		doctor: {
+			id: doctor.id,
+			name: doctor.profile?.name?.trim() || "Unnamed doctor",
+			email: doctor.profile?.email?.trim() || "No email",
+		},
+		files: doctor.files.map((file) => ({
+			id: file.id,
+			filename: file.filename,
+			mime_type: file.mime_type,
+			proof_type: file.proof_type,
+			public_url: file.public_url,
+			size_bytes: file.size_bytes ?? null,
+			created_at: file.created_at,
+		} satisfies AdminDoctorFolderFileItem)),
+	};
+};
