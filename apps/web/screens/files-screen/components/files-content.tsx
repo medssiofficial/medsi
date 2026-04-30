@@ -1,0 +1,127 @@
+"use client";
+
+import type { PatientFilesPage } from "@/services/api/patient/get-files";
+import { Badge } from "@repo/ui/components/ui/badge";
+import { Button } from "@repo/ui/components/ui/button";
+import { Input } from "@repo/ui/components/ui/input";
+import { Skeleton } from "@repo/ui/components/ui/skeleton";
+import { SearchIcon } from "lucide-react";
+
+type FileItem = PatientFilesPage["items"][number];
+
+interface FilesContentProps {
+	searchInput: string;
+	onSearchInputChange: (value: string) => void;
+	items: FileItem[];
+	isLoading: boolean;
+	isFetchingNextPage: boolean;
+	hasNextPage: boolean;
+	onLoadMore: () => void;
+	setSentinelRef: (node: HTMLDivElement | null) => void;
+}
+
+const formatDate = (value: Date | string) => {
+	const date = value instanceof Date ? value : new Date(value);
+	return new Intl.DateTimeFormat("en-US", {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
+	}).format(date);
+};
+
+const toProcessingTone = (status: string) => {
+	if (status === "completed") return "bg-emerald-100 text-emerald-800";
+	if (status === "failed") return "bg-rose-100 text-rose-800";
+	if (status === "processing") return "bg-amber-100 text-amber-800";
+	return "bg-slate-100 text-slate-700";
+};
+
+export const FilesContent = (props: FilesContentProps) => {
+	const {
+		searchInput,
+		onSearchInputChange,
+		items,
+		isLoading,
+		isFetchingNextPage,
+		hasNextPage,
+		onLoadMore,
+		setSentinelRef,
+	} = props;
+
+	return (
+		<div className="space-y-4">
+			<div className="relative">
+				<SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-font-secondary" />
+				<Input
+					value={searchInput}
+					onChange={(event) => onSearchInputChange(event.target.value)}
+					placeholder="Search files..."
+					className="h-10 pl-9"
+				/>
+			</div>
+
+			{isLoading ? (
+				<div className="space-y-3">
+					{Array.from({ length: 5 }).map((_, index) => (
+						<div key={index} className="rounded-2xl border bg-background p-4">
+							<Skeleton className="h-4 w-40" />
+							<Skeleton className="mt-3 h-3 w-full" />
+							<Skeleton className="mt-2 h-3 w-3/4" />
+						</div>
+					))}
+				</div>
+			) : items.length === 0 ? (
+				<div className="rounded-2xl border border-dashed bg-background p-8 text-center">
+					<p className="text-sm font-medium text-font-primary">No records found.</p>
+					<p className="mt-1 text-xs text-font-secondary">
+						No files match your current search.
+					</p>
+				</div>
+			) : (
+				<>
+					<div className="space-y-3">
+						{items.map((item) => (
+							<div key={item.id} className="space-y-3 rounded-2xl border bg-background p-4">
+								<div className="flex items-center justify-between gap-3">
+									<p className="truncate text-sm font-semibold text-font-primary">
+										{item.filename}
+									</p>
+									<Badge className={`rounded-full px-2.5 py-1 text-xs ${toProcessingTone(item.processing_status)}`}>
+										{item.processing_status}
+									</Badge>
+								</div>
+								<div className="flex items-center justify-between text-xs text-font-secondary">
+									<span>{item.report_type.replace("_", " ")}</span>
+									<span>{formatDate(item.created_at)}</span>
+								</div>
+								<p className="text-xs text-font-secondary">
+									Used in {item.used_in_cases_count} case(s)
+									{item.related_case_ids.length > 0
+										? ` • ${item.related_case_ids
+												.slice(0, 2)
+												.map((id) => `#${id.slice(0, 8).toUpperCase()}`)
+												.join(", ")}`
+										: ""}
+								</p>
+							</div>
+						))}
+					</div>
+
+					<div ref={setSentinelRef} className="h-3 w-full" />
+
+					<div className="flex flex-col items-center gap-2 py-2">
+						{isFetchingNextPage ? (
+							<p className="text-xs text-font-secondary">Loading more...</p>
+						) : hasNextPage ? (
+							<Button type="button" variant="outline" size="sm" onClick={onLoadMore}>
+								Load more
+							</Button>
+						) : (
+							<p className="text-xs text-font-secondary">No more to show.</p>
+						)}
+					</div>
+				</>
+			)}
+		</div>
+	);
+};

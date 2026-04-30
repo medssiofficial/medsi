@@ -386,3 +386,276 @@ export const getPatientRegistrySummaryForAdmin =
 			pending_reviews: pendingReviews,
 		};
 	};
+
+const DEFAULT_LIST_LIMIT = 12;
+const MAX_LIST_LIMIT = 30;
+
+const normalizeListLimit = (value?: number) => {
+	if (!value) return DEFAULT_LIST_LIMIT;
+	return Math.max(1, Math.min(MAX_LIST_LIMIT, value));
+};
+
+const getPatientUserByClerkId = async (clerk_id: string) => {
+	return prisma.user.findUnique({
+		where: { clerk_id },
+		select: { id: true },
+	});
+};
+
+export interface PatientCaseListItem {
+	id: string;
+	conversation_status: "in_progress" | "completed" | "cancelled";
+	summary: string | null;
+	created_at: Date;
+	updated_at: Date;
+	file_count: number;
+}
+
+export interface CursorPageResult<TItem> {
+	items: TItem[];
+	next_cursor: string | null;
+	has_more: boolean;
+}
+
+interface GetPatientCasesByClerkIdArgs {
+	clerk_id: string;
+	limit?: number;
+	cursor?: string;
+	search?: string;
+}
+
+export const getPatientCasesByClerkId = async (
+	args: GetPatientCasesByClerkIdArgs,
+): Promise<CursorPageResult<PatientCaseListItem>> => {
+	const patient = await getPatientUserByClerkId(args.clerk_id);
+	if (!patient) return { items: [], next_cursor: null, has_more: false };
+
+	const limit = normalizeListLimit(args.limit);
+	const searchTerm = args.search?.trim();
+	const where: Prisma.medical_caseWhereInput = {
+		user_id: patient.id,
+	};
+
+	if (searchTerm) {
+		where.OR = [
+			{ id: { contains: searchTerm, mode: "insensitive" } },
+			{ summary: { contains: searchTerm, mode: "insensitive" } },
+		];
+	}
+
+	const rows = await prisma.medical_case.findMany({
+		where,
+		orderBy: { id: "desc" },
+		take: limit + 1,
+		...(args.cursor
+			? {
+					skip: 1,
+					cursor: { id: args.cursor },
+				}
+			: {}),
+		include: {
+			_count: { select: { files: true } },
+		},
+	});
+
+	const hasMore = rows.length > limit;
+	const slicedRows = hasMore ? rows.slice(0, limit) : rows;
+
+	return {
+		items: slicedRows.map((row) => ({
+			id: row.id,
+			conversation_status: row.conversation_status,
+			summary: row.summary,
+			created_at: row.created_at,
+			updated_at: row.updated_at,
+			file_count: row._count.files,
+		})),
+		next_cursor: hasMore ? slicedRows[slicedRows.length - 1]?.id ?? null : null,
+		has_more: hasMore,
+	};
+};
+
+export interface PatientFileListItem {
+	id: string;
+	filename: string;
+	report_type: "text_report" | "image_report";
+	processing_status: "pending" | "processing" | "completed" | "failed";
+	created_at: Date;
+	related_case_ids: string[];
+	used_in_cases_count: number;
+}
+
+interface GetPatientFilesByClerkIdArgs {
+	clerk_id: string;
+	limit?: number;
+	cursor?: string;
+	search?: string;
+}
+
+export const getPatientFilesByClerkId = async (
+	args: GetPatientFilesByClerkIdArgs,
+): Promise<CursorPageResult<PatientFileListItem>> => {
+	const patient = await getPatientUserByClerkId(args.clerk_id);
+	if (!patient) return { items: [], next_cursor: null, has_more: false };
+
+	const limit = normalizeListLimit(args.limit);
+	const searchTerm = args.search?.trim();
+	const where: Prisma.fileWhereInput = {
+		user_id: patient.id,
+	};
+
+	if (searchTerm) {
+		const reportTypeCandidate =
+			searchTerm.toLowerCase() === "text_report" ||
+			searchTerm.toLowerCase() === "image_report"
+				? (searchTerm.toLowerCase() as "text_report" | "image_report")
+				: null;
+
+		where.OR = [
+			{ filename: { contains: searchTerm, mode: "insensitive" } },
+			...(reportTypeCandidate ? [{ report_type: reportTypeCandidate }] : []),
+			{
+				case_references: {
+					some: {
+						medical_case_id: { contains: searchTerm, mode: "insensitive" },
+					},
+				},
+			},
+		];
+	}
+
+	const rows = await prisma.file.findMany({
+		where,
+		orderBy: { id: "desc" },
+		take: limit + 1,
+		...(args.cursor
+			? {
+					skip: 1,
+					cursor: { id: args.cursor },
+				}
+			: {}),
+		include: {
+			case_references: {
+				select: {
+					medical_case_id: true,
+				},
+			},
+		},
+	});
+
+	const hasMore = rows.length > limit;
+	const slicedRows = hasMore ? rows.slice(0, limit) : rows;
+
+	return {
+		items: slicedRows.map((row) => ({
+			id: row.id,
+			filename: row.filename,
+			report_type: row.report_type,
+			processing_status: row.processing_status,
+			created_at: row.created_at,
+			related_case_ids: row.case_references.map((r) => r.medical_case_id),
+			used_in_cases_count: row.case_references.length,
+		})),
+		next_cursor: hasMore ? slicedRows[slicedRows.length - 1]?.id ?? null : null,
+		has_more: hasMore,
+	};
+};
+
+export interface PatientChatListItem {
+	id: string;
+	status: "in_progress" | "completed" | "cancelled";
+	preview: string;
+	updated_at: Date;
+}
+
+interface GetPatientChatsByClerkIdArgs {
+	clerk_id: string;
+	limit?: number;
+	cursor?: string;
+	search?: string;
+}
+
+export const getPatientChatsByClerkId = async (
+	args: GetPatientChatsByClerkIdArgs,
+): Promise<CursorPageResult<PatientChatListItem>> => {
+	const cases = await getPatientCasesByClerkId({
+		clerk_id: args.clerk_id,
+		limit: args.limit,
+		cursor: args.cursor,
+		search: args.search,
+	});
+
+	return {
+		items: cases.items.map((item) => ({
+			id: item.id,
+			status: item.conversation_status,
+			preview: item.summary?.trim() || "Conversation in progress...",
+			updated_at: item.updated_at,
+		})),
+		next_cursor: cases.next_cursor,
+		has_more: cases.has_more,
+	};
+};
+
+export interface PatientDashboardOverview {
+	active_cases: number;
+	completed_cases: number;
+	has_ongoing_case: boolean;
+	recent_cases: PatientCaseListItem[];
+}
+
+interface GetPatientDashboardOverviewByClerkIdArgs {
+	clerk_id: string;
+}
+
+export const getPatientDashboardOverviewByClerkId = async (
+	args: GetPatientDashboardOverviewByClerkIdArgs,
+): Promise<PatientDashboardOverview> => {
+	const patient = await getPatientUserByClerkId(args.clerk_id);
+
+	if (!patient) {
+		return {
+			active_cases: 0,
+			completed_cases: 0,
+			has_ongoing_case: false,
+			recent_cases: [],
+		};
+	}
+
+	const [activeCases, completedCases, recentCases] = await prisma.$transaction([
+		prisma.medical_case.count({
+			where: {
+				user_id: patient.id,
+				conversation_status: "in_progress",
+			},
+		}),
+		prisma.medical_case.count({
+			where: {
+				user_id: patient.id,
+				conversation_status: "completed",
+			},
+		}),
+		prisma.medical_case.findMany({
+			where: { user_id: patient.id },
+			orderBy: { id: "desc" },
+			take: 5,
+			include: {
+				_count: { select: { files: true } },
+			},
+		}),
+	]);
+
+	return {
+		active_cases: activeCases,
+		completed_cases: completedCases,
+		has_ongoing_case: activeCases > 0,
+		recent_cases: recentCases.map((row) => ({
+			id: row.id,
+			conversation_status: row.conversation_status,
+			summary: row.summary,
+			created_at: row.created_at,
+			updated_at: row.updated_at,
+			file_count: row._count.files,
+		})),
+	};
+};

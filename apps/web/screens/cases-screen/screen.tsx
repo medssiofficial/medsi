@@ -1,14 +1,35 @@
 "use client";
 
-import { ComingSoon, PatientAppShell } from "@/components/common";
+import { PatientAppShell } from "@/components/common";
+import { CasesContent } from "./components";
 import { useCasesScreen } from "./hook";
 
 const CasesScreen = () => {
-	const screen = useCasesScreen();
+	const {
+		searchInput,
+		setSearchInput,
+		items,
+		setSentinelRef,
+		hasNextPage,
+		isLoading,
+		isFetchingNextPage,
+		handleLoadMore,
+		handleStartConsultation,
+	} = useCasesScreen();
 
 	return (
 		<PatientAppShell title="Cases">
-			<ComingSoon title={screen.title} description={screen.description} />
+			<CasesContent
+				searchInput={searchInput}
+				onSearchInputChange={setSearchInput}
+				items={items}
+				isLoading={isLoading}
+				isFetchingNextPage={isFetchingNextPage}
+				hasNextPage={hasNextPage}
+				onLoadMore={handleLoadMore}
+				onStartConsultation={handleStartConsultation}
+				setSentinelRef={setSentinelRef}
+			/>
 		</PatientAppShell>
 	);
 };

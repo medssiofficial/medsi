@@ -51,5 +51,25 @@ export const API_ROUTES = {
 			path: "/api/patient/settings",
 			method: "PUT",
 		},
+		DASHBOARD: {
+			key: "patient.dashboard",
+			path: "/api/patient/dashboard",
+			method: "GET",
+		},
+		CASES: {
+			key: "patient.cases",
+			path: "/api/patient/cases",
+			method: "GET",
+		},
+		FILES: {
+			key: "patient.files",
+			path: "/api/patient/files",
+			method: "GET",
+		},
+		CHATS: {
+			key: "patient.chats",
+			path: "/api/patient/chats",
+			method: "GET",
+		},
 	},
 } as const;
