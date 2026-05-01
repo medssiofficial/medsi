@@ -16,17 +16,33 @@ export type PatientFolderDetail = {
 		report_type: "text_report" | "image_report";
 		processing_status: "pending" | "processing" | "completed" | "failed";
 		created_at: string | Date;
+		size_bytes: number | null;
 		public_url: string | null;
 	}>;
+	meta: {
+		total: number;
+		page: number;
+		page_size: number;
+		total_pages: number;
+		has_next_page: boolean;
+		has_previous_page: boolean;
+	};
 };
 
 type ApiSuccess = JsonApiResponse<PatientFolderDetail>;
 
 export const getPatientFolderDetail = async (
 	patientId: string,
+	args?: { page?: number; page_size?: number; search?: string },
 ): Promise<PatientFolderDetail> => {
+	const query = new URLSearchParams({
+		page: String(args?.page ?? 1),
+		page_size: String(args?.page_size ?? 12),
+	});
+	if (args?.search?.trim()) query.set("search", args.search.trim());
+
 	const response = await fetch(
-		`${API_ROUTES.ADMIN.FILES.PATIENTS.DETAIL.path}/${patientId}`,
+		`${API_ROUTES.ADMIN.FILES.PATIENTS.DETAIL.path}/${patientId}?${query.toString()}`,
 		{
 			method: API_ROUTES.ADMIN.FILES.PATIENTS.DETAIL.method,
 			headers: { "Content-Type": "application/json" },
@@ -52,10 +68,19 @@ export const getPatientFolderDetail = async (
 	throw new Error("Invalid response.");
 };
 
-export const usePatientFolderDetailQuery = (patientId: string) =>
+export const usePatientFolderDetailQuery = (
+	patientId: string,
+	args?: { page?: number; page_size?: number; search?: string },
+) =>
 	useQuery({
-		queryKey: [API_ROUTES.ADMIN.FILES.PATIENTS.DETAIL.key, patientId],
-		queryFn: () => getPatientFolderDetail(patientId),
+		queryKey: [
+			API_ROUTES.ADMIN.FILES.PATIENTS.DETAIL.key,
+			patientId,
+			args?.page ?? 1,
+			args?.page_size ?? 12,
+			args?.search ?? "",
+		],
+		queryFn: () => getPatientFolderDetail(patientId, args),
 		enabled: Boolean(patientId),
 		retry: false,
 		refetchOnWindowFocus: false,

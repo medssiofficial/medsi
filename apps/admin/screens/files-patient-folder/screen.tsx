@@ -8,7 +8,16 @@ import { useFilesPatientFolderScreen } from "./hook";
 const FilesPatientFolderScreen = () => {
 	const params = useParams<{ patientId: string }>();
 	const patientId = String(params?.patientId ?? "");
-	const { detail, isLoading, handleSyncProcessing } =
+	const {
+		detail,
+		isLoading,
+		searchInput,
+		setSearchInput,
+		page,
+		setPage,
+		meta,
+		handleSyncProcessing,
+	} =
 		useFilesPatientFolderScreen(patientId);
 
 	return (
@@ -16,6 +25,13 @@ const FilesPatientFolderScreen = () => {
 			<PatientFolderContent
 				detail={detail}
 				isLoading={isLoading}
+				searchInput={searchInput}
+				onSearchInputChange={setSearchInput}
+				page={page}
+				totalPages={meta.total_pages}
+				hasNextPage={meta.has_next_page}
+				hasPreviousPage={meta.has_previous_page}
+				onPageChange={setPage}
 				onSyncProcessing={handleSyncProcessing}
 			/>
 		</AdminShell>

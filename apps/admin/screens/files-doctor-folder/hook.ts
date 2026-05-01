@@ -2,12 +2,30 @@
 
 import { useAPIErrorHandler } from "@/hooks/use-api-error-handler";
 import { useDoctorFolderDetailQuery } from "@/services/api/admin/files/get-doctor-folder-detail";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
+const PAGE_SIZE = 12;
 
 export const useFilesDoctorFolderScreen = (doctorId: string) => {
 	const { APIErrorHandler } = useAPIErrorHandler();
-	const detailQuery = useDoctorFolderDetailQuery(doctorId);
+	const [searchInput, setSearchInput] = useState("");
+	const [search, setSearch] = useState("");
+	const [page, setPage] = useState(1);
+
+	useEffect(() => {
+		const timeoutId = window.setTimeout(() => {
+			setSearch(searchInput.trim());
+			setPage(1);
+		}, 350);
+		return () => window.clearTimeout(timeoutId);
+	}, [searchInput]);
+
+	const detailQuery = useDoctorFolderDetailQuery(doctorId, {
+		page,
+		page_size: PAGE_SIZE,
+		search,
+	});
 
 	useEffect(() => {
 		if (!detailQuery.isError) return;
@@ -17,6 +35,18 @@ export const useFilesDoctorFolderScreen = (doctorId: string) => {
 	return {
 		detail: detailQuery.data ?? null,
 		isLoading: detailQuery.isLoading,
+		searchInput,
+		setSearchInput,
+		page,
+		setPage,
+		meta: detailQuery.data?.meta ?? {
+			total: 0,
+			page: 1,
+			page_size: PAGE_SIZE,
+			total_pages: 1,
+			has_next_page: false,
+			has_previous_page: false,
+		},
 		handleSyncProcessing: () => {
 			toast.success("Sync processing will be available soon.");
 		},

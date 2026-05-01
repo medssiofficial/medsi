@@ -1143,6 +1143,9 @@ export const getDoctorFileFoldersForAdmin = async (
 
 interface GetDoctorFilesForAdminByDoctorIdArgs {
 	doctor_id: string;
+	page: number;
+	page_size: number;
+	search?: string;
 }
 
 export interface AdminDoctorFolderFileItem {
@@ -1158,18 +1161,19 @@ export interface AdminDoctorFolderFileItem {
 export const getDoctorFilesForAdminByDoctorId = async (
 	args: GetDoctorFilesForAdminByDoctorIdArgs,
 ) => {
+	const page = Math.max(1, args.page);
+	const pageSize = Math.max(1, Math.min(50, args.page_size));
+	const skip = (page - 1) * pageSize;
+	const searchTerm = args.search?.trim();
+
 	const doctor = await prisma.doctor.findUnique({
 		where: { id: args.doctor_id },
-		include: {
+		select: {
+			id: true,
 			profile: {
 				select: {
 					name: true,
 					email: true,
-				},
-			},
-			files: {
-				orderBy: {
-					created_at: "desc",
 				},
 			},
 		},
@@ -1177,13 +1181,39 @@ export const getDoctorFilesForAdminByDoctorId = async (
 
 	if (!doctor) return null;
 
+	const where: Prisma.doctor_fileWhereInput = {
+		doctor_id: args.doctor_id,
+	};
+
+	if (searchTerm) {
+		where.OR = [
+			{ filename: { contains: searchTerm, mode: "insensitive" } },
+			{ mime_type: { contains: searchTerm, mode: "insensitive" } },
+			{ id: { contains: searchTerm, mode: "insensitive" } },
+		];
+	}
+
+	const [files, total] = await prisma.$transaction([
+		prisma.doctor_file.findMany({
+			where,
+			orderBy: {
+				created_at: "desc",
+			},
+			skip,
+			take: pageSize,
+		}),
+		prisma.doctor_file.count({ where }),
+	]);
+
+	const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
 	return {
 		doctor: {
 			id: doctor.id,
 			name: doctor.profile?.name?.trim() || "Unnamed doctor",
 			email: doctor.profile?.email?.trim() || "No email",
 		},
-		files: doctor.files.map((file) => ({
+		files: files.map((file) => ({
 			id: file.id,
 			filename: file.filename,
 			mime_type: file.mime_type,
@@ -1192,5 +1222,13 @@ export const getDoctorFilesForAdminByDoctorId = async (
 			size_bytes: file.size_bytes ?? null,
 			created_at: file.created_at,
 		} satisfies AdminDoctorFolderFileItem)),
+		meta: {
+			total,
+			page,
+			page_size: pageSize,
+			total_pages: totalPages,
+			has_next_page: page < totalPages,
+			has_previous_page: page > 1,
+		},
 	};
 };

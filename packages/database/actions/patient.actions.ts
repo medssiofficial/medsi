@@ -478,6 +478,9 @@ export const getPatientFileFoldersForAdmin = async (
 
 interface GetPatientFilesForAdminByUserIdArgs {
 	user_id: string;
+	page: number;
+	page_size: number;
+	search?: string;
 }
 
 export interface AdminPatientFolderFileItem {
@@ -487,12 +490,18 @@ export interface AdminPatientFolderFileItem {
 	report_type: "text_report" | "image_report";
 	processing_status: "pending" | "processing" | "completed" | "failed";
 	created_at: Date;
+	size_bytes: number | null;
 	public_url: string | null;
 }
 
 export const getPatientFilesForAdminByUserId = async (
 	args: GetPatientFilesForAdminByUserIdArgs,
 ) => {
+	const page = Math.max(1, args.page);
+	const pageSize = Math.max(1, Math.min(50, args.page_size));
+	const skip = (page - 1) * pageSize;
+	const searchTerm = args.search?.trim();
+
 	const patient = await prisma.patient_profile.findUnique({
 		where: {
 			user_id: args.user_id,
@@ -506,14 +515,31 @@ export const getPatientFilesForAdminByUserId = async (
 
 	if (!patient) return null;
 
-	const files = await prisma.file.findMany({
-		where: {
-			user_id: args.user_id,
-		},
-		orderBy: {
-			created_at: "desc",
-		},
-	});
+	const where: Prisma.fileWhereInput = {
+		user_id: args.user_id,
+	};
+
+	if (searchTerm) {
+		where.OR = [
+			{ filename: { contains: searchTerm, mode: "insensitive" } },
+			{ mime_type: { contains: searchTerm, mode: "insensitive" } },
+			{ id: { contains: searchTerm, mode: "insensitive" } },
+		];
+	}
+
+	const [files, total] = await prisma.$transaction([
+		prisma.file.findMany({
+			where,
+			orderBy: {
+				created_at: "desc",
+			},
+			skip,
+			take: pageSize,
+		}),
+		prisma.file.count({ where }),
+	]);
+
+	const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
 	return {
 		patient: {
@@ -528,8 +554,22 @@ export const getPatientFilesForAdminByUserId = async (
 			report_type: file.report_type,
 			processing_status: file.processing_status,
 			created_at: file.created_at,
-			public_url: resolvePublicUrlFromStorageKey(file.storage_key),
+			size_bytes:
+				typeof (file.metadata as { size?: unknown } | null)?.size === "number"
+					? ((file.metadata as { size: number }).size ?? null)
+					: null,
+			public_url:
+				resolvePublicUrlFromStorageKey(file.storage_key) ??
+				resolvePublicUrlFromMetadata(file.metadata),
 		} satisfies AdminPatientFolderFileItem)),
+		meta: {
+			total,
+			page,
+			page_size: pageSize,
+			total_pages: totalPages,
+			has_next_page: page < totalPages,
+			has_previous_page: page > 1,
+		},
 	};
 };
 
@@ -650,6 +690,14 @@ const resolvePublicUrlFromStorageKey = (storageKey: string) => {
 	return supabase.storage.from(bucket).getPublicUrl(storageKey).data.publicUrl;
 };
 
+const resolvePublicUrlFromMetadata = (metadata: unknown) => {
+	if (!metadata || typeof metadata !== "object") return null;
+	const maybeUrl = (metadata as { public_url?: unknown }).public_url;
+	return typeof maybeUrl === "string" && maybeUrl.trim().length > 0
+		? maybeUrl
+		: null;
+};
+
 interface GetPatientFilesByClerkIdArgs {
 	clerk_id: string;
 	limit?: number;
@@ -719,7 +767,9 @@ export const getPatientFilesByClerkId = async (
 			report_type: row.report_type,
 			processing_status: row.processing_status,
 			created_at: row.created_at,
-			public_url: resolvePublicUrlFromStorageKey(row.storage_key),
+			public_url:
+				resolvePublicUrlFromStorageKey(row.storage_key) ??
+				resolvePublicUrlFromMetadata(row.metadata),
 			related_case_ids: row.case_references.map((r) => r.medical_case_id),
 			used_in_cases_count: row.case_references.length,
 		})),

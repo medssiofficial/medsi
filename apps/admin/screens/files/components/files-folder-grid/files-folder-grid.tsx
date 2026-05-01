@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@repo/ui/components/ui/button";
+import { Badge } from "@repo/ui/components/ui/badge";
 import {
 	ContextMenu,
 	ContextMenuContent,
@@ -9,7 +10,7 @@ import {
 } from "@repo/ui/components/ui/context-menu";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@repo/ui/components/ui/empty";
 import { Skeleton } from "@repo/ui/components/ui/skeleton";
-import { FolderIcon } from "lucide-react";
+import { FolderIcon, SparklesIcon } from "lucide-react";
 import Link from "next/link";
 import { useFilesFolderGrid } from "./hook";
 
@@ -79,25 +80,28 @@ export const FilesFolderGrid = (props: FilesFolderGridProps) => {
 						<ContextMenuTrigger>
 							<Link
 								href={item.href}
-								className="block rounded-xl border bg-background p-4 transition hover:border-primary/40 hover:bg-accent/30"
+								className="group block rounded-2xl border bg-linear-to-b from-background to-muted/20 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
 							>
 								<div className="flex items-start justify-between gap-2">
 									<div className="flex items-start gap-2">
-										<FolderIcon className="mt-0.5 size-4 text-primary" />
+										<div className="mt-0.5 rounded-lg bg-primary/10 p-2 text-primary">
+											<FolderIcon className="size-4" />
+										</div>
 										<div className="min-w-0">
-											<p className="truncate text-sm font-semibold text-foreground">
+											<p className="truncate text-sm font-semibold text-foreground group-hover:text-primary">
 												{item.name}
 											</p>
 											<p className="truncate text-xs text-muted-foreground">{item.email}</p>
 										</div>
 									</div>
-									<span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
+									<Badge className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-700">
 										{item.file_count} files
-									</span>
+									</Badge>
 								</div>
-								<p className="mt-3 text-xs text-muted-foreground">
-									Last updated: {formatDate(item.last_file_at)}
-								</p>
+								<div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+									<p>Last updated: {formatDate(item.last_file_at)}</p>
+									<SparklesIcon className="size-3.5 text-primary/70" />
+								</div>
 							</Link>
 						</ContextMenuTrigger>
 						<ContextMenuContent className="w-48">
