@@ -1,14 +1,41 @@
 "use client";
 
-import { ComingSoon, PatientAppShell } from "@/components/common";
+import { PatientAppShell } from "@/components/common";
+import { FilesContent, FilesUpload } from "./components";
 import { useFilesScreen } from "./hook";
 
 const FilesScreen = () => {
-	const screen = useFilesScreen();
+	const {
+		searchInput,
+		setSearchInput,
+		items,
+		setSentinelRef,
+		hasNextPage,
+		isLoading,
+		isFetchingNextPage,
+		handleLoadMore,
+		handleUploadFile,
+		isUploading,
+	} = useFilesScreen();
 
 	return (
 		<PatientAppShell title="Files">
-			<ComingSoon title={screen.title} description={screen.description} />
+			<div className="space-y-4">
+				<FilesUpload
+					isUploading={isUploading}
+					onUploadFile={(file) => void handleUploadFile(file)}
+				/>
+				<FilesContent
+					searchInput={searchInput}
+					onSearchInputChange={setSearchInput}
+					items={items}
+					isLoading={isLoading}
+					isFetchingNextPage={isFetchingNextPage}
+					hasNextPage={hasNextPage}
+					onLoadMore={handleLoadMore}
+					setSentinelRef={setSentinelRef}
+				/>
+			</div>
 		</PatientAppShell>
 	);
 };

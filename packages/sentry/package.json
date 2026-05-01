@@ -1,0 +1,20 @@
+{
+	"name": "@repo/sentry",
+	"version": "0.0.0",
+	"type": "module",
+	"exports": {
+		".": "./index.ts",
+		"./client": "./client.ts",
+		"./server": "./server.ts",
+		"./edge": "./edge.ts",
+		"./next-config": "./next-config.ts"
+	},
+	"dependencies": {
+		"@sentry/nextjs": "^9"
+	},
+	"devDependencies": {
+		"@repo/typescript-config": "*",
+		"next": "16.2.3",
+		"typescript": "5.9.2"
+	}
+}

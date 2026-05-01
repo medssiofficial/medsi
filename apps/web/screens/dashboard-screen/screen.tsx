@@ -1,14 +1,21 @@
 "use client";
 
-import { ComingSoon, PatientAppShell } from "@/components/common";
+import { PatientAppShell } from "@/components/common";
+import { DashboardContent } from "./components";
 import { useDashboardScreen } from "./hook";
 
 const DashboardScreen = () => {
-	const screen = useDashboardScreen();
+	const { overview, isLoading, isRefreshing, handleStartConsultation } =
+		useDashboardScreen();
 
 	return (
 		<PatientAppShell title="Dashboard">
-			<ComingSoon title={screen.title} description={screen.description} />
+			<DashboardContent
+				overview={overview}
+				isLoading={isLoading}
+				isRefreshing={isRefreshing}
+				onStartConsultation={handleStartConsultation}
+			/>
 		</PatientAppShell>
 	);
 };

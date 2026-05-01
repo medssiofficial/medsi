@@ -1,7 +1,7 @@
-import { ComingSoonScreen } from "@/screens/coming-soon";
+import { FilesScreen } from "@/screens/files";
 
 const FilesPage = () => {
-	return <ComingSoonScreen />;
+	return <FilesScreen />;
 };
 
 export default FilesPage;

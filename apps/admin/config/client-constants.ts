@@ -56,6 +56,39 @@ export const API_ROUTES = {
 				method: "GET",
 			},
 		},
+		PATIENTS: {
+			LIST: {
+				key: "admin.patients.list",
+				path: "/api/admin/patients",
+				method: "GET",
+			},
+		},
+		FILES: {
+			DOCTORS: {
+				LIST: {
+					key: "admin.files.doctors.list",
+					path: "/api/admin/files/doctors",
+					method: "GET",
+				},
+				DETAIL: {
+					key: "admin.files.doctors.detail",
+					path: "/api/admin/files/doctors",
+					method: "GET",
+				},
+			},
+			PATIENTS: {
+				LIST: {
+					key: "admin.files.patients.list",
+					path: "/api/admin/files/patients",
+					method: "GET",
+				},
+				DETAIL: {
+					key: "admin.files.patients.detail",
+					path: "/api/admin/files/patients",
+					method: "GET",
+				},
+			},
+		},
 	},
 } as const;
 

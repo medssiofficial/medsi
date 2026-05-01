@@ -4,9 +4,11 @@ import z from "zod";
 export const CLIENT_ENV = createEnv({
 	client: {
 		NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
+		NEXT_PUBLIC_SENTRY_DSN: z.string().optional(),
 	},
 	runtimeEnv: {
 		NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
 			process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+		NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
 	},
 });

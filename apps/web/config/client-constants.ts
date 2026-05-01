@@ -8,6 +8,8 @@ export const SETTINGS_URL = "/settings";
 export const CASES_URL = "/cases";
 export const FILES_URL = "/files";
 export const CHAT_URL = "/chat";
+/** Patient AI consultation chat (edge-to-edge; not a tab route). */
+export const NEW_CONSULTATION_URL = "/consultation/chat";
 
 export const APP_TAB_ROUTES = [
 	DASHBOARD_URL,
@@ -50,6 +52,31 @@ export const API_ROUTES = {
 			key: "patient.settings.update",
 			path: "/api/patient/settings",
 			method: "PUT",
+		},
+		DASHBOARD: {
+			key: "patient.dashboard",
+			path: "/api/patient/dashboard",
+			method: "GET",
+		},
+		CASES: {
+			key: "patient.cases",
+			path: "/api/patient/cases",
+			method: "GET",
+		},
+		FILES: {
+			key: "patient.files",
+			path: "/api/patient/files",
+			method: "GET",
+		},
+		FILES_UPLOAD: {
+			key: "patient.files.upload",
+			path: "/api/patient/files",
+			method: "POST",
+		},
+		CHATS: {
+			key: "patient.chats",
+			path: "/api/patient/chats",
+			method: "GET",
 		},
 	},
 } as const;

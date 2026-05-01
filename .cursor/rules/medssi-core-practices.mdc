@@ -1,0 +1,21 @@
+---
+description: Medssi core coding and architecture practices
+alwaysApply: true
+---
+
+# Medssi Core Practices
+
+- Follow end-to-end layering: `schema/db -> db actions -> api routes -> services/api hooks -> screen/component hooks -> jsx`.
+- Keep API handlers thin; keep business logic in typed action layer.
+- Screen structure is mandatory: `screen.tsx`, `hook.ts`, and `components/<name>/{<name>.tsx,hook.ts,index.ts}` with root `components/index.ts`.
+- Use `@repo/ui` and `@repo/tailwind-config` primitives; implement loading/empty/error/success/disabled states.
+- Use React Query for fetch/mutation/invalidation; keep debounced search and orchestration logic in hooks.
+- Use Zod/API boundary validation and consistent response formats/status codes.
+- Keep Prisma queries type-safe; avoid raw SQL unless absolutely necessary.
+- Respect auth guards and secure route boundaries.
+- For list pages, implement server-side pagination/search and graceful "No records found" + "No more to show".
+- Use shared packages for cross-cutting concerns (`@repo/sentry`, `@repo/supabase`, `@repo/utils`, etc.).
+- Add env keys only in existing env files (`.env`, `.env.example`) and keep per-app scope clear.
+- Do not revert unrelated user edits; keep modifications scoped to requested feature.
+- Run relevant typecheck/lint checks after substantive edits.
+
