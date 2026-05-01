@@ -8,7 +8,8 @@ export const SETTINGS_URL = "/settings";
 export const CASES_URL = "/cases";
 export const FILES_URL = "/files";
 export const CHAT_URL = "/chat";
-export const NEW_CONSULTATION_URL = "/consultation/new";
+/** Patient AI consultation chat (edge-to-edge; not a tab route). */
+export const NEW_CONSULTATION_URL = "/consultation/chat";
 
 export const APP_TAB_ROUTES = [
 	DASHBOARD_URL,
