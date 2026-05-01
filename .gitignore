@@ -37,3 +37,5 @@ yarn-error.log*
 dist/
 
 packages/**/generated/
+
+.env.prod

@@ -2,7 +2,7 @@
   "name": "Medssi",
   "private": true,
   "scripts": {
-    "build": "turbo run build",
+    "build": "bun db:push && bun db:generate && turbo run build",
     "dev": "turbo run dev",
     "dev:admin": "NEXT_PUBLIC_SENTRY_ENABLED=true turbo run dev --filter=admin",
     "dev:doctor": "NEXT_PUBLIC_SENTRY_ENABLED=true turbo run dev --filter=doctor",
