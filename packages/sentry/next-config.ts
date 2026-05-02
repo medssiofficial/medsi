@@ -1,5 +1,6 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
+import { isSentryBuildTimeEnabled } from "./runtime-enabled";
 
 interface SentryNextConfigOptions {
 	org?: string;
@@ -12,9 +13,9 @@ interface SentryNextConfigOptions {
  * Wraps a Next.js config with Sentry build-time tooling:
  * source map upload, tunnel route, and tree-shaking of unused Sentry code.
  *
- * Sentry is only activated when NEXT_PUBLIC_SENTRY_ENABLED=true is set.
- * Omitting it (e.g. in the global `bun dev` shortcut) keeps Turbopack enabled
- * and skips the Sentry webpack plugin entirely, making cold-starts much faster.
+ * Sentry build plugins run only when deployment rules pass (production +
+ * optional Vercel production tier). Set NEXT_PUBLIC_SENTRY_ENABLED=false to
+ * disable everywhere. Dev (`next dev`) skips the plugin automatically.
  *
  * SENTRY_ORG, SENTRY_PROJECT and SENTRY_AUTH_TOKEN are read from the process
  * environment at build time (CI / local .env). They do NOT need to be in
@@ -24,7 +25,7 @@ export const withSentryNextConfig = (
 	nextConfig: NextConfig,
 	options: SentryNextConfigOptions = {},
 ): NextConfig => {
-	if (process.env.NEXT_PUBLIC_SENTRY_ENABLED !== "true") {
+	if (!isSentryBuildTimeEnabled()) {
 		return nextConfig;
 	}
 

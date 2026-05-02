@@ -1,11 +1,12 @@
 import * as Sentry from "@sentry/nextjs";
+import { isSentryRuntimeInitEnabled } from "./runtime-enabled";
 
 /**
  * Initialises Sentry for the Node.js server runtime.
  * Call this at the top of `sentry.server.config.ts` in each Next.js app.
  */
 export const initSentryServer = (dsn: string): void => {
-	if (!dsn || process.env.NEXT_PUBLIC_SENTRY_ENABLED !== "true") return;
+	if (!isSentryRuntimeInitEnabled(dsn)) return;
 
 	Sentry.init({
 		dsn,
