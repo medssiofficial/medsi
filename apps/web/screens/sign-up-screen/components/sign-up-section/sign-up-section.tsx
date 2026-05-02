@@ -83,7 +83,7 @@ export const SignUpSection = (props: { title: string }) => {
 												<Input
 													type="email"
 													placeholder="you@example.com"
-													className="h-13 bg-white"
+													className="h-13 bg-card"
 													{...field}
 												/>
 											</FormControl>
@@ -110,7 +110,7 @@ export const SignUpSection = (props: { title: string }) => {
 																<InputOTPSlot
 																	key={idx}
 																	index={idx}
-																	className="h-14 w-12 rounded-lg border border-border bg-white text-base first:rounded-lg first:border last:rounded-lg"
+																	className="h-14 w-12 rounded-lg border border-border bg-card text-base first:rounded-lg first:border last:rounded-lg"
 																/>
 															))}
 														</InputOTPGroup>

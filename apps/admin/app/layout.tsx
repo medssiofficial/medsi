@@ -30,6 +30,7 @@ export default function RootLayout({
 	return (
 		<html
 			lang="en"
+			suppressHydrationWarning
 			className={`${spaceGrotesk.variable} ${manrope.variable} h-full antialiased`}
 		>
 			<body>

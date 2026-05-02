@@ -28,6 +28,10 @@
 	--color-border: var(--border);
 	--color-input: var(--input);
 	--color-ring: var(--ring);
+	--color-border-subtle: var(--border-subtle);
+	--color-font-primary: var(--font-primary);
+	--color-font-secondary: var(--font-secondary);
+	--color-font-tertiary: var(--font-tertiary);
 
 	/* ── Chart colors ── */
 	--color-chart-1: var(--chart-1);
@@ -106,6 +110,7 @@
    Teal-green primary · Cool-tinted greys
    ═══════════════════════════════════════════ */
 :root {
+	color-scheme: light;
 	/* ── Core surfaces ── */
 	--background: #ffffff;
 	--foreground: #0B1119;
@@ -136,8 +141,12 @@
 
 	/* ── Borders & inputs ── */
 	--border: #E2E6EC;
+	--border-subtle: #E2E6EC;
 	--input: #C6CDD7;
 	--ring: #0F6E6E;
+	--font-primary: #0B1119;
+	--font-secondary: #5C6675;
+	--font-tertiary: #8B95A4;
 
 	/* ── Chart palette ── */
 	--chart-1: #0F6E6E;
@@ -209,12 +218,13 @@
    DARK MODE
    ═══════════════════════════════════════════ */
 .dark {
+	color-scheme: dark;
 	/* ── Core surfaces ── */
-	--background: #0B1119;
-	--foreground: #F0F2F5;
-	--card: #1A1F2C;
+	--background: #0E141D;
+	--foreground: #F3F7FA;
+	--card: #141C26;
 	--card-foreground: #F0F2F5;
-	--popover: #1A1F2C;
+	--popover: #141C26;
 	--popover-foreground: #F0F2F5;
 
 	/* ── Primary ── */
@@ -222,83 +232,87 @@
 	--primary-foreground: #ffffff;
 
 	/* ── Secondary ── */
-	--secondary: #1A1F2C;
+	--secondary: #1B2531;
 	--secondary-foreground: #F0F2F5;
 
 	/* ── Muted ── */
-	--muted: #1A1F2C;
-	--muted-foreground: #8B95A4;
+	--muted: #1B2531;
+	--muted-foreground: #AAB5C4;
 
 	/* ── Accent ── */
-	--accent: #0E2A45;
-	--accent-foreground: #2E9695;
+	--accent: #1C2B3A;
+	--accent-foreground: #8AD5D4;
 
 	/* ── Destructive ── */
 	--destructive: #DC2626;
 	--destructive-foreground: #ffffff;
 
 	/* ── Borders & inputs ── */
-	--border: rgba(255, 255, 255, 0.1);
-	--input: rgba(255, 255, 255, 0.15);
-	--ring: #2E9695;
+	--border: rgba(216, 231, 245, 0.16);
+	--border-subtle: rgba(216, 231, 245, 0.14);
+	--input: rgba(216, 231, 245, 0.24);
+	--ring: #43B8B7;
+	--font-primary: #F3F7FA;
+	--font-secondary: #B7C6D7;
+	--font-tertiary: #8EA0B4;
 
 	/* ── Chart palette (dark mode) ── */
 	--chart-1: #2E9695;
 	--chart-2: #3B6B95;
 	--chart-3: #C8A35C;
-	--chart-4: #BFE0DF;
+	--chart-4: #8AD5D4;
 	--chart-5: #5C6675;
 
 	/* ── Sidebar ── */
-	--sidebar: #060A10;
+	--sidebar: #0A1018;
 	--sidebar-foreground: #F0F2F5;
-	--sidebar-primary: #0B1119;
+	--sidebar-primary: #121A24;
 	--sidebar-primary-foreground: #F0F2F5;
-	--sidebar-accent: #0B1119;
+	--sidebar-accent: #121A24;
 	--sidebar-accent-foreground: #F0F2F5;
-	--sidebar-border: rgba(255, 255, 255, 0.06);
-	--sidebar-ring: #3D4654;
+	--sidebar-border: rgba(216, 231, 245, 0.1);
+	--sidebar-ring: #607082;
 
 	/* ── Medical semantic (dark mode) ── */
 	--success: #22C55E;
 	--success-foreground: #ffffff;
-	--success-surface: #14532D;
+	--success-surface: #123F2A;
 	--warning: #F59E0B;
 	--warning-foreground: #0B1119;
-	--warning-surface: #422006;
+	--warning-surface: #3D2609;
 	--error: #EF4444;
 	--error-foreground: #ffffff;
-	--error-surface: #450A0A;
+	--error-surface: #3F1218;
 	--info: #3B82F6;
 	--info-foreground: #ffffff;
-	--info-surface: #1E3A8A;
+	--info-surface: #1D3F74;
 
 	/* ── Medssi brand (dark mode) ── */
 	--medssi-green: #2E9695;
 	--medssi-green-dark: #0F6E6E;
-	--medssi-green-light: #5AB9B8;
-	--medssi-green-surface: #0A3D3C;
+	--medssi-green-light: #72CDCC;
+	--medssi-green-surface: #123332;
 	--medssi-gold: #C8A35C;
 	--medssi-gold-light: #D4B574;
-	--medssi-gold-wash: #3A3020;
+	--medssi-gold-wash: #3A2F1F;
 	--medssi-navy: #3B6B95;
 	--medssi-navy-deep: #0E3A5C;
 	--medssi-navy-light: #5A8AB5;
 
 	/* ── Grey scale (inverted for dark mode) ── */
-	--grey-50: #1A1F2C;
-	--grey-100: #252B3A;
-	--grey-200: #3D4654;
-	--grey-300: #5C6675;
-	--grey-400: #8B95A4;
-	--grey-500: #C6CDD7;
-	--grey-600: #E2E6EC;
-	--grey-700: #F0F2F5;
+	--grey-50: #151C26;
+	--grey-100: #212B38;
+	--grey-200: #314053;
+	--grey-300: #607082;
+	--grey-400: #8EA0B4;
+	--grey-500: #B7C6D7;
+	--grey-600: #D6E1ED;
+	--grey-700: #EDF3F9;
 
 	/* ── Warm neutrals (dark mode) ── */
-	--neutral-warm: #131210;
-	--neutral-warm-dark: #0A3D3C;
-	--neutral-warm-medium: #5C6675;
+	--neutral-warm: #10151B;
+	--neutral-warm-dark: #123332;
+	--neutral-warm-medium: #607082;
 }
 
 /* ═══════════════════════════════════════════

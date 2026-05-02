@@ -32,7 +32,7 @@ const TopBar = (props: { title: string; rightActionHref?: string }) => {
 	const rightHref = props.rightActionHref ?? SETTINGS_URL;
 
 	return (
-		<header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border-subtle bg-neutral-warm/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-neutral-warm/85 md:px-6">
+		<header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border-subtle bg-neutral-warm/95 px-4 backdrop-blur supports-backdrop-filter:bg-neutral-warm/85 md:px-6">
 			<h1 className="text-base font-semibold text-font-primary">{props.title}</h1>
 			<Button
 				asChild
@@ -53,7 +53,7 @@ const BottomTabs = () => {
 
 	return (
 		<div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center px-3 pb-3 md:pb-5">
-			<nav className="pointer-events-auto flex h-[62px] w-full max-w-[430px] items-center gap-0.5 rounded-full border border-[#C6CDD7] bg-white p-1 shadow-sm md:w-fit md:min-w-[540px]">
+			<nav className="pointer-events-auto flex h-[62px] w-full max-w-[430px] items-center gap-0.5 rounded-full border border-border bg-card p-1 shadow-sm md:w-fit md:min-w-[540px]">
 				{TABS.map((tab) => {
 					const Icon = tab.icon;
 					const isActive = pathname === tab.href;
@@ -63,7 +63,9 @@ const BottomTabs = () => {
 							key={tab.href}
 							href={tab.href}
 							className={`flex h-full flex-1 flex-col items-center justify-center rounded-full px-3 ${
-								isActive ? "bg-primary text-white" : "text-[#5C6675]"
+								isActive
+									? "bg-primary text-primary-foreground"
+									: "text-muted-foreground hover:text-foreground"
 							}`}
 						>
 							<Icon className="size-[18px]" />

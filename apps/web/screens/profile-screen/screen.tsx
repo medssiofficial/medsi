@@ -14,7 +14,7 @@ const ProfileScreen = () => {
 	return (
 		<PatientAppShell title="Profile">
 			<div className="space-y-4">
-				<div className="rounded-2xl border border-border-subtle bg-white p-5">
+				<div className="rounded-2xl border border-border-subtle bg-card p-5">
 					<div className="flex flex-col items-center gap-2 text-center">
 						<Avatar size="lg">
 							{user?.imageUrl ? <AvatarImage src={user.imageUrl} alt={user.fullName ?? "Profile"} /> : null}
@@ -28,7 +28,7 @@ const ProfileScreen = () => {
 						</p>
 					</div>
 				</div>
-				<div className="rounded-2xl border border-border-subtle bg-white p-5">
+				<div className="rounded-2xl border border-border-subtle bg-card p-5">
 					<div className="mb-4 flex items-center justify-between">
 						<p className="text-sm font-semibold text-font-primary">
 							Personal Information

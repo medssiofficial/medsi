@@ -49,7 +49,7 @@ export const SettingsForm = (props: {
 					control={screen.form.control}
 					name="notifications_enabled"
 					render={({ field }) => (
-						<FormItem className="rounded-2xl border border-border-subtle bg-white p-4">
+						<FormItem className="rounded-2xl border border-border-subtle bg-card p-4">
 							<div className="flex items-center justify-between gap-4">
 								<div>
 									<FormLabel className="text-sm font-semibold text-font-primary">
@@ -81,7 +81,7 @@ export const SettingsForm = (props: {
 							</FormLabel>
 							<Select value={field.value} onValueChange={field.onChange}>
 								<FormControl>
-									<SelectTrigger className="h-12 w-fit min-w-[160px] rounded-2xl border-border-subtle bg-white px-4 text-left">
+									<SelectTrigger className="h-12 w-fit min-w-[160px] rounded-2xl border-border-subtle bg-card px-4 text-left">
 										<SelectValue />
 									</SelectTrigger>
 								</FormControl>
@@ -106,7 +106,7 @@ export const SettingsForm = (props: {
 							</FormLabel>
 							<Select value={field.value} onValueChange={field.onChange}>
 								<FormControl>
-									<SelectTrigger className="h-12 w-fit min-w-[160px] rounded-2xl border-border-subtle bg-white px-4 text-left">
+									<SelectTrigger className="h-12 w-fit min-w-[160px] rounded-2xl border-border-subtle bg-card px-4 text-left">
 										<SelectValue />
 									</SelectTrigger>
 								</FormControl>

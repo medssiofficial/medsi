@@ -55,7 +55,7 @@ export const OnboardForm = () => {
 						<FormItem>
 							<FormLabel>Full Name</FormLabel>
 							<FormControl>
-								<Input className="h-13 bg-white" placeholder="Enter full name" {...field} />
+								<Input className="h-13 bg-card" placeholder="Enter full name" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -71,7 +71,7 @@ export const OnboardForm = () => {
 							<FormControl>
 								<Input
 									type="number"
-									className="h-13 bg-white"
+									className="h-13 bg-card"
 									placeholder="Enter age"
 									value={field.value || ""}
 									onChange={(event) =>
@@ -92,7 +92,7 @@ export const OnboardForm = () => {
 							<FormLabel>Gender</FormLabel>
 							<Select value={field.value} onValueChange={field.onChange}>
 								<FormControl>
-									<SelectTrigger className="h-13 w-full bg-white">
+									<SelectTrigger className="h-13 w-full bg-card">
 										<SelectValue placeholder="Select gender" />
 									</SelectTrigger>
 								</FormControl>
@@ -114,7 +114,7 @@ export const OnboardForm = () => {
 						<FormItem>
 							<FormLabel>Email</FormLabel>
 							<FormControl>
-								<Input className="h-13 bg-white" type="email" placeholder="you@example.com" {...field} />
+								<Input className="h-13 bg-card" type="email" placeholder="you@example.com" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -128,7 +128,7 @@ export const OnboardForm = () => {
 						<FormItem>
 							<FormLabel>Phone</FormLabel>
 							<FormControl>
-								<Input className="h-13 bg-white" placeholder="+1 123456789" {...field} />
+								<Input className="h-13 bg-card" placeholder="+1 123456789" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -142,7 +142,7 @@ export const OnboardForm = () => {
 						<FormItem>
 							<FormLabel>Country</FormLabel>
 							<FormControl>
-								<Input className="h-13 bg-white" placeholder="Country" {...field} />
+								<Input className="h-13 bg-card" placeholder="Country" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>

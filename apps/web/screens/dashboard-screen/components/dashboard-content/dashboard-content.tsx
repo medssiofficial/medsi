@@ -53,7 +53,7 @@ export const DashboardContent = (props: DashboardContentProps) => {
 						Talk to our AI assistant
 					</span>
 				</span>
-				<span className="flex size-12 items-center justify-center rounded-xl bg-white">
+				<span className="flex size-12 items-center justify-center rounded-xl bg-card">
 					<StethoscopeIcon className="size-5 text-primary" />
 				</span>
 			</Button>
