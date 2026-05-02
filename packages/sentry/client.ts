@@ -1,10 +1,6 @@
 import * as Sentry from "@sentry/nextjs";
 import { isSentryRuntimeInitEnabled } from "./runtime-enabled";
 
-/**
- * Initialises Sentry for the browser runtime.
- * Call this at the top of `instrumentation-client.ts` in each Next.js app.
- */
 export const initSentryClient = (dsn: string): void => {
 	if (!isSentryRuntimeInitEnabled(dsn)) return;
 

@@ -9,18 +9,6 @@ interface SentryNextConfigOptions {
 	silent?: boolean;
 }
 
-/**
- * Wraps a Next.js config with Sentry build-time tooling:
- * source map upload, tunnel route, and tree-shaking of unused Sentry code.
- *
- * Sentry build plugins run only when deployment rules pass (production +
- * optional Vercel production tier). Set NEXT_PUBLIC_SENTRY_ENABLED=false to
- * disable everywhere. Dev (`next dev`) skips the plugin automatically.
- *
- * SENTRY_ORG, SENTRY_PROJECT and SENTRY_AUTH_TOKEN are read from the process
- * environment at build time (CI / local .env). They do NOT need to be in
- * runtime env schema since they are consumed only by the webpack plugin.
- */
 export const withSentryNextConfig = (
 	nextConfig: NextConfig,
 	options: SentryNextConfigOptions = {},

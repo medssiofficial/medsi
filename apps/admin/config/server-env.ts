@@ -10,11 +10,8 @@ export const SERVER_ENV = createEnv({
 	server: {
 		CLERK_SECRET_KEY: z.string(),
 		HOST: z.string(),
-		/** Dev secret from Trigger.dev project → API Keys (local + self-hosted). */
 		TRIGGER_SECRET_KEY: optionalNonEmpty,
-		/** Optional; cloud default if unset. Self-hosted Trigger.dev base URL. */
 		TRIGGER_API_URL: optionalNonEmpty,
-		/** Optional; documented for tooling. Project ref is also set in `trigger.config.ts`. */
 		TRIGGER_PROJECT_REF: optionalNonEmpty,
 	},
 	runtimeEnv: {
