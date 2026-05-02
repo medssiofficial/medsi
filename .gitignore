@@ -39,3 +39,6 @@ dist/
 packages/**/generated/
 
 .env.prod
+
+# Trigger.dev local dev
+.trigger
