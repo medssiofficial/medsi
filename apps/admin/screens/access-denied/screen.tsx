@@ -7,10 +7,10 @@ import Link from "next/link";
 
 const AccessDeniedScreen = () => {
 	return (
-		<main className="w-full min-h-screen bg-gray-100 font-sans flex flex-col items-center justify-center p-8">
+		<main className="w-full min-h-screen bg-secondary font-sans flex flex-col items-center justify-center p-8">
 			<div className="w-full flex flex-col max-w-90 items-center justify-center gap-4">
-				<div className="bg-gray-200 flex items-center justify-center p-5 rounded-full w-fit">
-					<Lock className="w-9 h-9 text-gray-500" />
+				<div className="bg-muted flex items-center justify-center p-5 rounded-full w-fit">
+					<Lock className="w-9 h-9 text-muted-foreground" />
 				</div>
 
 				<h1 className="text-xl font-heading font-semibold">

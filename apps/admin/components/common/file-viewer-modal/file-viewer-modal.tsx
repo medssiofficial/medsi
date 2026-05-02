@@ -60,7 +60,7 @@ export const FileViewerModal = (props: FileViewerModalProps) => {
 						<iframe
 							src={file.public_url}
 							title={file.filename}
-							className="h-full w-full rounded-lg border bg-white"
+							className="h-full w-full rounded-lg border bg-card"
 						/>
 					) : (
 						<div className="flex h-full flex-col items-center justify-center gap-3 text-sm text-muted-foreground">

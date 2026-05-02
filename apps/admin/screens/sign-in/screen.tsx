@@ -35,7 +35,7 @@ const SignInScreen = () => {
 	} = useSignInScreen();
 
 	return (
-		<div className="w-full min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8 font-heading">
+		<div className="w-full min-h-screen bg-secondary flex flex-col items-center justify-center p-8 font-heading">
 			<Card className="bg-card w-full max-w-105 px-7 py-8 flex flex-col gap-6">
 				<AdminLogo size="lg" />
 

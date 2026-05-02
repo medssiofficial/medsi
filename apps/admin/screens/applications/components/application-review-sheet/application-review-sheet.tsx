@@ -399,7 +399,7 @@ export const ApplicationReviewSheet = (props: ApplicationReviewSheetProps) => {
 								Close Preview
 							</Button>
 						</div>
-						<div className="h-[calc(100%-40px)] overflow-hidden rounded-md border bg-white">
+						<div className="h-[calc(100%-40px)] overflow-hidden rounded-md border bg-card">
 							<DocPreview doc={activePreviewDoc} />
 						</div>
 					</div>

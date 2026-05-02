@@ -35,7 +35,7 @@ const LoginSection = () => {
 	} = useLoginSection();
 
 	return (
-		<div className="flex-1 min-h-screen bg-grey-50 flex flex-col items-center justify-center">
+		<div className="flex-1 min-h-screen bg-secondary flex flex-col items-center justify-center">
 			<Card className="w-full max-w-110 bg-background flex flex-col px-6 py-8 gap-6">
 				{/* ── Header ── */}
 				<div className="flex flex-col gap-1.5">

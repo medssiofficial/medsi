@@ -21,7 +21,7 @@ export const DoctorAppShell = (props: {
 			<TooltipProvider>
 				<SidebarProvider className="h-svh w-full">
 					<DoctorSidebar />
-					<SidebarInset className="h-svh bg-grey-50">
+					<SidebarInset className="h-svh bg-secondary">
 						<DoctorTopbar title={shell.title} />
 						<main className="flex-1 overflow-auto p-6">{children}</main>
 					</SidebarInset>
