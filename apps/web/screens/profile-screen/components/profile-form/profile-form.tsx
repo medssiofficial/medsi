@@ -53,7 +53,7 @@ export const ProfileForm = (props: {
 						<FormItem>
 							<FormLabel>Full Name</FormLabel>
 							<FormControl>
-								<Input className="h-13 bg-white" disabled={!isEditable} {...field} />
+								<Input className="h-13 bg-card" disabled={!isEditable} {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -69,7 +69,7 @@ export const ProfileForm = (props: {
 							<FormControl>
 								<Input
 									type="number"
-									className="h-13 bg-white"
+									className="h-13 bg-card"
 									disabled={!isEditable}
 									value={field.value || ""}
 									onChange={(event) =>
@@ -94,7 +94,7 @@ export const ProfileForm = (props: {
 								disabled={!isEditable}
 							>
 								<FormControl>
-									<SelectTrigger className="h-13 bg-white" disabled={!isEditable}>
+									<SelectTrigger className="h-13 bg-card" disabled={!isEditable}>
 										<SelectValue />
 									</SelectTrigger>
 								</FormControl>
@@ -117,7 +117,7 @@ export const ProfileForm = (props: {
 							<FormControl>
 								<Input
 									type="email"
-									className="h-13 bg-white"
+									className="h-13 bg-card"
 									readOnly
 									disabled
 									aria-readonly
@@ -137,7 +137,7 @@ export const ProfileForm = (props: {
 							<FormLabel>Phone</FormLabel>
 							<FormControl>
 								<Input
-									className="h-13 bg-white"
+									className="h-13 bg-card"
 									readOnly
 									disabled
 									aria-readonly
@@ -157,7 +157,7 @@ export const ProfileForm = (props: {
 							<FormLabel>Country</FormLabel>
 							<FormControl>
 								<Input
-									className="h-13 bg-white"
+									className="h-13 bg-card"
 									readOnly
 									disabled
 									aria-readonly

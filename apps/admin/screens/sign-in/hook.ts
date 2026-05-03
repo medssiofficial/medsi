@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useSignIn } from "@clerk/nextjs";
+import { useClerk, useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { ACCESS_DENIED_URL, DASHBOARD_URL } from "@/config/client-constants";
 
@@ -68,6 +68,7 @@ const getClerkErrorDetails = (input: unknown) => {
 
 export const useSignInScreen = () => {
 	const router = useRouter();
+	const { setActive } = useClerk();
 	const { signIn } = useSignIn();
 
 	const signInForm = useForm<LoginFormValues>({
@@ -176,6 +177,16 @@ export const useSignInScreen = () => {
 
 			toast.error(message);
 			return;
+		}
+
+		const createdSessionId =
+			(verifyResult as { createdSessionId?: string | null }).createdSessionId ??
+			(signIn as unknown as { createdSessionId?: string | null })
+				.createdSessionId ??
+			null;
+
+		if (createdSessionId) {
+			await setActive({ session: createdSessionId });
 		}
 
 		setIsLoading(false);

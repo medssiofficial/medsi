@@ -7,7 +7,9 @@
 		"./client": "./client.ts",
 		"./server": "./server.ts",
 		"./edge": "./edge.ts",
-		"./next-config": "./next-config.ts"
+		"./next-config": "./next-config.ts",
+		"./runtime-enabled": "./runtime-enabled.ts",
+		"./capture-exception": "./capture-exception.ts"
 	},
 	"dependencies": {
 		"@sentry/nextjs": "^9"

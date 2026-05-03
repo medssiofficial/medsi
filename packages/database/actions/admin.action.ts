@@ -73,5 +73,6 @@ export const createManyAdmins = (args: CreateManyAdminsArgs) => {
 		data: args.clerk_ids.map((clerk_id) => ({
 			clerk_id,
 		})),
+		skipDuplicates: true,
 	});
 };

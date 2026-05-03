@@ -55,7 +55,7 @@ const LandingScreen = () => {
 					</Link>
 					<Link
 						href={SIGN_IN_URL}
-						className="flex h-13 w-full items-center justify-center rounded-lg border border-border bg-white text-base font-semibold text-grey-600 transition-opacity active:opacity-80"
+						className="flex h-13 w-full items-center justify-center rounded-lg border border-border bg-card text-base font-semibold text-grey-600 transition-opacity active:opacity-80"
 					>
 						Sign In
 					</Link>

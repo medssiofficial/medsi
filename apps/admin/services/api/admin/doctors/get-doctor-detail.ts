@@ -34,6 +34,14 @@ export type DoctorDetail = {
 		rejection_reason: string | null;
 		created_at: string | Date;
 	} | null;
+	embedding_state: {
+		status: string;
+		last_error: string | null;
+		last_model: string | null;
+		last_dimensions: number | null;
+		last_success_at: string | Date | null;
+		last_attempt_at: string | Date | null;
+	} | null;
 };
 
 type ApiSuccess = JsonApiResponse<{ doctor: DoctorDetail }>;
@@ -92,6 +100,8 @@ export const getAdminDoctorDetail = async (args: {
 	throw new Error("Invalid response.");
 };
 
+const EMBEDDING_DETAIL_POLL_MS = 2500;
+
 export const useAdminDoctorDetailQuery = (args: {
 	doctor_id: string | null;
 	enabled?: boolean;
@@ -106,6 +116,12 @@ export const useAdminDoctorDetailQuery = (args: {
 		retry: false,
 		refetchOnWindowFocus: false,
 		refetchOnReconnect: false,
-		staleTime: 60 * 1000,
+		staleTime: 0,
+		refetchInterval: (query) => {
+			const doctor = query.state.data;
+			return doctor?.embedding_state?.status === "pending"
+				? EMBEDDING_DETAIL_POLL_MS
+				: false;
+		},
 	});
 };

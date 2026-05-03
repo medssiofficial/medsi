@@ -13,6 +13,7 @@ import {
 import { useUpdatePatientSettings } from "@/services/api/patient/update-settings";
 import { useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { useAppTheme } from "@repo/providers";
 import { SIGN_IN_URL } from "@/config/client-constants";
 
 const SettingsSchema = z.object({
@@ -32,6 +33,7 @@ const DEFAULT_VALUES: SettingsFormValues = {
 export const useSettingsScreen = () => {
 	const router = useRouter();
 	const clerk = useClerk();
+	const { theme, resolvedTheme, setTheme } = useAppTheme();
 	const { APIErrorHandler } = useAPIErrorHandler();
 	const settingsQuery = usePatientSettings();
 	const updateMutation = useUpdatePatientSettings();
@@ -70,7 +72,9 @@ export const useSettingsScreen = () => {
 	return {
 		form,
 		settingsQuery,
+		theme: resolvedTheme === "dark" || theme === "dark" ? "dark" : "light",
 		isSaving: updateMutation.isPending,
+		setTheme,
 		handleSubmit,
 		handleLogout,
 	};

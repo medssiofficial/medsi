@@ -16,7 +16,7 @@ type ProfileView = ReturnType<typeof useMyProfileScreen>["profileView"];
 
 const InfoField = (props: { label: string; value: string }) => {
 	return (
-		<div className="space-y-1 rounded-lg border border-border bg-grey-50 px-3 py-2.5">
+		<div className="space-y-1 rounded-lg border border-border bg-muted/60 px-3 py-2.5">
 			<p className="text-xs font-medium text-font-tertiary">{props.label}</p>
 			<p className="text-sm font-medium text-font-primary">{props.value}</p>
 		</div>
@@ -60,7 +60,7 @@ export const ProfileContent = (props: { profileView: ProfileView }) => {
 						<InfoField label="Experience" value={profileView.experienceYears} />
 					</div>
 
-					<div className="rounded-lg border border-border bg-grey-50 p-3">
+					<div className="rounded-lg border border-border bg-muted/60 p-3">
 						<p className="mb-1 text-xs font-medium text-font-tertiary">Short Bio</p>
 						<p className="text-sm leading-relaxed text-font-secondary">
 							{profileView.bio}

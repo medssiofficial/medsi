@@ -1,8 +1,8 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useTheme } from "next-themes";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
+import { useAppTheme } from "@repo/providers";
 import {
 	CircleCheckIcon,
 	InfoIcon,
@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 const Toaster = ({ ...props }: ToasterProps) => {
-	const { theme = "light" } = useTheme();
+	const { theme = "light" } = useAppTheme();
 
 	return (
 		<Sonner

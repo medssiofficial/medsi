@@ -1,14 +1,22 @@
 {
   "mcpServers": {
+    "sentry": {
+      "url": "https://mcp.sentry.dev/mcp"
+    },
     "shadcn": {
-      "command": "npx",
       "args": [
         "shadcn@latest",
         "mcp"
-      ]
+      ],
+      "command": "npx"
     },
-    "sentry": {
-      "url": "https://mcp.sentry.dev/mcp"
+    "trigger": {
+      "args": [
+        "trigger.dev@latest",
+        "mcp",
+        "--dev-only"
+      ],
+      "command": "npx"
     }
   }
 }

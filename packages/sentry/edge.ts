@@ -1,11 +1,8 @@
 import * as Sentry from "@sentry/nextjs";
+import { isSentryRuntimeInitEnabled } from "./runtime-enabled";
 
-/**
- * Initialises Sentry for the Edge runtime.
- * Call this at the top of `sentry.edge.config.ts` in each Next.js app.
- */
 export const initSentryEdge = (dsn: string): void => {
-	if (!dsn || process.env.NEXT_PUBLIC_SENTRY_ENABLED !== "true") return;
+	if (!isSentryRuntimeInitEnabled(dsn)) return;
 
 	Sentry.init({
 		dsn,

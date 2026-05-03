@@ -4,7 +4,10 @@ import { useAPIErrorHandler } from "@/hooks/use-api-error-handler";
 import { useApplicationCountsQuery } from "@/services/api/admin/applications/get-application-counts";
 import { useAdminDoctorDetailQuery } from "@/services/api/admin/doctors/get-doctor-detail";
 import { useAdminDoctorsQuery } from "@/services/api/admin/doctors/get-doctors";
+import { useTriggerDoctorEmbedBulkMutation } from "@/services/api/admin/doctors/trigger-embed-bulk";
+import { useTriggerDoctorEmbedMutation } from "@/services/api/admin/doctors/trigger-doctor-embed";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const PAGE_SIZE = 10;
 
@@ -37,6 +40,8 @@ export const useDoctorsScreen = () => {
 		doctor_id: selectedDoctorId,
 		enabled: Boolean(selectedDoctorId),
 	});
+	const embedMutation = useTriggerDoctorEmbedMutation();
+	const embedBulkMutation = useTriggerDoctorEmbedBulkMutation();
 
 	useEffect(() => {
 		if (!doctorsQuery.isError) return;
@@ -53,6 +58,16 @@ export const useDoctorsScreen = () => {
 		APIErrorHandler()(doctorDetailQuery.error);
 	}, [APIErrorHandler, doctorDetailQuery.error, doctorDetailQuery.isError]);
 
+	useEffect(() => {
+		if (!embedMutation.isError) return;
+		APIErrorHandler()(embedMutation.error);
+	}, [APIErrorHandler, embedMutation.error, embedMutation.isError]);
+
+	useEffect(() => {
+		if (!embedBulkMutation.isError) return;
+		APIErrorHandler()(embedBulkMutation.error);
+	}, [APIErrorHandler, embedBulkMutation.error, embedBulkMutation.isError]);
+
 	const doctors = doctorsQuery.data?.doctors ?? [];
 	const meta = doctorsQuery.data?.meta ?? {
 		total: 0,
@@ -61,6 +76,22 @@ export const useDoctorsScreen = () => {
 		total_pages: 1,
 		has_next_page: false,
 		has_previous_page: false,
+	};
+
+	const onEmbedDoctor = (doctorId: string) => {
+		void embedMutation.mutateAsync({ doctor_id: doctorId }).then(() => {
+			toast.success("Embedding job queued for this doctor.");
+		});
+	};
+
+	const onEmbedMissing = () => {
+		void embedBulkMutation.mutateAsync().then((data) => {
+			if (data.queued === 0) {
+				toast.message("No verified doctors need embedding right now.");
+				return;
+			}
+			toast.success(`Queued ${data.queued} embedding job(s).`);
+		});
 	};
 
 	return {
@@ -80,6 +111,11 @@ export const useDoctorsScreen = () => {
 		isLoading:
 			doctorsQuery.isLoading || (doctorsQuery.isFetching && !doctorsQuery.data),
 		isRefreshing: doctorsQuery.isFetching,
+		onEmbedDoctor,
+		onEmbedMissing,
+		isEmbedDoctorLoading: embedMutation.isPending,
+		embedDoctorId: embedMutation.variables?.doctor_id ?? null,
+		isEmbedBulkLoading: embedBulkMutation.isPending,
 	};
 };
 

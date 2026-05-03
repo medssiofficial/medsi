@@ -20,7 +20,7 @@ export const ConsultationChatInput = (props: ConsultationChatInputProps) => {
 				type="button"
 				variant="ghost"
 				size="icon-sm"
-				className="text-[#5C6675]"
+				className="text-muted-foreground"
 				onClick={onAttach}
 				aria-label="Attach file"
 			>
@@ -28,7 +28,7 @@ export const ConsultationChatInput = (props: ConsultationChatInputProps) => {
 			</Button>
 			<button
 				type="button"
-				className="flex h-11 min-w-0 flex-1 items-center rounded-full bg-[#F0F2F5] px-4 text-left text-sm text-[#5C6675]"
+				className="flex h-11 min-w-0 flex-1 items-center rounded-full bg-muted px-4 text-left text-sm text-muted-foreground"
 				onClick={onSend}
 			>
 				Type a message...
@@ -37,7 +37,7 @@ export const ConsultationChatInput = (props: ConsultationChatInputProps) => {
 				type="button"
 				variant="ghost"
 				size="icon-sm"
-				className="text-[#5C6675]"
+				className="text-muted-foreground"
 				onClick={onMic}
 				aria-label="Voice input"
 			>

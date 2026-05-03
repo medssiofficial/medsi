@@ -52,6 +52,24 @@ enum PatientDataSharing {
     full
 }
 
+enum DoctorEmbeddingStatus {
+    not_embedded
+    pending
+    synced
+    failed
+}
+
+enum DoctorEmbeddingSource {
+    approval
+    manual
+    bulk
+}
+
+enum DoctorEmbeddingLogOutcome {
+    success
+    failure
+}
+
 model user {
     id         String   @id @default(ulid())
     clerk_id   String   @unique
@@ -84,6 +102,8 @@ model doctor {
     expertises      doctor_expertise[]
     application     doctor_application?
     files           doctor_file[]
+    embedding_state doctor_embedding_state?
+    embedding_logs  doctor_embedding_log[]
 }
 
 model doctor_application {
@@ -283,4 +303,38 @@ model case_info_state {
     updated_at             DateTime @updatedAt
 
     case medical_case @relation(fields: [case_id], references: [id])
+}
+
+model doctor_embedding_state {
+    doctor_id           String                @id
+    status              DoctorEmbeddingStatus @default(not_embedded)
+    last_model          String?
+    last_dimensions     Int?
+    last_success_at     DateTime?
+    last_attempt_at     DateTime?
+    last_error          String?
+    last_trigger_run_id String?
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    doctor doctor @relation(fields: [doctor_id], references: [id], onDelete: Cascade)
+}
+
+model doctor_embedding_log {
+    id               String                     @id @default(ulid())
+    doctor_id        String
+    source           DoctorEmbeddingSource
+    outcome          DoctorEmbeddingLogOutcome
+    error_message    String?
+    embedding_model  String?
+    dimensions       Int?
+    trigger_run_id   String?
+    metadata         Json?
+    created_at       DateTime                   @default(now())
+
+    doctor doctor @relation(fields: [doctor_id], references: [id], onDelete: Cascade)
+
+    @@index([doctor_id, created_at(sort: Desc)])
+    @@index([created_at(sort: Desc)])
 }

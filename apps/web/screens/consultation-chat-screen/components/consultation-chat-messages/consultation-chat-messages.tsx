@@ -12,7 +12,7 @@ export const ConsultationChatMessages = () => {
 				<div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#0F6E6E] text-white">
 					<BotIcon className="size-3.5" />
 				</div>
-				<div className="max-w-[260px] rounded-br-xl rounded-tr-xl rounded-bl-xl border border-[#E2E6EC] bg-white p-3 shadow-sm">
+				<div className="max-w-[260px] rounded-br-xl rounded-tr-xl rounded-bl-xl border border-border-subtle bg-card p-3 shadow-sm">
 					<p className="whitespace-pre-wrap text-sm leading-relaxed text-font-primary">{message}</p>
 				</div>
 			</div>

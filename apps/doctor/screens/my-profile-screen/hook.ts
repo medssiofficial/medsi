@@ -25,8 +25,8 @@ const getAge = (dob: Date | string | null | undefined) => {
 	return age < 0 ? null : age;
 };
 
-const toYearsLabel = (value: number | string | null | undefined) => {
-	const numeric = Number(value ?? 0);
+const toYearsLabel = (value: { toString: () => string } | null | undefined) => {
+	const numeric = Number(value?.toString() ?? 0);
 	if (Number.isNaN(numeric) || numeric < 0) return "N/A";
 	return `${numeric} year${numeric === 1 ? "" : "s"}`;
 };

@@ -61,6 +61,50 @@ export const getDoctorFullByClerkId = (args: GetDoctorFullByClerkIdArgs) => {
 	});
 };
 
+interface GetDoctorEmbeddingSourceByIdArgs {
+	id: string;
+}
+
+/** Profile, specializations, and experiences shaped for semantic embedding text. */
+export const getDoctorEmbeddingSourceById = (
+	args: GetDoctorEmbeddingSourceByIdArgs,
+) => {
+	return prisma.doctor.findUnique({
+		where: { id: args.id },
+		select: {
+			id: true,
+			profile: {
+				select: {
+					name: true,
+					years_of_experience: true,
+					years_in_practice: true,
+					city: true,
+					county: true,
+					country: true,
+					address_line_1: true,
+				},
+			},
+			specializations: {
+				select: { name: true },
+				orderBy: { name: "asc" },
+			},
+			experiences: {
+				select: {
+					start_date: true,
+					end_date: true,
+					hospital_name: true,
+					description: true,
+				},
+				orderBy: { start_date: "desc" },
+			},
+		},
+	});
+};
+
+export type DoctorEmbeddingSource = NonNullable<
+	Awaited<ReturnType<typeof getDoctorEmbeddingSourceById>>
+>;
+
 interface GetDoctorInboxPendingCountByClerkIdArgs {
 	clerk_id: string;
 }
@@ -608,6 +652,7 @@ export const getDoctorsForAdmin = async (args: GetDoctorsForAdminArgs) => {
 				application: true,
 				specializations: true,
 				expertises: true,
+				embedding_state: true,
 			},
 		}),
 		prisma.doctor.count({ where }),
@@ -669,6 +714,7 @@ export const getDoctorByIdForAdmin = (args: GetDoctorByIdForAdminArgs) => {
 					experience_letter_file: true,
 				},
 			},
+			embedding_state: true,
 		},
 	});
 };

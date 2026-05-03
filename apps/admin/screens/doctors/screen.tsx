@@ -18,6 +18,11 @@ const DoctorsScreen = () => {
 		isDoctorDetailLoading,
 		isLoading,
 		isRefreshing,
+		onEmbedDoctor,
+		onEmbedMissing,
+		isEmbedDoctorLoading,
+		embedDoctorId,
+		isEmbedBulkLoading,
 	} = useDoctorsScreen();
 
 	return (
@@ -28,6 +33,8 @@ const DoctorsScreen = () => {
 					pendingApplicationsCount={pendingApplicationsCount}
 					searchInput={searchInput}
 					onSearchInputChange={setSearchInput}
+					onEmbedMissing={onEmbedMissing}
+					isEmbedBulkLoading={isEmbedBulkLoading}
 				/>
 				<DoctorsTable
 					items={doctors}
@@ -41,10 +48,16 @@ const DoctorsScreen = () => {
 					hasPreviousPage={meta.has_previous_page}
 					onPageChange={setPage}
 					onViewDoctor={setSelectedDoctorId}
+					onEmbedDoctor={onEmbedDoctor}
+					isEmbedDoctorLoading={isEmbedDoctorLoading}
+					embedDoctorId={embedDoctorId}
 				/>
 				<DoctorDetailCard
 					doctor={selectedDoctor}
 					isLoading={isDoctorDetailLoading}
+					onEmbedDoctor={onEmbedDoctor}
+					isEmbedDoctorLoading={isEmbedDoctorLoading}
+					embedDoctorId={embedDoctorId}
 				/>
 			</div>
 		</AdminShell>
