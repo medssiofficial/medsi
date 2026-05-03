@@ -9,7 +9,10 @@
 		"./client": "./client.ts",
 		"./actions/admin": "./actions/admin.action.ts",
 		"./actions/doctor": "./actions/doctor.actions.ts",
-		"./actions/patient": "./actions/patient.actions.ts"
+		"./actions/doctor-embedding": "./actions/doctor-embedding.action.ts",
+		"./actions/patient": "./actions/patient.actions.ts",
+		"./constants/doctor-embedding": "./constants/doctor-embedding.ts",
+		"./ensure-doctor-embedding-vector-table": "./ensure-doctor-embedding-vector-table.ts"
 	},
 	"scripts": {
 		"db:generate": "prisma generate",

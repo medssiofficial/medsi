@@ -75,6 +75,7 @@ export const getDoctorEmbeddingSourceById = (
 			id: true,
 			profile: {
 				select: {
+					name: true,
 					years_of_experience: true,
 					years_in_practice: true,
 					city: true,
@@ -651,6 +652,7 @@ export const getDoctorsForAdmin = async (args: GetDoctorsForAdminArgs) => {
 				application: true,
 				specializations: true,
 				expertises: true,
+				embedding_state: true,
 			},
 		}),
 		prisma.doctor.count({ where }),
@@ -712,6 +714,7 @@ export const getDoctorByIdForAdmin = (args: GetDoctorByIdForAdminArgs) => {
 					experience_letter_file: true,
 				},
 			},
+			embedding_state: true,
 		},
 	});
 };
