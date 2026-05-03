@@ -13,6 +13,8 @@ export const SERVER_ENV = createEnv({
 		TRIGGER_SECRET_KEY: optionalNonEmpty,
 		TRIGGER_API_URL: optionalNonEmpty,
 		TRIGGER_PROJECT_REF: optionalNonEmpty,
+		GOOGLE_GENERATIVE_AI_API_KEY: optionalNonEmpty,
+		GOOGLE_GENAI_EMBEDDING_MODEL: optionalNonEmpty,
 	},
 	runtimeEnv: {
 		CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
@@ -20,5 +22,7 @@ export const SERVER_ENV = createEnv({
 		TRIGGER_SECRET_KEY: process.env.TRIGGER_SECRET_KEY,
 		TRIGGER_API_URL: process.env.TRIGGER_API_URL,
 		TRIGGER_PROJECT_REF: process.env.TRIGGER_PROJECT_REF,
+		GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+		GOOGLE_GENAI_EMBEDDING_MODEL: process.env.GOOGLE_GENAI_EMBEDDING_MODEL,
 	},
 });
