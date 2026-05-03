@@ -130,7 +130,8 @@ export const useAdminDoctorsQuery = (args: GetAdminDoctorsArgs) => {
 		placeholderData: (previous) => previous,
 		refetchOnWindowFocus: false,
 		refetchOnReconnect: false,
-		staleTime: 60 * 1000,
+		// TanStack Query v5: refetchInterval only ticks when data is stale.
+		staleTime: 0,
 		refetchInterval: (query) => {
 			const rows = query.state.data?.doctors ?? [];
 			return rows.some((d) => d.embedding_state?.status === "pending")

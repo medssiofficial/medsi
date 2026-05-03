@@ -116,7 +116,7 @@ export const useAdminDoctorDetailQuery = (args: {
 		retry: false,
 		refetchOnWindowFocus: false,
 		refetchOnReconnect: false,
-		staleTime: 60 * 1000,
+		staleTime: 0,
 		refetchInterval: (query) => {
 			const doctor = query.state.data;
 			return doctor?.embedding_state?.status === "pending"

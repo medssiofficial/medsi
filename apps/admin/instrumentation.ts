@@ -1,12 +1,18 @@
 import * as Sentry from "@sentry/nextjs";
-import { ensureDoctorEmbeddingVectorTable } from "@repo/database/ensure-doctor-embedding-vector-table";
 import { isSentryDeploymentEligible } from "@repo/sentry/runtime-enabled";
 
 export async function register() {
 	if (process.env.NEXT_RUNTIME === "nodejs") {
-		void ensureDoctorEmbeddingVectorTable().catch((error) => {
-			console.error("[medssi] Failed to ensure doctor embedding vector table", error);
-		});
+		void import("@repo/database/ensure-doctor-embedding-vector-table")
+			.then(({ ensureDoctorEmbeddingVectorTable }) =>
+				ensureDoctorEmbeddingVectorTable(),
+			)
+			.catch((error: unknown) => {
+				console.error(
+					"[medssi] Failed to ensure doctor embedding vector table",
+					error,
+				);
+			});
 	}
 
 	if (!isSentryDeploymentEligible()) return;
