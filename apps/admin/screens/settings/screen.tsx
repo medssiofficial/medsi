@@ -1,11 +1,13 @@
 "use client";
 
 import { AdminShell } from "@/components/common/admin-shell";
-import { EmbeddingLogsSection } from "./components";
 import { Button } from "@repo/ui/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/ui/card";
-import { MoonStarIcon, SunIcon } from "lucide-react";
+import { MoonStarIcon, SunIcon, ChevronRightIcon } from "lucide-react";
+import Link from "next/link";
 import { useSettingsScreen } from "./hook";
+
+const SETTINGS_EMBEDDING_LOGS_HREF = "/settings/embedding-logs";
 
 const SettingsScreen = () => {
 	const screen = useSettingsScreen();
@@ -54,7 +56,26 @@ const SettingsScreen = () => {
 					</CardContent>
 				</Card>
 
-				<EmbeddingLogsSection />
+				<Card>
+					<CardHeader>
+						<CardTitle>Doctor Embedding Logs</CardTitle>
+						<CardDescription>
+							View the audit trail for doctor profile embedding jobs (successes and
+							failures).
+						</CardDescription>
+					</CardHeader>
+					<CardContent>
+						<Button variant="secondary" className="w-full sm:w-auto" asChild>
+							<Link
+								href={SETTINGS_EMBEDDING_LOGS_HREF}
+								className="inline-flex items-center gap-2"
+							>
+								Open embedding logs
+								<ChevronRightIcon className="size-4" />
+							</Link>
+						</Button>
+					</CardContent>
+				</Card>
 			</div>
 		</AdminShell>
 	);

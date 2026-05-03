@@ -22,6 +22,8 @@ import {
 } from "@repo/ui/components/ui/table";
 import { useEmbeddingLogsSection } from "./hook";
 
+export type EmbeddingLogsPresentation = "card" | "plain";
+
 const formatWhen = (value: string | Date) => {
 	const d = typeof value === "string" ? new Date(value) : value;
 	if (Number.isNaN(d.getTime())) return "—";
@@ -38,7 +40,12 @@ const outcomeBadge = (outcome: string) => {
 	return <Badge variant="secondary" className="rounded-full">{outcome}</Badge>;
 };
 
-export const EmbeddingLogsSection = () => {
+interface EmbeddingLogsSectionProps {
+	presentation?: EmbeddingLogsPresentation;
+}
+
+export const EmbeddingLogsSection = (props?: EmbeddingLogsSectionProps) => {
+	const { presentation = "card" } = props ?? {};
 	const screen = useEmbeddingLogsSection();
 	const { items, meta, page, setPage, isLoading, isRefreshing } = screen;
 
@@ -48,16 +55,8 @@ export const EmbeddingLogsSection = () => {
 
 	const pageNumbers = Array.from({ length: meta.total_pages }, (_, i) => i + 1);
 
-	return (
-		<Card>
-			<CardHeader>
-				<CardTitle>Doctor embedding activity</CardTitle>
-				<CardDescription>
-					Audit log of embedding jobs triggered from approvals, manual actions, or
-					bulk runs. {isRefreshing && !isLoading ? "Refreshing…" : ""}
-				</CardDescription>
-			</CardHeader>
-			<CardContent className="space-y-4">
+	const body = (
+		<>
 				<div className="rounded-lg border bg-background">
 					<Table>
 						<TableHeader>
@@ -167,7 +166,30 @@ export const EmbeddingLogsSection = () => {
 						</PaginationContent>
 					</Pagination>
 				</div>
-			</CardContent>
+		</>
+	);
+
+	if (presentation === "plain") {
+		return (
+			<div className="space-y-4">
+				<p className="text-sm text-muted-foreground">
+					{isRefreshing && !isLoading ? "Refreshing…" : "\u00a0"}
+				</p>
+				{body}
+			</div>
+		);
+	}
+
+	return (
+		<Card>
+			<CardHeader>
+				<CardTitle>Doctor embedding activity</CardTitle>
+				<CardDescription>
+					Audit log of embedding jobs triggered from approvals, manual actions, or
+					bulk runs. {isRefreshing && !isLoading ? "Refreshing…" : ""}
+				</CardDescription>
+			</CardHeader>
+			<CardContent className="space-y-4">{body}</CardContent>
 		</Card>
 	);
 };
