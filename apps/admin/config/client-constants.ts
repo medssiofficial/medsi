@@ -55,6 +55,23 @@ export const API_ROUTES = {
 				path: "/api/admin/doctors",
 				method: "GET",
 			},
+			EMBED: {
+				key: "admin.doctors.embed",
+				path: "/api/admin/doctors",
+				method: "POST",
+			},
+			EMBED_BULK: {
+				key: "admin.doctors.embed-bulk",
+				path: "/api/admin/doctors/embed-bulk",
+				method: "POST",
+			},
+		},
+		EMBEDDING_LOGS: {
+			LIST: {
+				key: "admin.embedding-logs.list",
+				path: "/api/admin/embedding-logs",
+				method: "GET",
+			},
 		},
 		PATIENTS: {
 			LIST: {

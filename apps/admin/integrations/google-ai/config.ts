@@ -1,4 +1,4 @@
-const DEFAULT_EMBEDDING_MODEL = "text-embedding-004";
+const DEFAULT_EMBEDDING_MODEL = "gemini-embedding-2-preview";
 
 export function getGoogleGenAiApiKey(): string {
 	const key = process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim();

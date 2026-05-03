@@ -1,3 +1,5 @@
+import { DOCTOR_EMBEDDING_VECTOR_DIMENSION } from "@repo/database/constants/doctor-embedding";
+
 import { createGoogleGenAiClient } from "./client";
 import { getGoogleGenAiEmbeddingModel } from "./config";
 
@@ -17,6 +19,9 @@ export async function embedText(text: string): Promise<EmbedTextResult> {
 	const response = await ai.models.embedContent({
 		model,
 		contents: trimmed,
+		config: {
+			outputDimensionality: DOCTOR_EMBEDDING_VECTOR_DIMENSION,
+		},
 	});
 
 	const values = response.embeddings?.[0]?.values;

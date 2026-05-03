@@ -21,6 +21,12 @@ type DoctorListItem = {
 		status: string;
 		created_at: string | Date;
 	} | null;
+	embedding_state: {
+		status: string;
+		last_error: string | null;
+		last_success_at: string | Date | null;
+		last_attempt_at: string | Date | null;
+	} | null;
 };
 
 type DoctorsListResult = {
@@ -109,6 +115,8 @@ export const getAdminDoctors = async (
 	throw new Error("Invalid response.");
 };
 
+const EMBEDDING_LIST_POLL_MS = 2500;
+
 export const useAdminDoctorsQuery = (args: GetAdminDoctorsArgs) => {
 	return useQuery({
 		queryKey: [
@@ -123,6 +131,12 @@ export const useAdminDoctorsQuery = (args: GetAdminDoctorsArgs) => {
 		refetchOnWindowFocus: false,
 		refetchOnReconnect: false,
 		staleTime: 60 * 1000,
+		refetchInterval: (query) => {
+			const rows = query.state.data?.doctors ?? [];
+			return rows.some((d) => d.embedding_state?.status === "pending")
+				? EMBEDDING_LIST_POLL_MS
+				: false;
+		},
 	});
 };
 

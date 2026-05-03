@@ -1,6 +1,7 @@
 "use client";
 
 import { AdminShell } from "@/components/common/admin-shell";
+import { EmbeddingLogsSection } from "./components";
 import { Button } from "@repo/ui/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/ui/card";
 import { MoonStarIcon, SunIcon } from "lucide-react";
@@ -52,6 +53,8 @@ const SettingsScreen = () => {
 						</div>
 					</CardContent>
 				</Card>
+
+				<EmbeddingLogsSection />
 			</div>
 		</AdminShell>
 	);

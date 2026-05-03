@@ -26,6 +26,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@repo/ui/components/ui/table";
+import { getEmbeddingBadgeVariant, getEmbeddingStatusLabel } from "../../lib/embedding-status-ui";
 import { useDoctorsTable } from "./hook";
 
 interface DoctorsTableProps {
@@ -40,6 +41,9 @@ interface DoctorsTableProps {
 	hasPreviousPage: boolean;
 	onPageChange: (page: number) => void;
 	onViewDoctor: (doctorId: string) => void;
+	onEmbedDoctor: (doctorId: string) => void;
+	isEmbedDoctorLoading: boolean;
+	embedDoctorId: string | null;
 }
 
 const TABLE_HEADERS = [
@@ -50,6 +54,7 @@ const TABLE_HEADERS = [
 	"Yrs",
 	"Work Setup",
 	"Verification",
+	"Embedding",
 	"Date",
 	"Action",
 ];
@@ -67,6 +72,9 @@ export const DoctorsTable = (props: DoctorsTableProps) => {
 		hasPreviousPage,
 		onPageChange,
 		onViewDoctor,
+		onEmbedDoctor,
+		isEmbedDoctorLoading,
+		embedDoctorId,
 	} = props;
 
 	const { pageNumbers, formatDate, toWorkSetup } = useDoctorsTable({
@@ -134,18 +142,45 @@ export const DoctorsTable = (props: DoctorsTableProps) => {
 										{doctor.verified ? "Verified" : "Unverified"}
 									</Badge>
 								</TableCell>
+								<TableCell>
+									<Badge
+										variant={getEmbeddingBadgeVariant(
+											doctor.embedding_state?.status,
+										)}
+										className="rounded-full"
+									>
+										{getEmbeddingStatusLabel(doctor.embedding_state?.status)}
+									</Badge>
+								</TableCell>
 								<TableCell className="text-muted-foreground">
 									{formatDate(doctor.created_at)}
 								</TableCell>
 								<TableCell>
-									<Button
-										size="sm"
-										variant="ghost"
-										type="button"
-										onClick={() => onViewDoctor(doctor.id)}
-									>
-										View
-									</Button>
+									<div className="flex flex-wrap gap-1">
+										<Button
+											size="sm"
+											variant="ghost"
+											type="button"
+											onClick={() => onViewDoctor(doctor.id)}
+										>
+											View
+										</Button>
+										<Button
+											size="sm"
+											variant="outline"
+											type="button"
+											disabled={
+												!doctor.profile ||
+												isEmbedDoctorLoading ||
+												doctor.embedding_state?.status === "pending"
+											}
+											onClick={() => onEmbedDoctor(doctor.id)}
+										>
+											{isEmbedDoctorLoading && embedDoctorId === doctor.id
+												? "Queueing…"
+												: "Embed"}
+										</Button>
+									</div>
 								</TableCell>
 							</TableRow>
 						))

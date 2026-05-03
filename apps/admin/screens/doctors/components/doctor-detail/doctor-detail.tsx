@@ -1,7 +1,9 @@
 "use client";
 
 import type { DoctorDetail } from "@/services/api/admin/doctors/get-doctor-detail";
+import { getEmbeddingBadgeVariant, getEmbeddingStatusLabel } from "../../lib/embedding-status-ui";
 import { Badge } from "@repo/ui/components/ui/badge";
+import { Button } from "@repo/ui/components/ui/button";
 import { Card } from "@repo/ui/components/ui/card";
 import { Separator } from "@repo/ui/components/ui/separator";
 import { Skeleton } from "@repo/ui/components/ui/skeleton";
@@ -11,10 +13,19 @@ import { useDoctorDetail } from "./hook";
 interface DoctorDetailProps {
 	doctor: DoctorDetail | null;
 	isLoading: boolean;
+	onEmbedDoctor: (doctorId: string) => void;
+	isEmbedDoctorLoading: boolean;
+	embedDoctorId: string | null;
 }
 
 export const DoctorDetailCard = (props: DoctorDetailProps) => {
-	const { doctor, isLoading } = props;
+	const {
+		doctor,
+		isLoading,
+		onEmbedDoctor,
+		isEmbedDoctorLoading,
+		embedDoctorId,
+	} = props;
 	const { leftFields, rightFields, docs } = useDoctorDetail({ doctor });
 
 	if (!doctor && !isLoading) return null;
@@ -62,6 +73,54 @@ export const DoctorDetailCard = (props: DoctorDetailProps) => {
 								</div>
 							))}
 						</div>
+					</div>
+
+					<Separator />
+
+					<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+						<div className="space-y-1">
+							<p className="font-heading text-base font-semibold">Profile embedding</p>
+							<div className="flex flex-wrap items-center gap-2">
+								<Badge
+									variant={getEmbeddingBadgeVariant(
+										doctor?.embedding_state?.status,
+									)}
+									className="rounded-full"
+								>
+									{getEmbeddingStatusLabel(doctor?.embedding_state?.status)}
+								</Badge>
+								{doctor?.embedding_state?.last_model ? (
+									<span className="text-xs text-muted-foreground">
+										Model: {doctor.embedding_state.last_model}
+										{doctor.embedding_state.last_dimensions
+											? ` · ${doctor.embedding_state.last_dimensions}d`
+											: ""}
+									</span>
+								) : null}
+							</div>
+							{doctor?.embedding_state?.last_error ? (
+								<p className="text-xs text-destructive">
+									{doctor.embedding_state.last_error}
+								</p>
+							) : null}
+						</div>
+						{doctor ? (
+							<Button
+								type="button"
+								size="sm"
+								variant="secondary"
+								disabled={
+									!doctor.profile ||
+									isEmbedDoctorLoading ||
+									doctor.embedding_state?.status === "pending"
+								}
+								onClick={() => onEmbedDoctor(doctor.id)}
+							>
+								{isEmbedDoctorLoading && embedDoctorId === doctor.id
+									? "Queueing…"
+									: "Queue embedding"}
+							</Button>
+						) : null}
 					</div>
 
 					<Separator />

@@ -9,6 +9,8 @@ import { createApi, sendJsonApiResponse } from "@repo/utils/server";
 import z from "zod";
 import { DOCTOR_APPLICATION_STATUSES } from "@repo/database/actions/doctor";
 
+import { doctorEmbeddingTask } from "@/trigger/tasks/doctor-embedding";
+
 const BodySchema = z
 	.object({
 		status: z.enum(DOCTOR_APPLICATION_STATUSES),
@@ -65,6 +67,20 @@ export const PATCH = createApi({
 					reason: body.rejection_reason,
 				});
 			}
+		}
+
+		if (body.status === "approved") {
+			void doctorEmbeddingTask
+				.trigger({
+					doctorId: application.doctor_id,
+					source: "approval",
+				})
+				.catch((error: unknown) => {
+					console.error(
+						"[medssi] Failed to enqueue doctor embedding after approval",
+						error,
+					);
+				});
 		}
 
 		return sendJsonApiResponse({
