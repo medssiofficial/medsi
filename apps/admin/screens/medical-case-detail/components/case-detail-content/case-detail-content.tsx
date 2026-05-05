@@ -188,11 +188,30 @@ function AnalysisCard(props: {
 					<div className="space-y-2">
 						<p className="text-sm text-muted-foreground">Key Symptoms</p>
 						<div className="flex flex-wrap gap-2">
-							{analysis.key_symptoms.map((symptom, index) => (
-								<Badge key={index} variant="outline" className="rounded-full">
-									{symptom}
-								</Badge>
-							))}
+							{analysis.key_symptoms.map((symptom, index) => {
+								const isObjectSymptom =
+									typeof symptom === "object" && symptom !== null;
+								const symptomRecord = isObjectSymptom
+									? (symptom as Record<string, unknown>)
+									: null;
+								const description = symptomRecord?.description;
+								const severity = symptomRecord?.severity;
+								const label =
+									typeof description === "string" && description.trim().length > 0
+										? description
+										: typeof symptom === "string"
+											? symptom
+											: JSON.stringify(symptom);
+
+								return (
+									<Badge key={index} variant="outline" className="rounded-full">
+										{label}
+										{typeof severity === "string" && severity.trim().length > 0
+											? ` (${severity})`
+											: ""}
+									</Badge>
+								);
+							})}
 						</div>
 					</div>
 				)}

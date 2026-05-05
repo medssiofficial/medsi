@@ -155,10 +155,10 @@ export const MedicalCasesTable = (props: MedicalCasesTableProps) => {
 									</Badge>
 								</TableCell>
 								<TableCell className="tabular-nums">
-									{medicalCase._count.files}
+									{medicalCase._count?.files ?? 0}
 								</TableCell>
 								<TableCell className="tabular-nums">
-									{medicalCase._count.chat_messages}
+									{medicalCase._count?.chat_messages ?? 0}
 								</TableCell>
 								<TableCell className="text-muted-foreground">
 									{formatDate(medicalCase.created_at)}

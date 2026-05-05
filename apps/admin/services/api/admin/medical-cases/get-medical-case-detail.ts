@@ -61,6 +61,47 @@ export type MedicalCaseDetail = {
 
 type ApiSuccess = JsonApiResponse<{ medical_case: MedicalCaseDetail }>;
 
+const normalizeMedicalCaseDetail = (
+	value: MedicalCaseDetail,
+): MedicalCaseDetail => {
+	const files = Array.isArray((value as { files?: unknown }).files)
+		? ((value as { files: Array<Record<string, unknown>> }).files ?? []).map(
+				(caseFile) => {
+					const nestedFile =
+						(caseFile.file as Record<string, unknown> | undefined) ?? undefined;
+					return {
+						id: String(caseFile.id ?? nestedFile?.id ?? ""),
+						file_name: String(
+							caseFile.file_name ?? nestedFile?.filename ?? "Untitled file",
+						),
+						file_type: String(
+							caseFile.file_type ?? nestedFile?.mime_type ?? "unknown",
+						),
+						file_key: String(
+							caseFile.file_key ?? nestedFile?.storage_key ?? "",
+						),
+						processing_status: String(
+							caseFile.processing_status ??
+								nestedFile?.processing_status ??
+								"pending",
+						),
+						created_at:
+							(caseFile.created_at as string | Date | undefined) ??
+							(nestedFile?.created_at as string | Date | undefined) ??
+							new Date().toISOString(),
+					};
+				},
+			)
+		: [];
+
+	return {
+		...value,
+		chat_messages: Array.isArray(value.chat_messages) ? value.chat_messages : [],
+		event_logs: Array.isArray(value.event_logs) ? value.event_logs : [],
+		files,
+	};
+};
+
 export const getMedicalCaseDetail = async (args: {
 	case_id: string;
 }): Promise<MedicalCaseDetail> => {
@@ -109,7 +150,9 @@ export const getMedicalCaseDetail = async (args: {
 		typeof apiJson.data === "object" &&
 		"medical_case" in apiJson.data
 	) {
-		return (apiJson.data as { medical_case: MedicalCaseDetail }).medical_case;
+		return normalizeMedicalCaseDetail(
+			(apiJson.data as { medical_case: MedicalCaseDetail }).medical_case,
+		);
 	}
 
 	throw new Error("Invalid response.");
