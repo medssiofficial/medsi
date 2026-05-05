@@ -8,6 +8,7 @@ import { Separator } from "@repo/ui/components/ui/separator";
 import { Skeleton } from "@repo/ui/components/ui/skeleton";
 import { Textarea } from "@repo/ui/components/ui/textarea";
 import { CheckCircle2, FileText, Lock, X } from "lucide-react";
+import Image from "next/image";
 import { type DocumentItem, useApplicationReviewSheet } from "./hook";
 
 interface ApplicationReviewSheetProps {
@@ -48,9 +49,12 @@ const DocPreview = ({ doc }: { doc: DocumentItem }) => {
 	if (doc.mime_type?.startsWith("image/")) {
 		return (
 			<div className="h-full overflow-auto">
-				<img
+				<Image
 					src={doc.file_url}
 					alt={doc.label}
+					width={1600}
+					height={1200}
+					unoptimized
 					className="h-full w-full object-contain"
 				/>
 			</div>

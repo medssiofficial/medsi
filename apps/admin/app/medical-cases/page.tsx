@@ -1,7 +1,7 @@
-import { ComingSoonScreen } from "@/screens/coming-soon";
+import MedicalCasesScreen from "@/screens/medical-cases/screen";
 
 const MedicalCasesPage = () => {
-	return <ComingSoonScreen />;
+	return <MedicalCasesScreen />;
 };
 
 export default MedicalCasesPage;

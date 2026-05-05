@@ -14,6 +14,7 @@ import {
 import { Input } from "@repo/ui/components/ui/input";
 import { Skeleton } from "@repo/ui/components/ui/skeleton";
 import Link from "next/link";
+import Image from "next/image";
 import {
 	FileIcon,
 	FileSpreadsheetIcon,
@@ -190,9 +191,12 @@ export const FilesContent = (props: FilesContentProps) => {
 								{viewMode === "thumbnail" ? (
 									<div className="rounded-lg border bg-muted/30 p-3 text-xs text-font-secondary">
 										{item.public_url && getThumbKind(item.mime_type) === "image" ? (
-											<img
+											<Image
 												src={item.public_url}
 												alt={item.filename}
+												width={600}
+												height={400}
+												unoptimized
 												className="h-28 w-full rounded-md object-cover"
 											/>
 										) : (

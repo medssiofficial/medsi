@@ -32,7 +32,7 @@ export const ChatContent = (props: ChatContentProps) => {
 		onLoadMore,
 		setSentinelRef,
 	} = props;
-	const { formatDate, toStatusLabel, toStatusTone } = useChatContent();
+	const { formatDate, toStatusLabel, toStatusTone, handleChatClick } = useChatContent();
 
 	return (
 		<div className="space-y-4">
@@ -67,7 +67,12 @@ export const ChatContent = (props: ChatContentProps) => {
 				<>
 					<div className="space-y-3">
 						{items.map((item) => (
-							<div key={item.id} className="space-y-3 rounded-2xl border bg-background p-4">
+							<button
+								key={item.id}
+								type="button"
+								onClick={() => handleChatClick(item.id)}
+								className="w-full space-y-3 rounded-2xl border bg-background p-4 text-left transition-colors hover:bg-muted/50"
+							>
 								<div className="flex items-center justify-between gap-2">
 									<p className="text-sm font-semibold text-font-primary">
 										Chat #{item.id.slice(0, 8).toUpperCase()}
@@ -81,7 +86,7 @@ export const ChatContent = (props: ChatContentProps) => {
 									<p className="line-clamp-2 text-sm text-font-secondary">{item.preview}</p>
 								</div>
 								<p className="text-xs text-font-secondary">Updated {formatDate(item.updated_at)}</p>
-							</div>
+							</button>
 						))}
 					</div>
 

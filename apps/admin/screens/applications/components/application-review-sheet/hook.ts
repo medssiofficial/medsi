@@ -1,7 +1,7 @@
 "use client";
 
 import type { AdminApplicationDetail } from "@/services/api/admin/applications/types";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { DoctorApplicationStatus } from "@repo/database/actions/doctor";
 
 const toReadableDate = (value: Date | string | null | undefined) => {
@@ -80,23 +80,29 @@ export const useApplicationReviewSheet = (args: {
 	}) => Promise<void>;
 }) => {
 	const { application, onUpdateStatus } = args;
-	const [rejectionReason, setRejectionReason] = useState("");
+	const [rejectionReasonDraft, setRejectionReasonDraft] = useState<string | null>(
+		null,
+	);
 	const [reasonError, setReasonError] = useState<string | null>(null);
-	const [selectedStatus, setSelectedStatus] =
-		useState<DoctorApplicationStatus>("pending");
-	const [previewDoc, setPreviewDoc] = useState<DocumentItem | null>(null);
+	const [selectedStatusDraft, setSelectedStatusDraft] =
+		useState<DoctorApplicationStatus | null>(null);
+	const [draftApplicationId, setDraftApplicationId] = useState<string | null>(
+		null,
+	);
+	const [previewDocKey, setPreviewDocKey] = useState<string | null>(null);
 
 	const isStatusLocked = application
 		? LOCKED_STATUSES.has(application.status)
 		: false;
 
-	useEffect(() => {
-		if (!application) return;
-		setSelectedStatus(application.status);
-		setRejectionReason(application.rejection_reason ?? "");
-		setReasonError(null);
-		setPreviewDoc(null);
-	}, [application]);
+	const currentApplicationId = application?.id ?? null;
+	const useDraftValues = draftApplicationId === currentApplicationId;
+	const selectedStatus = useDraftValues
+		? (selectedStatusDraft ?? (application?.status ?? "pending"))
+		: (application?.status ?? "pending");
+	const rejectionReason = useDraftValues
+		? (rejectionReasonDraft ?? (application?.rejection_reason ?? ""))
+		: (application?.rejection_reason ?? "");
 
 	const applicantFields = useMemo(() => {
 		if (!application) return [];
@@ -286,6 +292,31 @@ export const useApplicationReviewSheet = (args: {
 		return [...requiredDocs, ...specializationDocs, ...experienceDocs];
 	}, [application]);
 
+	const previewDoc = useMemo(() => {
+		if (!previewDocKey) return null;
+		return (
+			submittedDocuments.find((item) => item.file_key === previewDocKey) ?? null
+		);
+	}, [previewDocKey, submittedDocuments]);
+
+	const setSelectedStatus = useCallback(
+		(value: DoctorApplicationStatus) => {
+			setDraftApplicationId(currentApplicationId);
+			setSelectedStatusDraft(value);
+			setReasonError(null);
+		},
+		[currentApplicationId],
+	);
+
+	const setRejectionReason = useCallback(
+		(value: string) => {
+			setDraftApplicationId(currentApplicationId);
+			setRejectionReasonDraft(value);
+			setReasonError(null);
+		},
+		[currentApplicationId],
+	);
+
 	const handleApplyStatus = useCallback(async () => {
 		if (!application) return;
 		if (isStatusLocked) return;
@@ -310,13 +341,13 @@ export const useApplicationReviewSheet = (args: {
 
 	const handleDocClick = useCallback(
 		(doc: DocumentItem) => {
-			if (previewDoc?.file_key === doc.file_key) {
-				setPreviewDoc(null);
+			if (previewDocKey === doc.file_key) {
+				setPreviewDocKey(null);
 			} else {
-				setPreviewDoc(doc);
+				setPreviewDocKey(doc.file_key);
 			}
 		},
-		[previewDoc],
+		[previewDocKey],
 	);
 
 	return {

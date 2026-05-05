@@ -67,14 +67,6 @@ export const useApplicationsScreen = () => {
 
 	const pendingCount = applicationCountsQuery.data ?? 0;
 
-	useEffect(() => {
-		if (!applicationsQuery.data) return;
-		const totalPages = applicationsQuery.data.meta.total_pages;
-		if (page > totalPages) {
-			setPage(totalPages);
-		}
-	}, [applicationsQuery.data, page]);
-
 	const handleStatusChange = (nextStatus: AdminApplicationStatusFilter) => {
 		setStatus(nextStatus);
 		setPage(1);

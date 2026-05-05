@@ -17,6 +17,7 @@
 		"@clerk/nextjs": "^7.2.3",
 		"@hookform/resolvers": "^5.2.2",
 		"@repo/database": "*",
+		"@repo/case-processing": "*",
 		"@repo/patient-file-processing": "*",
 		"@repo/providers": "*",
 		"@repo/types": "*",

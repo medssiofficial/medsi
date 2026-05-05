@@ -1,5 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useCallback } from "react";
+
 const formatDate = (value: Date | string) => {
 	const date = value instanceof Date ? value : new Date(value);
 	return new Intl.DateTimeFormat("en-US", {
@@ -22,9 +25,19 @@ const toStatusLabel = (status: string) => {
 };
 
 export const useChatContent = () => {
+	const router = useRouter();
+
+	const handleChatClick = useCallback(
+		(caseId: string) => {
+			router.push(`/chat/${caseId}`);
+		},
+		[router],
+	);
+
 	return {
 		formatDate,
 		toStatusTone,
 		toStatusLabel,
+		handleChatClick,
 	};
 };

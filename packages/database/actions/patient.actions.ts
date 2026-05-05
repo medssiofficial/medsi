@@ -602,6 +602,7 @@ export const resolvePatientUserIdByClerkId = async (clerk_id: string) => {
 export interface PatientCaseListItem {
 	id: string;
 	conversation_status: "in_progress" | "completed" | "cancelled";
+	case_stage: "chatting" | "processing" | "analyzed" | "ready_for_matching";
 	summary: string | null;
 	created_at: Date;
 	updated_at: Date;
@@ -662,6 +663,7 @@ export const getPatientCasesByClerkId = async (
 		items: slicedRows.map((row) => ({
 			id: row.id,
 			conversation_status: row.conversation_status,
+			case_stage: row.case_stage,
 			summary: row.summary,
 			created_at: row.created_at,
 			updated_at: row.updated_at,
@@ -998,6 +1000,10 @@ export interface PatientDashboardOverview {
 	active_cases: number;
 	completed_cases: number;
 	has_ongoing_case: boolean;
+	ongoing_case: {
+		id: string;
+		case_stage: "chatting" | "processing" | "analyzed" | "ready_for_matching";
+	} | null;
 	recent_cases: PatientCaseListItem[];
 }
 
@@ -1015,11 +1021,12 @@ export const getPatientDashboardOverviewByClerkId = async (
 			active_cases: 0,
 			completed_cases: 0,
 			has_ongoing_case: false,
+			ongoing_case: null,
 			recent_cases: [],
 		};
 	}
 
-	const [activeCases, completedCases, recentCases] = await prisma.$transaction([
+	const [activeCases, completedCases, ongoingCase, recentCases] = await prisma.$transaction([
 		prisma.medical_case.count({
 			where: {
 				user_id: patient.id,
@@ -1030,6 +1037,17 @@ export const getPatientDashboardOverviewByClerkId = async (
 			where: {
 				user_id: patient.id,
 				conversation_status: "completed",
+			},
+		}),
+		prisma.medical_case.findFirst({
+			where: {
+				user_id: patient.id,
+				conversation_status: "in_progress",
+			},
+			orderBy: { updated_at: "desc" },
+			select: {
+				id: true,
+				case_stage: true,
 			},
 		}),
 		prisma.medical_case.findMany({
@@ -1046,9 +1064,16 @@ export const getPatientDashboardOverviewByClerkId = async (
 		active_cases: activeCases,
 		completed_cases: completedCases,
 		has_ongoing_case: activeCases > 0,
+		ongoing_case: ongoingCase
+			? {
+					id: ongoingCase.id,
+					case_stage: ongoingCase.case_stage,
+				}
+			: null,
 		recent_cases: recentCases.map((row) => ({
 			id: row.id,
 			conversation_status: row.conversation_status,
+			case_stage: row.case_stage,
 			summary: row.summary,
 			created_at: row.created_at,
 			updated_at: row.updated_at,

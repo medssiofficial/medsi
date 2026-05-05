@@ -1,4 +1,5 @@
-import { getPatientCasesByClerkId } from "@repo/database/actions/patient";
+import { getPatientCasesByClerkId, resolvePatientUserIdByClerkId } from "@repo/database/actions/patient";
+import { createMedicalCase } from "@repo/database/actions/medical-case";
 import { createApi, sendJsonApiResponse } from "@repo/utils/server";
 import z from "zod";
 
@@ -24,5 +25,19 @@ export const GET = createApi({
 			code: 200,
 			data: result,
 		});
+	},
+});
+
+export const POST = createApi({
+	requireAuth: true,
+	execute: async ({ user }) => {
+		const userId = await resolvePatientUserIdByClerkId(user.id);
+		if (!userId) {
+			return sendJsonApiResponse({ success: false, error: "Patient not found.", code: 404 });
+		}
+
+		const result = await createMedicalCase({ user_id: userId });
+
+		return sendJsonApiResponse({ success: true, code: 201, data: { case: result } });
 	},
 });

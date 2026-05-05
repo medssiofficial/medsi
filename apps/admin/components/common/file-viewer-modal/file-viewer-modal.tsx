@@ -9,6 +9,7 @@ import {
 	DialogTitle,
 } from "@repo/ui/components/ui/dialog";
 import Link from "next/link";
+import Image from "next/image";
 import { useFileViewerModal } from "./hook";
 
 interface FileViewerModalProps {
@@ -44,9 +45,12 @@ export const FileViewerModal = (props: FileViewerModalProps) => {
 						</div>
 					) : kind === "image" ? (
 						<div className="flex h-full items-center justify-center rounded-lg bg-muted/30 p-4">
-							<img
+							<Image
 								src={file.public_url}
 								alt={file.filename}
+								width={1600}
+								height={1200}
+								unoptimized
 								className="max-h-full max-w-full rounded-lg object-contain"
 							/>
 						</div>

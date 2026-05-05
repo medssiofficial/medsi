@@ -5,6 +5,7 @@ import {
 	Folder,
 	GitMerge,
 	LayoutDashboard,
+	MessageSquareText,
 	Settings,
 	Stethoscope,
 	User,
@@ -87,6 +88,45 @@ export const API_ROUTES = {
 				method: "GET",
 			},
 		},
+		MEDICAL_CASES: {
+			LIST: {
+				key: "admin.medical-cases.list",
+				path: "/api/admin/medical-cases",
+				method: "GET",
+			},
+			DETAIL: {
+				key: "admin.medical-cases.detail",
+				path: "/api/admin/medical-cases",
+				method: "GET",
+			},
+		},
+		INTAKE_QUESTIONS: {
+			LIST: {
+				key: "admin.intake-questions.list",
+				path: "/api/admin/intake-questions",
+				method: "GET",
+			},
+			CREATE: {
+				key: "admin.intake-questions.create",
+				path: "/api/admin/intake-questions",
+				method: "POST",
+			},
+			UPDATE: {
+				key: "admin.intake-questions.update",
+				path: "/api/admin/intake-questions",
+				method: "PUT",
+			},
+			DELETE: {
+				key: "admin.intake-questions.delete",
+				path: "/api/admin/intake-questions",
+				method: "DELETE",
+			},
+			REORDER: {
+				key: "admin.intake-questions.reorder",
+				path: "/api/admin/intake-questions/reorder",
+				method: "PATCH",
+			},
+		},
 		FILES: {
 			DOCTORS: {
 				LIST: {
@@ -121,6 +161,7 @@ export const NAV_ITEMS: NavItem[] = [
 	{ label: "Doctor Applications", href: "/applications", icon: FileText },
 	{ label: "Doctors", href: "/doctors", icon: Users },
 	{ label: "Patients", href: "/patients", icon: User },
+	{ label: "Intake Questions", href: "/intake-questions", icon: MessageSquareText },
 	{ label: "Medical Cases", href: "/medical-cases", icon: BriefcaseMedical },
 	{ label: "Matches", href: "/matches", icon: GitMerge },
 	{ label: "Files", href: "/files", icon: Folder },

@@ -1,5 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useCallback } from "react";
+
 const formatDate = (value: Date | string) => {
 	const date = value instanceof Date ? value : new Date(value);
 	return new Intl.DateTimeFormat("en-US", {
@@ -21,10 +24,44 @@ const toStatusLabel = (status: string) => {
 	return "In progress";
 };
 
+const toStageTone = (stage: string) => {
+	if (stage === "analyzed" || stage === "ready_for_matching") return "bg-green-100 text-green-700";
+	if (stage === "processing") return "bg-amber-100 text-amber-700";
+	return "bg-blue-100 text-blue-700";
+};
+
+const toStageLabel = (stage: string) => {
+	if (stage === "chatting") return "Chatting";
+	if (stage === "processing") return "Processing";
+	if (stage === "analyzed") return "Analyzed";
+	if (stage === "ready_for_matching") return "Ready";
+	return stage;
+};
+
+const getCaseRoute = (caseId: string, stage: string) => {
+	if (stage === "chatting") return `/consultation/chat?caseId=${caseId}`;
+	if (stage === "processing") return `/cases/${caseId}/analyzing`;
+	if (stage === "analyzed") return `/cases/${caseId}/analyzed`;
+	if (stage === "ready_for_matching") return `/cases/${caseId}/review`;
+	return `/cases/${caseId}/analyzed`;
+};
+
 export const useCasesContent = () => {
+	const router = useRouter();
+
+	const handleCaseClick = useCallback(
+		(caseId: string, stage: string) => {
+			router.push(getCaseRoute(caseId, stage));
+		},
+		[router],
+	);
+
 	return {
 		formatDate,
 		toStatusTone,
 		toStatusLabel,
+		toStageTone,
+		toStageLabel,
+		handleCaseClick,
 	};
 };
