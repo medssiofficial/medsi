@@ -10,11 +10,35 @@ import { useUploadPatientFileMutation } from "@/services/api/patient/upload-file
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+const VIEW_MODE_STORAGE_KEY = "web.files.view_mode";
+const VIEW_MODE_COOKIE_KEY = "web_files_view_mode";
+
+const readStoredViewMode = (): "list" | "thumbnail" => {
+	if (typeof window === "undefined") return "list";
+
+	const raw = window.localStorage.getItem(VIEW_MODE_STORAGE_KEY);
+	if (raw === "list" || raw === "thumbnail") return raw;
+
+	const cookieRaw = document.cookie
+		.split("; ")
+		.find((part) => part.startsWith(`${VIEW_MODE_COOKIE_KEY}=`))
+		?.split("=")[1];
+	if (cookieRaw === "list" || cookieRaw === "thumbnail") return cookieRaw;
+
+	return "list";
+};
+
+const persistViewMode = (viewMode: "list" | "thumbnail") => {
+	if (typeof window === "undefined") return;
+	window.localStorage.setItem(VIEW_MODE_STORAGE_KEY, viewMode);
+	document.cookie = `${VIEW_MODE_COOKIE_KEY}=${viewMode}; path=/; max-age=31536000; samesite=lax`;
+};
+
 export const useFilesScreen = () => {
 	const { APIErrorHandler } = useAPIErrorHandler();
 	const [searchInput, setSearchInput] = useState("");
 	const [search, setSearch] = useState("");
-	const [viewMode, setViewMode] = useState<"list" | "thumbnail">("list");
+	const [viewModeState, setViewModeState] = useState<"list" | "thumbnail">(readStoredViewMode);
 	const [activePreviewFile, setActivePreviewFile] = useState<{
 		filename: string;
 		mime_type: string;
@@ -25,16 +49,15 @@ export const useFilesScreen = () => {
 	const bulkMutation = useTriggerPatientFilesProcessBulkMutation();
 	const deleteMutation = useDeletePatientFileMutation();
 
-	useEffect(() => {
-		const raw = window.localStorage.getItem("web.files.view_mode");
-		if (raw === "list" || raw === "thumbnail") {
-			setViewMode(raw);
-		}
-	}, []);
+	const setViewMode = (nextMode: "list" | "thumbnail") => {
+		setViewModeState(nextMode);
+		persistViewMode(nextMode);
+	};
 
 	useEffect(() => {
-		window.localStorage.setItem("web.files.view_mode", viewMode);
-	}, [viewMode]);
+		const persisted = readStoredViewMode();
+		setViewModeState(persisted);
+	}, []);
 
 	useEffect(() => {
 		const timeoutId = window.setTimeout(() => {
@@ -163,7 +186,7 @@ export const useFilesScreen = () => {
 				? processMutation.variables
 				: null,
 		eligibleBulkCount,
-		viewMode,
+		viewMode: viewModeState,
 		setViewMode,
 		onDeleteFile: handleDeleteFile,
 		isDeletingFile:

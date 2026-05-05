@@ -187,27 +187,29 @@ export const FilesContent = (props: FilesContentProps) => {
 									<span>{item.report_type.replace("_", " ")}</span>
 									<span>{formatDate(item.created_at)}</span>
 								</div>
-								<div className="rounded-lg border bg-muted/30 p-3 text-xs text-font-secondary">
-									{item.public_url && getThumbKind(item.mime_type) === "image" ? (
-										<img
-											src={item.public_url}
-											alt={item.filename}
-											className="h-28 w-full rounded-md object-cover"
-										/>
-									) : (
-										<div className="flex h-28 items-center justify-center rounded-md border bg-background">
-											{getThumbKind(item.mime_type) === "pdf" ? (
-												<FileSpreadsheetIcon className="size-12 text-rose-500" />
-											) : getThumbKind(item.mime_type) === "text" ? (
-												<FileTextIcon className="size-12 text-sky-500" />
-											) : getThumbKind(item.mime_type) === "image" ? (
-												<ImageIcon className="size-12 text-emerald-500" />
-											) : (
-												<FileIcon className="size-12 text-muted-foreground" />
-											)}
-										</div>
-									)}
-								</div>
+								{viewMode === "thumbnail" ? (
+									<div className="rounded-lg border bg-muted/30 p-3 text-xs text-font-secondary">
+										{item.public_url && getThumbKind(item.mime_type) === "image" ? (
+											<img
+												src={item.public_url}
+												alt={item.filename}
+												className="h-28 w-full rounded-md object-cover"
+											/>
+										) : (
+											<div className="flex h-28 items-center justify-center rounded-md border bg-background">
+												{getThumbKind(item.mime_type) === "pdf" ? (
+													<FileSpreadsheetIcon className="size-12 text-rose-500" />
+												) : getThumbKind(item.mime_type) === "text" ? (
+													<FileTextIcon className="size-12 text-sky-500" />
+												) : getThumbKind(item.mime_type) === "image" ? (
+													<ImageIcon className="size-12 text-emerald-500" />
+												) : (
+													<FileIcon className="size-12 text-muted-foreground" />
+												)}
+											</div>
+										)}
+									</div>
+								) : null}
 								<p className="text-xs text-font-secondary">
 									Used in {item.used_in_cases_count} case(s)
 									{item.related_case_ids.length > 0
