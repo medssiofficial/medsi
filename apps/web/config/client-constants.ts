@@ -8,6 +8,7 @@ export const SETTINGS_URL = "/settings";
 export const SETTINGS_FILE_PROCESSING_LOGS_URL = "/settings/file-processing-logs";
 export const CASES_URL = "/cases";
 export const FILES_URL = "/files";
+export const FILES_DETAIL_PREFIX = "/files/";
 export const CHAT_URL = "/chat";
 /** Patient AI consultation chat (edge-to-edge; not a tab route). */
 export const NEW_CONSULTATION_URL = "/consultation/chat";

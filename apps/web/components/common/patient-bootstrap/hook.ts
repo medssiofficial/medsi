@@ -3,9 +3,12 @@
 import {
 	APP_TAB_ROUTES,
 	DASHBOARD_URL,
+	FILES_DETAIL_PREFIX,
+	FILES_URL,
 	NEW_CONSULTATION_URL,
 	ONBOARD_URL,
 	SETTINGS_URL,
+	SETTINGS_FILE_PROCESSING_LOGS_URL,
 	SIGN_IN_URL,
 	SIGN_UP_URL,
 } from "@/config/client-constants";
@@ -36,11 +39,14 @@ export const usePatientBootstrap = () => {
 		if (!isLoaded || !isSignedIn) return;
 		if (!patientMeQuery.isSuccess) return;
 
-		const isAppRoute = [
+		const isKnownStaticRoute = [
 			...APP_TAB_ROUTES,
 			SETTINGS_URL,
+			SETTINGS_FILE_PROCESSING_LOGS_URL,
 			NEW_CONSULTATION_URL,
 		].includes(pathname as typeof DASHBOARD_URL);
+		const isFilesDetailRoute = pathname.startsWith(FILES_DETAIL_PREFIX) && pathname !== FILES_URL;
+		const isAppRoute = isKnownStaticRoute || isFilesDetailRoute;
 		const isAuthOrLandingRoute = pathname === "/" || pathname === SIGN_IN_URL || pathname === SIGN_UP_URL;
 
 		if (!patientMeQuery.data.is_onboarding_complete) {
