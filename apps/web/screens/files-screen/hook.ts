@@ -2,6 +2,7 @@
 
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useAPIErrorHandler } from "@/hooks/use-api-error-handler";
+import { useDeletePatientFileMutation } from "@/services/api/patient/delete-file";
 import { usePatientFilesInfinite } from "@/services/api/patient/get-files";
 import { useTriggerPatientFileProcessMutation } from "@/services/api/patient/trigger-file-process";
 import { useTriggerPatientFilesProcessBulkMutation } from "@/services/api/patient/trigger-files-process-bulk";
@@ -13,9 +14,27 @@ export const useFilesScreen = () => {
 	const { APIErrorHandler } = useAPIErrorHandler();
 	const [searchInput, setSearchInput] = useState("");
 	const [search, setSearch] = useState("");
+	const [viewMode, setViewMode] = useState<"list" | "thumbnail">("list");
+	const [activePreviewFile, setActivePreviewFile] = useState<{
+		filename: string;
+		mime_type: string;
+		public_url: string | null;
+	} | null>(null);
 	const uploadMutation = useUploadPatientFileMutation();
 	const processMutation = useTriggerPatientFileProcessMutation();
 	const bulkMutation = useTriggerPatientFilesProcessBulkMutation();
+	const deleteMutation = useDeletePatientFileMutation();
+
+	useEffect(() => {
+		const raw = window.localStorage.getItem("web.files.view_mode");
+		if (raw === "list" || raw === "thumbnail") {
+			setViewMode(raw);
+		}
+	}, []);
+
+	useEffect(() => {
+		window.localStorage.setItem("web.files.view_mode", viewMode);
+	}, [viewMode]);
 
 	useEffect(() => {
 		const timeoutId = window.setTimeout(() => {
@@ -45,6 +64,11 @@ export const useFilesScreen = () => {
 		if (!bulkMutation.isError) return;
 		APIErrorHandler()(bulkMutation.error);
 	}, [APIErrorHandler, bulkMutation.error, bulkMutation.isError]);
+
+	useEffect(() => {
+		if (!deleteMutation.isError) return;
+		APIErrorHandler()(deleteMutation.error);
+	}, [APIErrorHandler, deleteMutation.error, deleteMutation.isError]);
 
 	const items = useMemo(
 		() => filesQuery.data?.pages.flatMap((page) => page.items) ?? [],
@@ -94,6 +118,31 @@ export const useFilesScreen = () => {
 		});
 	};
 
+	const handleDeleteFile = (fileId: string, filename: string) => {
+		const confirmed = window.confirm(`Delete "${filename}"? This cannot be undone.`);
+		if (!confirmed) return;
+
+		void deleteMutation.mutateAsync(fileId).then(() => {
+			toast.success("File deleted.");
+		});
+	};
+
+	const handleOpenPreview = (file: {
+		filename: string;
+		mime_type: string;
+		public_url: string | null;
+	}) => {
+		if (!file.public_url) {
+			toast.info("Preview unavailable for this file.");
+			return;
+		}
+		if (file.mime_type.toLowerCase().startsWith("video/")) {
+			toast.info("Video preview is not supported yet.");
+			return;
+		}
+		setActivePreviewFile(file);
+	};
+
 	return {
 		searchInput,
 		setSearchInput,
@@ -114,5 +163,15 @@ export const useFilesScreen = () => {
 				? processMutation.variables
 				: null,
 		eligibleBulkCount,
+		viewMode,
+		setViewMode,
+		onDeleteFile: handleDeleteFile,
+		isDeletingFile:
+			deleteMutation.isPending && deleteMutation.variables
+				? deleteMutation.variables
+				: null,
+		activePreviewFile,
+		setActivePreviewFile,
+		onOpenPreview: handleOpenPreview,
 	};
 };

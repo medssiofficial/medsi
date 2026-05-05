@@ -21,6 +21,13 @@ const FilesScreen = () => {
 		isBulkProcessing,
 		isProcessingFile,
 		eligibleBulkCount,
+		viewMode,
+		setViewMode,
+		onDeleteFile,
+		isDeletingFile,
+		activePreviewFile,
+		setActivePreviewFile,
+		onOpenPreview,
 	} = useFilesScreen();
 
 	return (
@@ -44,6 +51,15 @@ const FilesScreen = () => {
 					isBulkProcessing={isBulkProcessing}
 					isProcessingFile={isProcessingFile}
 					eligibleBulkCount={eligibleBulkCount}
+					viewMode={viewMode}
+					onViewModeChange={setViewMode}
+					onDeleteFile={onDeleteFile}
+					isDeletingFile={isDeletingFile}
+					activePreviewFile={activePreviewFile}
+					onOpenPreview={onOpenPreview}
+					onPreviewOpenChange={(open) => {
+						if (!open) setActivePreviewFile(null);
+					}}
 				/>
 			</div>
 		</PatientAppShell>

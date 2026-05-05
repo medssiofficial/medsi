@@ -6,9 +6,12 @@ import { Button } from "@repo/ui/components/ui/button";
 import { Skeleton } from "@repo/ui/components/ui/skeleton";
 import Link from "next/link";
 import { ArrowLeftIcon } from "lucide-react";
+import { useState } from "react";
 
 const PatientFileProcessingLogsScreen = () => {
-	const query = useAdminPatientFileProcessingLogsQuery({ page: 1, page_size: 30 });
+	const [page, setPage] = useState(1);
+	const query = useAdminPatientFileProcessingLogsQuery({ page, page_size: 20 });
+	const meta = query.data?.meta;
 
 	return (
 		<AdminShell>
@@ -66,6 +69,29 @@ const PatientFileProcessingLogsScreen = () => {
 							))}
 						</ul>
 					)}
+				</div>
+				<div className="flex items-center justify-end gap-2">
+					<Button
+						type="button"
+						variant="outline"
+						size="sm"
+						disabled={query.isLoading || !(meta?.has_previous_page ?? false)}
+						onClick={() => setPage((p) => Math.max(1, p - 1))}
+					>
+						Previous
+					</Button>
+					<span className="text-xs text-muted-foreground">
+						Page {meta?.page ?? page} of {Math.max(meta?.total_pages ?? 1, 1)}
+					</span>
+					<Button
+						type="button"
+						variant="outline"
+						size="sm"
+						disabled={query.isLoading || !(meta?.has_next_page ?? false)}
+						onClick={() => setPage((p) => p + 1)}
+					>
+						Next
+					</Button>
 				</div>
 			</div>
 		</AdminShell>

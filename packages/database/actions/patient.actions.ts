@@ -1,6 +1,7 @@
 import { prisma } from "../client";
 import type { Prisma } from "../types/server";
 import {
+	deleteFile,
 	getDefaultStorageBucket,
 	getSupabaseAnonClient,
 	uploadPublicFile,
@@ -908,6 +909,53 @@ export const getPatientFileByClerkId = async (args: GetPatientFileByClerkIdArgs)
 		related_case_ids: row.case_references.map((r) => r.medical_case_id),
 		used_in_cases_count: row.case_references.length,
 	} satisfies PatientFileDetail;
+};
+
+interface DeletePatientFileByClerkIdArgs {
+	clerk_id: string;
+	file_id: string;
+}
+
+export const deletePatientFileByClerkId = async (args: DeletePatientFileByClerkIdArgs) => {
+	const patient = await getPatientUserByClerkId(args.clerk_id);
+	if (!patient) {
+		throw new Error("Patient not found.");
+	}
+
+	const file = await prisma.file.findFirst({
+		where: {
+			id: args.file_id,
+			user_id: patient.id,
+		},
+		include: {
+			case_references: {
+				select: { id: true },
+			},
+		},
+	});
+
+	if (!file) {
+		throw new Error("File not found.");
+	}
+
+	if (file.case_references.length > 0) {
+		throw new Error("Cannot delete a file that is linked to medical cases.");
+	}
+
+	const bucket =
+		typeof (file.metadata as { bucket?: unknown } | null)?.bucket === "string"
+			? ((file.metadata as { bucket: string }).bucket ?? "").trim()
+			: "";
+	await deleteFile({
+		path: file.storage_key,
+		bucket: bucket.length > 0 ? bucket : undefined,
+	});
+
+	await prisma.file.delete({
+		where: { id: file.id },
+	});
+
+	return { id: file.id };
 };
 
 export interface PatientChatListItem {
