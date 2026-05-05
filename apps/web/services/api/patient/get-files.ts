@@ -69,6 +69,12 @@ export const usePatientFilesInfinite = (args?: {
 		retry: false,
 		refetchOnWindowFocus: false,
 		refetchOnReconnect: false,
-		staleTime: 60 * 1000,
+		staleTime: 0,
+		refetchInterval: (query) => {
+			const pages = query.state.data?.pages;
+			if (!pages?.length) return false;
+			const flat = pages.flatMap((p) => p.items);
+			return flat.some((f) => f.processing_status === "processing") ? 4000 : false;
+		},
 	});
 };

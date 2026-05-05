@@ -73,6 +73,13 @@ export const API_ROUTES = {
 				method: "GET",
 			},
 		},
+		PATIENT_FILE_PROCESSING_LOGS: {
+			LIST: {
+				key: "admin.patient-file-processing-logs.list",
+				path: "/api/admin/patient-file-processing-logs",
+				method: "GET",
+			},
+		},
 		PATIENTS: {
 			LIST: {
 				key: "admin.patients.list",

@@ -21,7 +21,7 @@ import {
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@repo/ui/components/ui/empty";
 import { Input } from "@repo/ui/components/ui/input";
 import { Skeleton } from "@repo/ui/components/ui/skeleton";
-import { FileIcon, RefreshCwIcon, SearchIcon } from "lucide-react";
+import { FileIcon, SearchIcon, SparklesIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -37,7 +37,11 @@ interface PatientFolderContentProps {
 	hasNextPage: boolean;
 	hasPreviousPage: boolean;
 	onPageChange: (nextPage: number) => void;
-	onSyncProcessing: () => void;
+	onBulkProcessTextFiles: () => void;
+	onProcessTextFile: (fileId: string) => void;
+	isBulkProcessing: boolean;
+	isProcessingFile: string | null;
+	eligibleBulkCount: number;
 }
 
 export const PatientFolderContent = (props: PatientFolderContentProps) => {
@@ -51,7 +55,11 @@ export const PatientFolderContent = (props: PatientFolderContentProps) => {
 		hasNextPage,
 		hasPreviousPage,
 		onPageChange,
-		onSyncProcessing,
+		onBulkProcessTextFiles,
+		onProcessTextFile,
+		isBulkProcessing,
+		isProcessingFile,
+		eligibleBulkCount,
 	} = props;
 	const { formatDate, formatFileSize, toProcessingTone, handleContextAction } =
 		usePatientFolderContent();
@@ -113,9 +121,14 @@ export const PatientFolderContent = (props: PatientFolderContentProps) => {
 					<p className="text-sm font-semibold text-foreground">{detail.patient.name}</p>
 					<p className="text-xs text-muted-foreground">{detail.patient.email}</p>
 				</div>
-				<Button type="button" variant="outline" onClick={onSyncProcessing}>
-					<RefreshCwIcon className="mr-1.5 size-4" />
-					Sync Processing
+				<Button
+					type="button"
+					variant="outline"
+					disabled={isBulkProcessing || eligibleBulkCount === 0}
+					onClick={onBulkProcessTextFiles}
+				>
+					<SparklesIcon className="mr-1.5 size-4" />
+					{isBulkProcessing ? "Queueing…" : `Process all eligible (${eligibleBulkCount})`}
 				</Button>
 			</div>
 
@@ -184,12 +197,32 @@ export const PatientFolderContent = (props: PatientFolderContentProps) => {
 								</div>
 							</ContextMenuTrigger>
 							<ContextMenuContent className="w-52">
-								<ContextMenuItem onSelect={onSyncProcessing}>
-									Sync processing
-								</ContextMenuItem>
 								<ContextMenuItem
-									onSelect={() => openPreview(file)}
+									disabled={
+										Boolean(isProcessingFile && isProcessingFile === file.id) ||
+										(file.report_type === "text_report" &&
+											file.processing_status !== "pending" &&
+											file.processing_status !== "failed")
+									}
+									onSelect={() => {
+										if (file.report_type === "image_report") {
+											toast.info("Coming soon.", {
+												description: "Image report processing is not available yet.",
+											});
+											return;
+										}
+										if (
+											file.report_type === "text_report" &&
+											(file.processing_status === "pending" ||
+												file.processing_status === "failed")
+										) {
+											onProcessTextFile(file.id);
+										}
+									}}
 								>
+									Process with AI
+								</ContextMenuItem>
+								<ContextMenuItem onSelect={() => openPreview(file)}>
 									Preview file
 								</ContextMenuItem>
 								{file.public_url ? (

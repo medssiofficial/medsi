@@ -11,6 +11,7 @@
 		"./actions/doctor": "./actions/doctor.actions.ts",
 		"./actions/doctor-embedding": "./actions/doctor-embedding.action.ts",
 		"./actions/patient": "./actions/patient.actions.ts",
+		"./actions/patient-file-processing": "./actions/patient-file-processing.action.ts",
 		"./constants/doctor-embedding": "./constants/doctor-embedding.ts",
 		"./ensure-doctor-embedding-vector-table": "./ensure-doctor-embedding-vector-table.ts"
 	},

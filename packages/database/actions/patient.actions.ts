@@ -488,7 +488,12 @@ export interface AdminPatientFolderFileItem {
 	filename: string;
 	mime_type: string;
 	report_type: "text_report" | "image_report";
-	processing_status: "pending" | "processing" | "completed" | "failed";
+	processing_status:
+		| "pending"
+		| "processing"
+		| "completed"
+		| "failed"
+		| "not_supported";
 	created_at: Date;
 	size_bytes: number | null;
 	public_url: string | null;
@@ -588,6 +593,11 @@ const getPatientUserByClerkId = async (clerk_id: string) => {
 	});
 };
 
+export const resolvePatientUserIdByClerkId = async (clerk_id: string) => {
+	const row = await getPatientUserByClerkId(clerk_id);
+	return row?.id ?? null;
+};
+
 export interface PatientCaseListItem {
 	id: string;
 	conversation_status: "in_progress" | "completed" | "cancelled";
@@ -666,7 +676,12 @@ export interface PatientFileListItem {
 	filename: string;
 	mime_type: string;
 	report_type: "text_report" | "image_report";
-	processing_status: "pending" | "processing" | "completed" | "failed";
+	processing_status:
+		| "pending"
+		| "processing"
+		| "completed"
+		| "failed"
+		| "not_supported";
 	created_at: Date;
 	public_url: string | null;
 	related_case_ids: string[];
@@ -834,6 +849,65 @@ export const uploadPatientFileByClerkId = async (
 		related_case_ids: [] as string[],
 		used_in_cases_count: 0,
 	};
+};
+
+export interface PatientFileDetail {
+	id: string;
+	filename: string;
+	mime_type: string;
+	report_type: "text_report" | "image_report";
+	processing_status:
+		| "pending"
+		| "processing"
+		| "completed"
+		| "failed"
+		| "not_supported";
+	created_at: Date;
+	public_url: string | null;
+	processed_data: Prisma.JsonValue | null;
+	related_case_ids: string[];
+	used_in_cases_count: number;
+}
+
+interface GetPatientFileByClerkIdArgs {
+	clerk_id: string;
+	file_id: string;
+}
+
+export const getPatientFileByClerkId = async (args: GetPatientFileByClerkIdArgs) => {
+	const patient = await getPatientUserByClerkId(args.clerk_id);
+	if (!patient) return null;
+
+	const row = await prisma.file.findFirst({
+		where: {
+			id: args.file_id,
+			user_id: patient.id,
+		},
+		include: {
+			case_references: {
+				select: {
+					medical_case_id: true,
+				},
+			},
+		},
+	});
+
+	if (!row) return null;
+
+	return {
+		id: row.id,
+		filename: row.filename,
+		mime_type: row.mime_type,
+		report_type: row.report_type,
+		processing_status: row.processing_status,
+		created_at: row.created_at,
+		public_url:
+			resolvePublicUrlFromStorageKey(row.storage_key) ??
+			resolvePublicUrlFromMetadata(row.metadata),
+		processed_data: row.processed_data,
+		related_case_ids: row.case_references.map((r) => r.medical_case_id),
+		used_in_cases_count: row.case_references.length,
+	} satisfies PatientFileDetail;
 };
 
 export interface PatientChatListItem {

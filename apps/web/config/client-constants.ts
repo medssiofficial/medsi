@@ -5,6 +5,7 @@ export const ONBOARD_URL = "/onboard";
 export const SSO_CALLBACK_URL = "/auth/sso-callback";
 export const PROFILE_URL = "/profile";
 export const SETTINGS_URL = "/settings";
+export const SETTINGS_FILE_PROCESSING_LOGS_URL = "/settings/file-processing-logs";
 export const CASES_URL = "/cases";
 export const FILES_URL = "/files";
 export const CHAT_URL = "/chat";
@@ -72,6 +73,26 @@ export const API_ROUTES = {
 			key: "patient.files.upload",
 			path: "/api/patient/files",
 			method: "POST",
+		},
+		FILE_DETAIL: {
+			key: "patient.files.detail",
+			path: "/api/patient/files",
+			method: "GET",
+		},
+		FILE_PROCESS: {
+			key: "patient.files.process",
+			path: "/api/patient/files",
+			method: "POST",
+		},
+		FILES_PROCESS_BULK: {
+			key: "patient.files.process-bulk",
+			path: "/api/patient/files/process-bulk",
+			method: "POST",
+		},
+		FILE_PROCESSING_LOGS: {
+			key: "patient.file-processing-logs",
+			path: "/api/patient/file-processing-logs",
+			method: "GET",
 		},
 		CHATS: {
 			key: "patient.chats",

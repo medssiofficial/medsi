@@ -16,6 +16,11 @@ const FilesScreen = () => {
 		handleLoadMore,
 		handleUploadFile,
 		isUploading,
+		onProcessFile,
+		onBulkProcess,
+		isBulkProcessing,
+		isProcessingFile,
+		eligibleBulkCount,
 	} = useFilesScreen();
 
 	return (
@@ -34,6 +39,11 @@ const FilesScreen = () => {
 					hasNextPage={hasNextPage}
 					onLoadMore={handleLoadMore}
 					setSentinelRef={setSentinelRef}
+					onProcessFile={onProcessFile}
+					onBulkProcess={onBulkProcess}
+					isBulkProcessing={isBulkProcessing}
+					isProcessingFile={isProcessingFile}
+					eligibleBulkCount={eligibleBulkCount}
 				/>
 			</div>
 		</PatientAppShell>

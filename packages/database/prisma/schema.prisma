@@ -24,6 +24,21 @@ enum FileProcessingStataus {
     processing
     completed
     failed
+    not_supported
+}
+
+enum PatientFileProcessingSource {
+    patient_upload
+    patient_manual
+    patient_bulk
+    admin_manual
+    admin_bulk
+}
+
+enum PatientFileProcessingLogOutcome {
+    success
+    failure
+    skipped
 }
 
 enum FileType {
@@ -278,8 +293,26 @@ model file {
     created_at        DateTime              @default(now())
     updated_at        DateTime              @updatedAt
 
-    user            user        @relation(fields: [user_id], references: [id])
+    user            user                         @relation(fields: [user_id], references: [id])
     case_references case_file[]
+    processing_logs patient_file_processing_log[]
+}
+
+model patient_file_processing_log {
+    id              String                         @id @default(ulid())
+    file_id         String
+    source          PatientFileProcessingSource
+    outcome         PatientFileProcessingLogOutcome
+    error_message   String?
+    gemini_model    String?
+    trigger_run_id  String?
+    metadata        Json?
+    created_at      DateTime                       @default(now())
+
+    file file @relation(fields: [file_id], references: [id], onDelete: Cascade)
+
+    @@index([file_id, created_at(sort: Desc)])
+    @@index([created_at(sort: Desc)])
 }
 
 model case_file {

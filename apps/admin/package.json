@@ -19,6 +19,7 @@
 		"@google/genai": "^1.51.0",
 		"@hookform/resolvers": "^5.2.2",
 		"@repo/database": "*",
+		"@repo/patient-file-processing": "*",
 		"@repo/email": "*",
 		"@repo/env": "*",
 		"@repo/providers": "*",

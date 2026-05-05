@@ -1,12 +1,13 @@
 "use client";
 
+import { FILES_URL } from "@/config/client-constants";
 import type { PatientFilesPage } from "@/services/api/patient/get-files";
 import { Badge } from "@repo/ui/components/ui/badge";
 import { Button } from "@repo/ui/components/ui/button";
 import { Input } from "@repo/ui/components/ui/input";
 import { Skeleton } from "@repo/ui/components/ui/skeleton";
 import Link from "next/link";
-import { SearchIcon } from "lucide-react";
+import { SearchIcon, SparklesIcon } from "lucide-react";
 import { useFilesContent } from "./hook";
 
 type FileItem = PatientFilesPage["items"][number];
@@ -20,6 +21,11 @@ interface FilesContentProps {
 	hasNextPage: boolean;
 	onLoadMore: () => void;
 	setSentinelRef: (node: HTMLDivElement | null) => void;
+	onProcessFile: (fileId: string, reportType: string) => void;
+	onBulkProcess: () => void;
+	isBulkProcessing: boolean;
+	isProcessingFile: string | null;
+	eligibleBulkCount: number;
 }
 
 export const FilesContent = (props: FilesContentProps) => {
@@ -32,11 +38,28 @@ export const FilesContent = (props: FilesContentProps) => {
 		hasNextPage,
 		onLoadMore,
 		setSentinelRef,
+		onProcessFile,
+		onBulkProcess,
+		isBulkProcessing,
+		isProcessingFile,
+		eligibleBulkCount,
 	} = props;
 	const { formatDate, toProcessingTone } = useFilesContent();
 
 	return (
 		<div className="space-y-4">
+			<div className="flex justify-end">
+				<Button
+					type="button"
+					variant="outline"
+					size="sm"
+					disabled={isBulkProcessing || eligibleBulkCount === 0}
+					onClick={onBulkProcess}
+				>
+					<SparklesIcon className="mr-1.5 size-4" />
+					{isBulkProcessing ? "Queueing…" : `Process all eligible (${eligibleBulkCount})`}
+				</Button>
+			</div>
 			<div className="relative">
 				<SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-font-secondary" />
 				<Input
@@ -90,17 +113,36 @@ export const FilesContent = (props: FilesContentProps) => {
 												.join(", ")}`
 										: ""}
 								</p>
-								{item.public_url ? (
-									<Button asChild type="button" size="sm" variant="outline">
-										<Link href={item.public_url} target="_blank" rel="noreferrer">
-											View document
-										</Link>
+								<div className="flex flex-wrap gap-2">
+									<Button asChild type="button" size="sm" variant="secondary">
+										<Link href={`${FILES_URL}/${item.id}`}>Summary & text</Link>
 									</Button>
-								) : (
-									<Button type="button" size="sm" variant="outline" disabled>
-										View unavailable
+									<Button
+										type="button"
+										size="sm"
+										variant="outline"
+										disabled={
+											Boolean(isProcessingFile && isProcessingFile === item.id) ||
+											(item.report_type === "text_report" &&
+												item.processing_status !== "pending" &&
+												item.processing_status !== "failed")
+										}
+										onClick={() => onProcessFile(item.id, item.report_type)}
+									>
+										Process with AI
 									</Button>
-								)}
+									{item.public_url ? (
+										<Button asChild type="button" size="sm" variant="outline">
+											<Link href={item.public_url} target="_blank" rel="noreferrer">
+												View document
+											</Link>
+										</Button>
+									) : (
+										<Button type="button" size="sm" variant="outline" disabled>
+											View unavailable
+										</Button>
+									)}
+								</div>
 							</div>
 						))}
 					</div>
