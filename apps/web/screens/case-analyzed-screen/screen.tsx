@@ -17,9 +17,11 @@ import { useCaseAnalyzedScreen } from "./hook";
 
 const severityTone = (severity: string) => {
 	const lower = severity.toLowerCase();
-	if (lower === "high") return "bg-red-100 text-red-700";
-	if (lower === "medium" || lower === "med") return "bg-amber-100 text-amber-700";
-	return "bg-green-100 text-green-700";
+	if (lower === "high")
+		return "border border-red-200 bg-red-100 text-red-700 dark:border-red-900/40 dark:bg-red-950/40 dark:text-red-200";
+	if (lower === "medium" || lower === "med")
+		return "border border-amber-200 bg-amber-100 text-amber-700 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-200";
+	return "border border-emerald-200 bg-emerald-100 text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-950/40 dark:text-emerald-200";
 };
 
 const CaseAnalyzedScreen = () => {
@@ -28,22 +30,25 @@ const CaseAnalyzedScreen = () => {
 
 	if (isLoading) {
 		return (
-			<div className="flex min-h-dvh flex-col px-5 py-6">
-				<Skeleton className="h-6 w-32" />
-				<Skeleton className="mt-6 h-16 w-16 self-center rounded-full" />
-				<Skeleton className="mt-4 h-6 w-40 self-center" />
-				<Skeleton className="mt-2 h-4 w-56 self-center" />
-				<div className="mt-6 space-y-3">
-					<Skeleton className="h-16 w-full rounded-xl" />
-					<Skeleton className="h-16 w-full rounded-xl" />
-					<Skeleton className="h-16 w-full rounded-xl" />
+			<div className="min-h-dvh bg-neutral-warm">
+				<div className="mx-auto flex min-h-dvh w-full max-w-[640px] flex-col px-4 py-6 md:px-6">
+					<Skeleton className="h-6 w-32" />
+					<Skeleton className="mt-6 h-16 w-16 self-center rounded-full" />
+					<Skeleton className="mt-4 h-6 w-40 self-center" />
+					<Skeleton className="mt-2 h-4 w-56 self-center" />
+					<div className="mt-6 space-y-3">
+						<Skeleton className="h-16 w-full rounded-xl" />
+						<Skeleton className="h-16 w-full rounded-xl" />
+						<Skeleton className="h-16 w-full rounded-xl" />
+					</div>
 				</div>
 			</div>
 		);
 	}
 
 	return (
-		<div className="flex min-h-dvh flex-col px-5 py-6">
+		<div className="min-h-dvh bg-neutral-warm">
+			<div className="mx-auto flex min-h-dvh w-full max-w-[640px] flex-col px-4 py-6 md:px-6">
 			{/* Header */}
 			<div className="flex items-center justify-between">
 				<button type="button" onClick={handleGoBack} className="p-1">
@@ -60,17 +65,17 @@ const CaseAnalyzedScreen = () => {
 
 			{/* Icon + Title */}
 			<div className="mt-8 flex flex-col items-center gap-3">
-				<div className="flex size-16 items-center justify-center rounded-full bg-green-100">
-					<StethoscopeIcon className="size-8 text-green-700" />
+				<div className="flex size-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-950/40">
+					<StethoscopeIcon className="size-8 text-emerald-700 dark:text-emerald-200" />
 				</div>
 				<h1 className="text-xl font-bold text-font-primary">Case Analyzed</h1>
 				<p className="text-sm text-font-secondary">AI has processed your intake</p>
 			</div>
 
 			{/* AI Disclaimer */}
-			<div className="mt-6 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
-				<AlertTriangleIcon className="size-4 shrink-0 text-amber-600" />
-				<p className="text-xs text-amber-800">
+			<div className="mt-6 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-900/40 dark:bg-amber-950/40">
+				<AlertTriangleIcon className="size-4 shrink-0 text-amber-600 dark:text-amber-300" />
+				<p className="text-xs text-amber-800 dark:text-amber-200">
 					AI-generated content. Always verify with your healthcare provider.
 				</p>
 			</div>
@@ -80,8 +85,8 @@ const CaseAnalyzedScreen = () => {
 				<div className="mt-6 space-y-3">
 					{/* Detected Specialty */}
 					<div className="flex items-center gap-3 rounded-xl border bg-background p-4">
-						<div className="flex size-10 items-center justify-center rounded-full bg-[#0F6E6E]/10">
-							<BrainIcon className="size-5 text-[#0F6E6E]" />
+						<div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+							<BrainIcon className="size-5 text-primary" />
 						</div>
 						<div>
 							<p className="text-xs text-font-secondary">Detected Specialty</p>
@@ -93,8 +98,8 @@ const CaseAnalyzedScreen = () => {
 
 					{/* Urgency Level */}
 					<div className="flex items-center gap-3 rounded-xl border bg-background p-4">
-						<div className="flex size-10 items-center justify-center rounded-full bg-amber-100">
-							<ShieldAlertIcon className="size-5 text-amber-700" />
+						<div className="flex size-10 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-950/40">
+							<ShieldAlertIcon className="size-5 text-amber-700 dark:text-amber-200" />
 						</div>
 						<div>
 							<p className="text-xs text-font-secondary">Urgency Level</p>
@@ -106,8 +111,8 @@ const CaseAnalyzedScreen = () => {
 
 					{/* AI Confidence */}
 					<div className="flex items-center gap-3 rounded-xl border bg-background p-4">
-						<div className="flex size-10 items-center justify-center rounded-full bg-blue-100">
-							<GaugeIcon className="size-5 text-blue-700" />
+						<div className="flex size-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-950/40">
+							<GaugeIcon className="size-5 text-blue-700 dark:text-blue-200" />
 						</div>
 						<div>
 							<p className="text-xs text-font-secondary">AI Confidence</p>
@@ -153,6 +158,7 @@ const CaseAnalyzedScreen = () => {
 					Continue to Full Review
 					<ArrowRightIcon className="ml-2 size-4" />
 				</Button>
+			</div>
 			</div>
 		</div>
 	);

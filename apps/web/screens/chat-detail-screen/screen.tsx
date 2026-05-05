@@ -7,9 +7,11 @@ import { Skeleton } from "@repo/ui/components/ui/skeleton";
 import { useChatDetailScreen } from "./hook";
 
 const statusTone = (status: string) => {
-	if (status === "completed") return "bg-emerald-100 text-emerald-800";
-	if (status === "cancelled") return "bg-rose-100 text-rose-800";
-	return "bg-blue-100 text-blue-800";
+	if (status === "completed")
+		return "border border-emerald-200 bg-emerald-100 text-emerald-800 dark:border-emerald-900/40 dark:bg-emerald-950/40 dark:text-emerald-200";
+	if (status === "cancelled")
+		return "border border-rose-200 bg-rose-100 text-rose-800 dark:border-rose-900/40 dark:bg-rose-950/40 dark:text-rose-200";
+	return "border border-blue-200 bg-blue-100 text-blue-800 dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-200";
 };
 
 const statusLabel = (status: string) => {
@@ -32,22 +34,25 @@ const ChatDetailScreen = () => {
 
 	if (isLoading) {
 		return (
-			<div className="flex min-h-dvh flex-col px-5 py-6">
-				<Skeleton className="h-6 w-40" />
-				<div className="mt-6 flex-1 space-y-4">
-					{Array.from({ length: 6 }).map((_, i) => (
-						<div key={i} className={`flex gap-2 ${i % 2 === 0 ? "" : "flex-row-reverse"}`}>
-							<Skeleton className="size-7 rounded-full" />
-							<Skeleton className="h-12 w-48 rounded-2xl" />
-						</div>
-					))}
+			<div className="min-h-dvh bg-neutral-warm">
+				<div className="mx-auto flex min-h-dvh w-full max-w-[640px] flex-col px-4 py-6 md:px-6">
+					<Skeleton className="h-6 w-40" />
+					<div className="mt-6 flex-1 space-y-4">
+						{Array.from({ length: 6 }).map((_, i) => (
+							<div key={i} className={`flex gap-2 ${i % 2 === 0 ? "" : "flex-row-reverse"}`}>
+								<Skeleton className="size-7 rounded-full" />
+								<Skeleton className="h-12 w-48 rounded-2xl" />
+							</div>
+						))}
+					</div>
 				</div>
 			</div>
 		);
 	}
 
 	return (
-		<div className="flex min-h-dvh flex-col">
+		<div className="min-h-dvh bg-neutral-warm">
+			<div className="mx-auto flex min-h-dvh w-full max-w-[640px] flex-col">
 			{/* Header */}
 			<div className="sticky top-0 z-10 flex items-center justify-between border-b bg-background px-5 py-4">
 				<div className="flex items-center gap-3">
@@ -64,7 +69,7 @@ const ChatDetailScreen = () => {
 			</div>
 
 			{/* Messages */}
-			<div className="flex flex-1 flex-col gap-4 overflow-y-auto px-5 py-4">
+			<div className="flex flex-1 flex-col gap-4 overflow-y-auto px-4 py-4 md:px-6">
 				{messages.length === 0 ? (
 					<div className="flex flex-1 items-center justify-center">
 						<p className="text-sm text-font-secondary">No messages yet.</p>
@@ -78,7 +83,7 @@ const ChatDetailScreen = () => {
 							<div
 								className={`flex size-7 shrink-0 items-center justify-center rounded-full ${
 									msg.role === "assistant"
-										? "bg-[#0F6E6E] text-white"
+										? "bg-primary text-primary-foreground"
 										: "bg-muted text-font-secondary"
 								}`}
 							>
@@ -92,7 +97,7 @@ const ChatDetailScreen = () => {
 								className={`max-w-[75%] rounded-2xl border border-border-subtle p-3 shadow-sm ${
 									msg.role === "assistant"
 										? "rounded-tl-sm bg-card"
-										: "rounded-tr-sm bg-[#0F6E6E] text-white"
+										: "rounded-tr-sm bg-primary text-primary-foreground"
 								}`}
 							>
 								<p className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</p>
@@ -105,7 +110,7 @@ const ChatDetailScreen = () => {
 
 			{/* Footer */}
 			{!isReadOnly && (
-				<div className="sticky bottom-0 border-t bg-background px-5 py-4">
+				<div className="sticky bottom-0 border-t bg-background px-4 py-4 md:px-6">
 					<Button
 						type="button"
 						onClick={handleContinueChat}
@@ -115,6 +120,7 @@ const ChatDetailScreen = () => {
 					</Button>
 				</div>
 			)}
+			</div>
 		</div>
 	);
 };

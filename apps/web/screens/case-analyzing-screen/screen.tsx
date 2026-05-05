@@ -9,31 +9,34 @@ const CaseAnalyzingScreen = () => {
 
 	if (isLoading) {
 		return (
-			<div className="flex min-h-dvh flex-col items-center justify-center gap-6 px-6">
-				<Skeleton className="h-16 w-16 rounded-full" />
-				<Skeleton className="h-6 w-48" />
-				<Skeleton className="h-4 w-64" />
-				<div className="space-y-3 w-full max-w-xs">
-					<Skeleton className="h-10 w-full rounded-xl" />
-					<Skeleton className="h-10 w-full rounded-xl" />
-					<Skeleton className="h-10 w-full rounded-xl" />
+			<div className="min-h-dvh bg-neutral-warm">
+				<div className="mx-auto flex min-h-dvh w-full max-w-[640px] flex-col items-center justify-center gap-6 px-4 md:px-6">
+					<Skeleton className="h-16 w-16 rounded-full" />
+					<Skeleton className="h-6 w-48" />
+					<Skeleton className="h-4 w-64" />
+					<div className="w-full max-w-xs space-y-3">
+						<Skeleton className="h-10 w-full rounded-xl" />
+						<Skeleton className="h-10 w-full rounded-xl" />
+						<Skeleton className="h-10 w-full rounded-xl" />
+					</div>
 				</div>
 			</div>
 		);
 	}
 
 	return (
-		<div className="flex min-h-dvh flex-col items-center justify-center px-6 py-10">
-			<div className="flex w-full max-w-sm flex-col items-center gap-6">
-				<div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
-					<AlertTriangleIcon className="size-4 shrink-0 text-amber-600" />
-					<p className="text-xs text-amber-800">
+		<div className="min-h-dvh bg-neutral-warm">
+			<div className="mx-auto flex min-h-dvh w-full max-w-[640px] flex-col items-center justify-center px-4 py-10 md:px-6">
+				<div className="flex w-full max-w-sm flex-col items-center gap-6">
+					<div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-900/40 dark:bg-amber-950/40">
+						<AlertTriangleIcon className="size-4 shrink-0 text-amber-600 dark:text-amber-300" />
+						<p className="text-xs text-amber-800 dark:text-amber-200">
 						AI-generated content. Always verify with your healthcare provider.
 					</p>
 				</div>
 
-				<div className="flex size-20 items-center justify-center rounded-full bg-[#0F6E6E]/10">
-					<BrainIcon className="size-10 text-[#0F6E6E]" />
+					<div className="flex size-20 items-center justify-center rounded-full bg-primary/10">
+						<BrainIcon className="size-10 text-primary" />
 				</div>
 
 				<div className="text-center">
@@ -52,26 +55,26 @@ const CaseAnalyzingScreen = () => {
 								key={step.label}
 								className={`flex items-center gap-3 rounded-xl border px-4 py-3 ${
 									isInProgress
-										? "border-amber-200 bg-amber-50"
+										? "border-amber-200 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-950/40"
 										: step.done
-											? "border-green-200 bg-green-50"
-											: "border-gray-200 bg-gray-50"
+											? "border-emerald-200 bg-emerald-50 dark:border-emerald-900/40 dark:bg-emerald-950/40"
+											: "border-border-subtle bg-muted"
 								}`}
 							>
 								{step.done ? (
-									<CheckCircle2Icon className="size-5 shrink-0 text-green-600" />
+									<CheckCircle2Icon className="size-5 shrink-0 text-emerald-600 dark:text-emerald-200" />
 								) : isInProgress ? (
-									<Loader2Icon className="size-5 shrink-0 animate-spin text-amber-600" />
+									<Loader2Icon className="size-5 shrink-0 animate-spin text-amber-600 dark:text-amber-200" />
 								) : (
-									<div className="size-5 shrink-0 rounded-full border-2 border-gray-300" />
+									<div className="size-5 shrink-0 rounded-full border-2 border-border-subtle" />
 								)}
 								<span
 									className={`text-sm font-medium ${
 										isInProgress
-											? "text-amber-800"
+											? "text-amber-800 dark:text-amber-200"
 											: step.done
-												? "text-green-700"
-												: "text-gray-500"
+												? "text-emerald-700 dark:text-emerald-200"
+												: "text-font-secondary"
 									}`}
 								>
 									{step.label}
@@ -82,6 +85,7 @@ const CaseAnalyzingScreen = () => {
 				</div>
 
 				<p className="text-xs text-font-secondary">This usually takes a few seconds</p>
+			</div>
 			</div>
 		</div>
 	);
