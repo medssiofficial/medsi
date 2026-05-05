@@ -91,8 +91,6 @@ export const usePatientFolderDetailQuery = (
 		refetchOnWindowFocus: false,
 		refetchOnReconnect: false,
 		staleTime: 0,
-		refetchInterval: (query) => {
-			const files = query.state.data?.files ?? [];
-			return files.some((f) => f.processing_status === "processing") ? 4000 : false;
-		},
+		// Keep admin folder synced with background task transitions.
+		refetchInterval: 4000,
 	});

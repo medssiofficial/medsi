@@ -20,10 +20,14 @@ export const adminPatientFileProcessTask = task({
 		{ ctx }: { ctx: { run: { id: string } } },
 	) => {
 		const parsed = payloadSchema.parse(payload);
-		await runPatientFileProcessing({
+		const result = await runPatientFileProcessing({
 			file_id: parsed.fileId,
 			source: parsed.source,
 			trigger_run_id: ctx.run.id,
 		});
+
+		if (result.outcome === "failed") {
+			throw new Error(result.error);
+		}
 	},
 });

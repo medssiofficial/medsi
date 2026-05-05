@@ -19,7 +19,9 @@ const resolveBucketFromMetadata = (metadata: unknown): string | undefined => {
 const shouldEmailPatient = (source: PatientFileProcessingSource) =>
 	source === "patient_upload" ||
 	source === "patient_manual" ||
-	source === "patient_bulk";
+	source === "patient_bulk" ||
+	source === "admin_manual" ||
+	source === "admin_bulk";
 
 const notifyPatientFailure = async (args: {
 	source: PatientFileProcessingSource;
@@ -64,8 +66,53 @@ export const runPatientFileProcessing = async (
 		throw new Error("GOOGLE_GENERATIVE_AI_API_KEY is required for patient file processing.");
 	}
 
-	const model =
+	const primaryModel =
 		process.env.GOOGLE_GENAI_PATIENT_FILE_MODEL?.trim() || DEFAULT_PATIENT_FILE_GEMINI_MODEL;
+	const fallbackModels = (process.env.GOOGLE_GENAI_PATIENT_FILE_FALLBACK_MODELS ?? "")
+		.split(",")
+		.map((m) => m.trim())
+		.filter(Boolean);
+	const modelCandidates = [primaryModel, ...fallbackModels].filter(
+		(model, index, arr) => arr.indexOf(model) === index,
+	);
+
+	const isTransientGeminiError = (message: string) =>
+		/Gemini API error \((429|500|502|503|504)\)/.test(message);
+
+	const runWithModelFallback = async (bytes: Uint8Array, mimeType: string) => {
+		let lastError: Error | null = null;
+
+		for (const model of modelCandidates) {
+			// Retry transient rate-limit/capacity errors once on same model.
+			for (let attempt = 1; attempt <= 2; attempt++) {
+				try {
+					const mime = mimeType.toLowerCase();
+					return mime === "application/pdf" || mime.includes("pdf")
+						? await runPdfPipeline({
+								apiKey,
+								model,
+								pdfBytes: bytes,
+								mime_type: mimeType,
+							})
+						: await runTextPipeline({
+								apiKey,
+								model,
+								fullText: decodeBytesToUtf8(bytes),
+								mime_type: mimeType,
+							});
+				} catch (error) {
+					const message = error instanceof Error ? error.message : String(error);
+					lastError = error instanceof Error ? error : new Error(message);
+					if (!isTransientGeminiError(message) || attempt === 2) {
+						break;
+					}
+					await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+				}
+			}
+		}
+
+		throw lastError ?? new Error("Patient file processing failed.");
+	};
 
 	const prepared = await preparePatientFileForProcessing({
 		file_id: args.file_id,
@@ -95,7 +142,7 @@ export const runPatientFileProcessing = async (
 			error_message: message,
 			source: args.source,
 			trigger_run_id: args.trigger_run_id,
-			gemini_model: model,
+			gemini_model: primaryModel,
 			metadata: { stage: "download" },
 		});
 		await notifyPatientFailure({
@@ -110,27 +157,12 @@ export const runPatientFileProcessing = async (
 	}
 
 	try {
-		const bytes = download.data;
-		const mime = file.mime_type.toLowerCase();
-		const payload =
-			mime === "application/pdf" || mime.includes("pdf")
-				? await runPdfPipeline({
-						apiKey,
-						model,
-						pdfBytes: bytes,
-						mime_type: file.mime_type,
-					})
-				: await runTextPipeline({
-						apiKey,
-						model,
-						fullText: decodeBytesToUtf8(bytes),
-						mime_type: file.mime_type,
-					});
+		const payload = await runWithModelFallback(download.data, file.mime_type);
 
 		await completePatientFileProcessing({
 			file_id: file.id,
 			processed_data: payload as unknown as Prisma.InputJsonValue,
-			gemini_model: model,
+			gemini_model: payload.model,
 			source: args.source,
 			trigger_run_id: args.trigger_run_id,
 			metadata: {
@@ -147,8 +179,8 @@ export const runPatientFileProcessing = async (
 			error_message: message,
 			source: args.source,
 			trigger_run_id: args.trigger_run_id,
-			gemini_model: model,
-			metadata: { stage: "processing" },
+			gemini_model: primaryModel,
+			metadata: { stage: "processing", models_tried: modelCandidates },
 		});
 		await notifyPatientFailure({
 			source: args.source,
