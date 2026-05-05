@@ -14,7 +14,16 @@ import {
 import { Input } from "@repo/ui/components/ui/input";
 import { Skeleton } from "@repo/ui/components/ui/skeleton";
 import Link from "next/link";
-import { LayoutGridIcon, ListIcon, SearchIcon, SparklesIcon } from "lucide-react";
+import {
+	FileIcon,
+	FileSpreadsheetIcon,
+	FileTextIcon,
+	ImageIcon,
+	LayoutGridIcon,
+	ListIcon,
+	SearchIcon,
+	SparklesIcon,
+} from "lucide-react";
 import { useFilesContent } from "./hook";
 
 type FileItem = PatientFilesPage["items"][number];
@@ -74,6 +83,13 @@ export const FilesContent = (props: FilesContentProps) => {
 		onPreviewOpenChange,
 	} = props;
 	const { formatDate, toProcessingTone } = useFilesContent();
+	const getThumbKind = (mimeType: string) => {
+		const value = mimeType.toLowerCase();
+		if (value.startsWith("image/")) return "image";
+		if (value === "application/pdf" || value.includes("pdf")) return "pdf";
+		if (value.startsWith("text/")) return "text";
+		return "other";
+	};
 	const isProcessDisabled = (item: FileItem) =>
 		Boolean(isProcessingFile && isProcessingFile === item.id) ||
 		(item.report_type === "text_report" &&
@@ -171,16 +187,24 @@ export const FilesContent = (props: FilesContentProps) => {
 									<span>{item.report_type.replace("_", " ")}</span>
 									<span>{formatDate(item.created_at)}</span>
 								</div>
-								<div className="rounded-lg border bg-muted/40 p-3 text-xs text-font-secondary">
-									{item.public_url && item.mime_type.toLowerCase().startsWith("image/") ? (
+								<div className="rounded-lg border bg-muted/30 p-3 text-xs text-font-secondary">
+									{item.public_url && getThumbKind(item.mime_type) === "image" ? (
 										<img
 											src={item.public_url}
 											alt={item.filename}
 											className="h-28 w-full rounded-md object-cover"
 										/>
 									) : (
-										<div className="flex h-28 items-center justify-center rounded-md border border-dashed">
-											Preview
+										<div className="flex h-28 items-center justify-center rounded-md border bg-background">
+											{getThumbKind(item.mime_type) === "pdf" ? (
+												<FileSpreadsheetIcon className="size-12 text-rose-500" />
+											) : getThumbKind(item.mime_type) === "text" ? (
+												<FileTextIcon className="size-12 text-sky-500" />
+											) : getThumbKind(item.mime_type) === "image" ? (
+												<ImageIcon className="size-12 text-emerald-500" />
+											) : (
+												<FileIcon className="size-12 text-muted-foreground" />
+											)}
 										</div>
 									)}
 								</div>
