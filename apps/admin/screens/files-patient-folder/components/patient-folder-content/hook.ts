@@ -22,6 +22,7 @@ const toProcessingTone = (status: string) => {
 	if (status === "completed") return "bg-emerald-100 text-emerald-800";
 	if (status === "failed") return "bg-rose-100 text-rose-800";
 	if (status === "processing") return "bg-blue-100 text-blue-800";
+	if (status === "not_supported") return "bg-muted text-muted-foreground";
 	return "bg-amber-100 text-amber-800";
 };
 

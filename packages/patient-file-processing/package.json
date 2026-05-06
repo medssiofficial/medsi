@@ -1,0 +1,24 @@
+{
+	"name": "@repo/patient-file-processing",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"check-types": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@repo/database": "*",
+		"@repo/email": "*",
+		"@repo/supabase": "*",
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"@repo/typescript-config": "*",
+		"@types/react": "^19.1.0",
+		"react": "^19.2.0",
+		"typescript": "5.9.2"
+	}
+}

@@ -5,8 +5,12 @@ export const ONBOARD_URL = "/onboard";
 export const SSO_CALLBACK_URL = "/auth/sso-callback";
 export const PROFILE_URL = "/profile";
 export const SETTINGS_URL = "/settings";
+export const SETTINGS_FILE_PROCESSING_LOGS_URL = "/settings/file-processing-logs";
 export const CASES_URL = "/cases";
 export const FILES_URL = "/files";
+export const FILES_DETAIL_PREFIX = "/files/";
+export const CASES_DETAIL_PREFIX = "/cases/";
+export const CHAT_DETAIL_PREFIX = "/chat/";
 export const CHAT_URL = "/chat";
 /** Patient AI consultation chat (edge-to-edge; not a tab route). */
 export const NEW_CONSULTATION_URL = "/consultation/chat";
@@ -73,9 +77,64 @@ export const API_ROUTES = {
 			path: "/api/patient/files",
 			method: "POST",
 		},
+		FILE_DETAIL: {
+			key: "patient.files.detail",
+			path: "/api/patient/files",
+			method: "GET",
+		},
+		FILE_PROCESS: {
+			key: "patient.files.process",
+			path: "/api/patient/files",
+			method: "POST",
+		},
+		FILES_PROCESS_BULK: {
+			key: "patient.files.process-bulk",
+			path: "/api/patient/files/process-bulk",
+			method: "POST",
+		},
+		FILE_PROCESSING_LOGS: {
+			key: "patient.file-processing-logs",
+			path: "/api/patient/file-processing-logs",
+			method: "GET",
+		},
 		CHATS: {
 			key: "patient.chats",
 			path: "/api/patient/chats",
+			method: "GET",
+		},
+		CASES_CREATE: {
+			key: "patient.cases.create",
+			path: "/api/patient/cases",
+			method: "POST",
+		},
+		CASE_DETAIL: {
+			key: "patient.cases.detail",
+			path: "/api/patient/cases",
+			method: "GET",
+		},
+		CASE_CHAT: {
+			key: "patient.cases.chat",
+			path: "/api/patient/cases",
+			method: "POST",
+		},
+		CASE_FILES: {
+			key: "patient.cases.files",
+			path: "/api/patient/cases",
+			method: "POST",
+		},
+		CASE_MESSAGES: {
+			key: "patient.cases.messages",
+			path: "/api/patient/cases",
+			method: "GET",
+		},
+		CASE_ANALYSIS: {
+			key: "patient.cases.analysis",
+			path: "/api/patient/cases",
+			method: "GET",
+		},
+		CASE_EVENTS: {
+			key: "patient.cases.events",
+			path: "/api/patient/cases",
 			method: "GET",
 		},
 	},

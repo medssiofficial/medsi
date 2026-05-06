@@ -11,8 +11,12 @@
 		"./actions/doctor": "./actions/doctor.actions.ts",
 		"./actions/doctor-embedding": "./actions/doctor-embedding.action.ts",
 		"./actions/patient": "./actions/patient.actions.ts",
+		"./actions/intake-question": "./actions/intake-question.actions.ts",
+		"./actions/medical-case": "./actions/medical-case.actions.ts",
+		"./actions/patient-file-processing": "./actions/patient-file-processing.action.ts",
 		"./constants/doctor-embedding": "./constants/doctor-embedding.ts",
-		"./ensure-doctor-embedding-vector-table": "./ensure-doctor-embedding-vector-table.ts"
+		"./ensure-doctor-embedding-vector-table": "./ensure-doctor-embedding-vector-table.ts",
+		"./ensure-case-embedding-vector-table": "./ensure-case-embedding-vector-table.ts"
 	},
 	"scripts": {
 		"db:generate": "prisma generate",

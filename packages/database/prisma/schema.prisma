@@ -19,11 +19,66 @@ enum MedicalCaseConversationStatus {
     cancelled
 }
 
+enum MedicalCaseStage {
+    chatting
+    processing
+    analyzed
+    ready_for_matching
+}
+
+enum IntakeQuestionResponseType {
+    text
+    file
+}
+
+enum CaseChatMessageRole {
+    assistant
+    user
+}
+
+enum CaseEventType {
+    case_created
+    question_asked
+    answer_received
+    file_attached
+    off_topic_warning
+    chat_completed
+    chat_cancelled
+    processing_started
+    file_processing_complete
+    analysis_started
+    analysis_completed
+    analysis_failed
+    embedding_generated
+}
+
+enum CaseEmbeddingStatus {
+    not_embedded
+    pending
+    synced
+    failed
+}
+
 enum FileProcessingStataus {
     pending
     processing
     completed
     failed
+    not_supported
+}
+
+enum PatientFileProcessingSource {
+    patient_upload
+    patient_manual
+    patient_bulk
+    admin_manual
+    admin_bulk
+}
+
+enum PatientFileProcessingLogOutcome {
+    success
+    failure
+    skipped
 }
 
 enum FileType {
@@ -222,10 +277,28 @@ model doctor_file {
     @@index([doctor_id, proof_type])
 }
 
+model intake_question {
+    id            String                      @id @default(ulid())
+    question_text String
+    response_type IntakeQuestionResponseType
+    order         Int
+    is_active     Boolean                     @default(true)
+    created_at    DateTime                    @default(now())
+    updated_at    DateTime                    @updatedAt
+
+    chat_messages case_chat_message[]
+    info_states   case_info_state[]
+
+    @@index([order])
+}
+
 model medical_case {
     id                  String                        @id @default(ulid())
     user_id             String
     conversation_status MedicalCaseConversationStatus @default(in_progress)
+    case_stage          MedicalCaseStage              @default(chatting)
+    language            String                        @default("English")
+    off_topic_count     Int                           @default(0)
 
     collected_data Json?
     summary        String?
@@ -233,9 +306,13 @@ model medical_case {
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
-    user       user             @relation(fields: [user_id], references: [id])
-    files      case_file[]
-    info_state case_info_state?
+    user            user                @relation(fields: [user_id], references: [id])
+    files           case_file[]
+    info_state      case_info_state?
+    chat_messages   case_chat_message[]
+    analysis        case_analysis?
+    event_logs      case_event_log[]
+    embedding_state case_embedding_state?
 }
 
 model patient_profile {
@@ -278,8 +355,27 @@ model file {
     created_at        DateTime              @default(now())
     updated_at        DateTime              @updatedAt
 
-    user            user        @relation(fields: [user_id], references: [id])
+    user            user                         @relation(fields: [user_id], references: [id])
     case_references case_file[]
+    processing_logs patient_file_processing_log[]
+    chat_messages   case_chat_message[]
+}
+
+model patient_file_processing_log {
+    id              String                         @id @default(ulid())
+    file_id         String
+    source          PatientFileProcessingSource
+    outcome         PatientFileProcessingLogOutcome
+    error_message   String?
+    gemini_model    String?
+    trigger_run_id  String?
+    metadata        Json?
+    created_at      DateTime                       @default(now())
+
+    file file @relation(fields: [file_id], references: [id], onDelete: Cascade)
+
+    @@index([file_id, created_at(sort: Desc)])
+    @@index([created_at(sort: Desc)])
 }
 
 model case_file {
@@ -293,16 +389,82 @@ model case_file {
     file         file         @relation(fields: [file_id], references: [id])
 }
 
+model case_chat_message {
+    id          String               @id @default(ulid())
+    case_id     String
+    role        CaseChatMessageRole
+    content     String
+    file_id     String?
+    question_id String?
+    metadata    Json?
+    created_at  DateTime             @default(now())
+
+    medical_case medical_case      @relation(fields: [case_id], references: [id], onDelete: Cascade)
+    file         file?              @relation(fields: [file_id], references: [id])
+    question     intake_question?   @relation(fields: [question_id], references: [id])
+
+    @@index([case_id, created_at])
+}
+
+model case_analysis {
+    id                   String  @id @default(ulid())
+    case_id              String  @unique
+    detected_specialty   String?
+    urgency_level        String?
+    ai_confidence        Decimal?
+    key_symptoms         Json?
+    ai_summary           String?
+    collected_information Json?
+    gemini_model         String?
+    trigger_run_id       String?
+    metadata             Json?
+    created_at           DateTime @default(now())
+    updated_at           DateTime @updatedAt
+
+    medical_case medical_case @relation(fields: [case_id], references: [id], onDelete: Cascade)
+}
+
+model case_event_log {
+    id         String        @id @default(ulid())
+    case_id    String
+    event_type CaseEventType
+    metadata   Json?
+    created_at DateTime      @default(now())
+
+    medical_case medical_case @relation(fields: [case_id], references: [id], onDelete: Cascade)
+
+    @@index([case_id, created_at(sort: Desc)])
+    @@index([created_at(sort: Desc)])
+}
+
+model case_embedding_state {
+    case_id             String              @id
+    status              CaseEmbeddingStatus @default(not_embedded)
+    last_model          String?
+    last_dimensions     Int?
+    last_success_at     DateTime?
+    last_attempt_at     DateTime?
+    last_error          String?
+    last_trigger_run_id String?
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    medical_case medical_case @relation(fields: [case_id], references: [id], onDelete: Cascade)
+}
+
 model case_info_state {
     id                     String   @id @default(ulid())
     collected_fields       Json     @default("{}")
-    current_questions      String?
+    current_question_id    String?
     current_question_index Int      @default(0)
+    off_topic_streak       Int      @default(0)
     case_id                String   @unique
     created_at             DateTime @default(now())
     updated_at             DateTime @updatedAt
 
-    case medical_case @relation(fields: [case_id], references: [id])
+    case     medical_case     @relation(fields: [case_id], references: [id])
+    question intake_question? @relation(fields: [current_question_id], references: [id])
 }
 
 model doctor_embedding_state {

@@ -34,7 +34,7 @@ export const CasesContent = (props: CasesContentProps) => {
 		onStartConsultation,
 		setSentinelRef,
 	} = props;
-	const { formatDate, toStatusLabel, toStatusTone } = useCasesContent();
+	const { formatDate, toStatusLabel, toStatusTone, toStageTone, toStageLabel, handleCaseClick } = useCasesContent();
 
 	return (
 		<div className="space-y-4">
@@ -79,14 +79,24 @@ export const CasesContent = (props: CasesContentProps) => {
 				<>
 					<div className="space-y-3">
 						{items.map((item) => (
-							<div key={item.id} className="space-y-3 rounded-2xl border bg-background p-4">
+							<button
+								key={item.id}
+								type="button"
+								onClick={() => handleCaseClick(item.id, item.case_stage)}
+								className="w-full space-y-3 rounded-2xl border bg-background p-4 text-left transition-colors hover:bg-muted/50"
+							>
 								<div className="flex items-center justify-between gap-2">
 									<p className="text-sm font-semibold text-font-primary">
 										#{item.id.slice(0, 10).toUpperCase()}
 									</p>
-									<Badge className={`rounded-full px-2.5 py-1 text-xs ${toStatusTone(item.conversation_status)}`}>
-										{toStatusLabel(item.conversation_status)}
-									</Badge>
+									<div className="flex items-center gap-1.5">
+										<Badge className={`rounded-full px-2 py-0.5 text-xs ${toStageTone(item.case_stage)}`}>
+											{toStageLabel(item.case_stage)}
+										</Badge>
+										<Badge className={`rounded-full px-2 py-0.5 text-xs ${toStatusTone(item.conversation_status)}`}>
+											{toStatusLabel(item.conversation_status)}
+										</Badge>
+									</div>
 								</div>
 								<p className="line-clamp-2 text-sm text-font-secondary">
 									{item.summary?.trim() || "No summary available yet."}
@@ -95,7 +105,7 @@ export const CasesContent = (props: CasesContentProps) => {
 									<span>{formatDate(item.created_at)}</span>
 									<span>{item.file_count} files</span>
 								</div>
-							</div>
+							</button>
 						))}
 					</div>
 

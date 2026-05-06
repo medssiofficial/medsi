@@ -16,6 +16,18 @@ const FilesScreen = () => {
 		handleLoadMore,
 		handleUploadFile,
 		isUploading,
+		onProcessFile,
+		onBulkProcess,
+		isBulkProcessing,
+		isProcessingFile,
+		eligibleBulkCount,
+		viewMode,
+		setViewMode,
+		onDeleteFile,
+		isDeletingFile,
+		activePreviewFile,
+		setActivePreviewFile,
+		onOpenPreview,
 	} = useFilesScreen();
 
 	return (
@@ -34,6 +46,20 @@ const FilesScreen = () => {
 					hasNextPage={hasNextPage}
 					onLoadMore={handleLoadMore}
 					setSentinelRef={setSentinelRef}
+					onProcessFile={onProcessFile}
+					onBulkProcess={onBulkProcess}
+					isBulkProcessing={isBulkProcessing}
+					isProcessingFile={isProcessingFile}
+					eligibleBulkCount={eligibleBulkCount}
+					viewMode={viewMode}
+					onViewModeChange={setViewMode}
+					onDeleteFile={onDeleteFile}
+					isDeletingFile={isDeletingFile}
+					activePreviewFile={activePreviewFile}
+					onOpenPreview={onOpenPreview}
+					onPreviewOpenChange={(open) => {
+						if (!open) setActivePreviewFile(null);
+					}}
 				/>
 			</div>
 		</PatientAppShell>

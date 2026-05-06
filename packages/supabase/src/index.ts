@@ -5,6 +5,7 @@ export {
 } from "./client/supabase-client";
 
 export { uploadPublicFile } from "./storage/upload-public-file";
+export { downloadStorageObject } from "./storage/download-storage-object";
 export { deleteFile } from "./storage/delete-file";
 
 export {
@@ -12,6 +13,12 @@ export {
 	type UpsertDoctorProfileEmbeddingArgs,
 	type UpsertDoctorProfileEmbeddingResult,
 } from "./vector/upsert-doctor-profile-embedding";
+
+export {
+	upsertCaseAnalysisEmbedding,
+	type UpsertCaseAnalysisEmbeddingArgs,
+	type UpsertCaseAnalysisEmbeddingResult,
+} from "./vector/upsert-case-analysis-embedding";
 
 export type {
 	SupabaseStorageResult,

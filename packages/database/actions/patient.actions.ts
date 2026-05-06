@@ -1,6 +1,7 @@
 import { prisma } from "../client";
 import type { Prisma } from "../types/server";
 import {
+	deleteFile,
 	getDefaultStorageBucket,
 	getSupabaseAnonClient,
 	uploadPublicFile,
@@ -488,7 +489,12 @@ export interface AdminPatientFolderFileItem {
 	filename: string;
 	mime_type: string;
 	report_type: "text_report" | "image_report";
-	processing_status: "pending" | "processing" | "completed" | "failed";
+	processing_status:
+		| "pending"
+		| "processing"
+		| "completed"
+		| "failed"
+		| "not_supported";
 	created_at: Date;
 	size_bytes: number | null;
 	public_url: string | null;
@@ -588,9 +594,15 @@ const getPatientUserByClerkId = async (clerk_id: string) => {
 	});
 };
 
+export const resolvePatientUserIdByClerkId = async (clerk_id: string) => {
+	const row = await getPatientUserByClerkId(clerk_id);
+	return row?.id ?? null;
+};
+
 export interface PatientCaseListItem {
 	id: string;
 	conversation_status: "in_progress" | "completed" | "cancelled";
+	case_stage: "chatting" | "processing" | "analyzed" | "ready_for_matching";
 	summary: string | null;
 	created_at: Date;
 	updated_at: Date;
@@ -651,6 +663,7 @@ export const getPatientCasesByClerkId = async (
 		items: slicedRows.map((row) => ({
 			id: row.id,
 			conversation_status: row.conversation_status,
+			case_stage: row.case_stage,
 			summary: row.summary,
 			created_at: row.created_at,
 			updated_at: row.updated_at,
@@ -666,7 +679,12 @@ export interface PatientFileListItem {
 	filename: string;
 	mime_type: string;
 	report_type: "text_report" | "image_report";
-	processing_status: "pending" | "processing" | "completed" | "failed";
+	processing_status:
+		| "pending"
+		| "processing"
+		| "completed"
+		| "failed"
+		| "not_supported";
 	created_at: Date;
 	public_url: string | null;
 	related_case_ids: string[];
@@ -836,6 +854,112 @@ export const uploadPatientFileByClerkId = async (
 	};
 };
 
+export interface PatientFileDetail {
+	id: string;
+	filename: string;
+	mime_type: string;
+	report_type: "text_report" | "image_report";
+	processing_status:
+		| "pending"
+		| "processing"
+		| "completed"
+		| "failed"
+		| "not_supported";
+	created_at: Date;
+	public_url: string | null;
+	processed_data: Prisma.JsonValue | null;
+	related_case_ids: string[];
+	used_in_cases_count: number;
+}
+
+interface GetPatientFileByClerkIdArgs {
+	clerk_id: string;
+	file_id: string;
+}
+
+export const getPatientFileByClerkId = async (args: GetPatientFileByClerkIdArgs) => {
+	const patient = await getPatientUserByClerkId(args.clerk_id);
+	if (!patient) return null;
+
+	const row = await prisma.file.findFirst({
+		where: {
+			id: args.file_id,
+			user_id: patient.id,
+		},
+		include: {
+			case_references: {
+				select: {
+					medical_case_id: true,
+				},
+			},
+		},
+	});
+
+	if (!row) return null;
+
+	return {
+		id: row.id,
+		filename: row.filename,
+		mime_type: row.mime_type,
+		report_type: row.report_type,
+		processing_status: row.processing_status,
+		created_at: row.created_at,
+		public_url:
+			resolvePublicUrlFromStorageKey(row.storage_key) ??
+			resolvePublicUrlFromMetadata(row.metadata),
+		processed_data: row.processed_data,
+		related_case_ids: row.case_references.map((r) => r.medical_case_id),
+		used_in_cases_count: row.case_references.length,
+	} satisfies PatientFileDetail;
+};
+
+interface DeletePatientFileByClerkIdArgs {
+	clerk_id: string;
+	file_id: string;
+}
+
+export const deletePatientFileByClerkId = async (args: DeletePatientFileByClerkIdArgs) => {
+	const patient = await getPatientUserByClerkId(args.clerk_id);
+	if (!patient) {
+		throw new Error("Patient not found.");
+	}
+
+	const file = await prisma.file.findFirst({
+		where: {
+			id: args.file_id,
+			user_id: patient.id,
+		},
+		include: {
+			case_references: {
+				select: { id: true },
+			},
+		},
+	});
+
+	if (!file) {
+		throw new Error("File not found.");
+	}
+
+	if (file.case_references.length > 0) {
+		throw new Error("Cannot delete a file that is linked to medical cases.");
+	}
+
+	const bucket =
+		typeof (file.metadata as { bucket?: unknown } | null)?.bucket === "string"
+			? ((file.metadata as { bucket: string }).bucket ?? "").trim()
+			: "";
+	await deleteFile({
+		path: file.storage_key,
+		bucket: bucket.length > 0 ? bucket : undefined,
+	});
+
+	await prisma.file.delete({
+		where: { id: file.id },
+	});
+
+	return { id: file.id };
+};
+
 export interface PatientChatListItem {
 	id: string;
 	status: "in_progress" | "completed" | "cancelled";
@@ -876,6 +1000,10 @@ export interface PatientDashboardOverview {
 	active_cases: number;
 	completed_cases: number;
 	has_ongoing_case: boolean;
+	ongoing_case: {
+		id: string;
+		case_stage: "chatting" | "processing" | "analyzed" | "ready_for_matching";
+	} | null;
 	recent_cases: PatientCaseListItem[];
 }
 
@@ -893,11 +1021,12 @@ export const getPatientDashboardOverviewByClerkId = async (
 			active_cases: 0,
 			completed_cases: 0,
 			has_ongoing_case: false,
+			ongoing_case: null,
 			recent_cases: [],
 		};
 	}
 
-	const [activeCases, completedCases, recentCases] = await prisma.$transaction([
+	const [activeCases, completedCases, ongoingCase, recentCases] = await prisma.$transaction([
 		prisma.medical_case.count({
 			where: {
 				user_id: patient.id,
@@ -908,6 +1037,17 @@ export const getPatientDashboardOverviewByClerkId = async (
 			where: {
 				user_id: patient.id,
 				conversation_status: "completed",
+			},
+		}),
+		prisma.medical_case.findFirst({
+			where: {
+				user_id: patient.id,
+				conversation_status: "in_progress",
+			},
+			orderBy: { updated_at: "desc" },
+			select: {
+				id: true,
+				case_stage: true,
 			},
 		}),
 		prisma.medical_case.findMany({
@@ -924,9 +1064,16 @@ export const getPatientDashboardOverviewByClerkId = async (
 		active_cases: activeCases,
 		completed_cases: completedCases,
 		has_ongoing_case: activeCases > 0,
+		ongoing_case: ongoingCase
+			? {
+					id: ongoingCase.id,
+					case_stage: ongoingCase.case_stage,
+				}
+			: null,
 		recent_cases: recentCases.map((row) => ({
 			id: row.id,
 			conversation_status: row.conversation_status,
+			case_stage: row.case_stage,
 			summary: row.summary,
 			created_at: row.created_at,
 			updated_at: row.updated_at,

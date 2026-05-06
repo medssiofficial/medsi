@@ -21,3 +21,4 @@ dist/
 packages/**/generated/
 .env.prod
 .trigger
+agency-agents

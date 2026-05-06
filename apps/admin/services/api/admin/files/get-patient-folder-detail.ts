@@ -14,7 +14,12 @@ export type PatientFolderDetail = {
 		filename: string;
 		mime_type: string;
 		report_type: "text_report" | "image_report";
-		processing_status: "pending" | "processing" | "completed" | "failed";
+		processing_status:
+			| "pending"
+			| "processing"
+			| "completed"
+			| "failed"
+			| "not_supported";
 		created_at: string | Date;
 		size_bytes: number | null;
 		public_url: string | null;
@@ -85,5 +90,7 @@ export const usePatientFolderDetailQuery = (
 		retry: false,
 		refetchOnWindowFocus: false,
 		refetchOnReconnect: false,
-		staleTime: 60 * 1000,
+		staleTime: 0,
+		// Keep admin folder synced with background task transitions.
+		refetchInterval: 4000,
 	});

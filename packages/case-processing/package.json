@@ -1,0 +1,13 @@
+{
+	"name": "@repo/case-processing",
+	"version": "0.0.0",
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"dependencies": {
+		"@repo/database": "*",
+		"@repo/supabase": "*",
+		"zod": "^4.3.6"
+	}
+}

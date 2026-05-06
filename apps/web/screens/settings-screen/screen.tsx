@@ -1,8 +1,10 @@
 "use client";
 
-import { Button } from "@repo/ui/components/ui/button";
-import { MoonStarIcon, SunIcon } from "lucide-react";
+import { SETTINGS_FILE_PROCESSING_LOGS_URL } from "@/config/client-constants";
 import { PatientAppShell } from "@/components/common";
+import { Button } from "@repo/ui/components/ui/button";
+import { ChevronRightIcon, MoonStarIcon, SunIcon } from "lucide-react";
+import Link from "next/link";
 import { SettingsForm } from "./components/settings-form";
 import { useSettingsScreen } from "./hook";
 
@@ -45,6 +47,25 @@ const SettingsScreen = () => {
 								Dark
 							</Button>
 						</div>
+					</div>
+				</div>
+				<div className="rounded-2xl border border-border-subtle bg-card p-5 shadow-sm">
+					<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+						<div>
+							<p className="text-sm font-semibold text-font-primary">File processing logs</p>
+							<p className="mt-1 text-xs text-font-tertiary">
+								See outcomes for automated text report processing on your files.
+							</p>
+						</div>
+						<Button variant="outline" size="sm" className="w-full sm:w-auto" asChild>
+							<Link
+								href={SETTINGS_FILE_PROCESSING_LOGS_URL}
+								className="inline-flex items-center gap-2"
+							>
+								Open logs
+								<ChevronRightIcon className="size-4" />
+							</Link>
+						</Button>
 					</div>
 				</div>
 				<Button

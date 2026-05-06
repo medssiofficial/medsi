@@ -7,6 +7,9 @@ import { auth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
 import z from "zod";
 
+import { SERVER_ENV } from "@/config/server-env";
+import { patientFileProcessTask } from "@/trigger/tasks/patient-file-process";
+
 const ALLOWED_UPLOAD_TYPES = new Set([
 	"application/pdf",
 	"image/png",
@@ -92,6 +95,20 @@ export const POST = async (req: NextRequest) => {
 			clerk_id: userId,
 			file: fileValue,
 		});
+
+		if (
+			uploaded.report_type === "text_report" &&
+			SERVER_ENV.TRIGGER_SECRET_KEY?.trim()
+		) {
+			try {
+				await patientFileProcessTask.trigger({
+					fileId: uploaded.id,
+					source: "patient_upload",
+				});
+			} catch {
+				// Non-fatal: file is stored; patient can retry from Files.
+			}
+		}
 
 		return sendJsonApiResponse({
 			success: true,

@@ -16,9 +16,12 @@ const FilesPatientFolderScreen = () => {
 		page,
 		setPage,
 		meta,
-		handleSyncProcessing,
-	} =
-		useFilesPatientFolderScreen(patientId);
+		onBulkProcessTextFiles,
+		onProcessTextFile,
+		isBulkProcessing,
+		isProcessingFile,
+		eligibleBulkCount,
+	} = useFilesPatientFolderScreen(patientId);
 
 	return (
 		<AdminShell>
@@ -32,7 +35,11 @@ const FilesPatientFolderScreen = () => {
 				hasNextPage={meta.has_next_page}
 				hasPreviousPage={meta.has_previous_page}
 				onPageChange={setPage}
-				onSyncProcessing={handleSyncProcessing}
+				onBulkProcessTextFiles={() => void onBulkProcessTextFiles()}
+				onProcessTextFile={(fileId) => void onProcessTextFile(fileId)}
+				isBulkProcessing={isBulkProcessing}
+				isProcessingFile={isProcessingFile}
+				eligibleBulkCount={eligibleBulkCount}
 			/>
 		</AdminShell>
 	);

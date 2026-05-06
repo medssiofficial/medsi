@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useSettingsScreen } from "./hook";
 
 const SETTINGS_EMBEDDING_LOGS_HREF = "/settings/embedding-logs";
+const SETTINGS_PATIENT_FILE_LOGS_HREF = "/settings/patient-file-processing-logs";
 
 const SettingsScreen = () => {
 	const screen = useSettingsScreen();
@@ -71,6 +72,27 @@ const SettingsScreen = () => {
 								className="inline-flex items-center gap-2"
 							>
 								Open embedding logs
+								<ChevronRightIcon className="size-4" />
+							</Link>
+						</Button>
+					</CardContent>
+				</Card>
+
+				<Card>
+					<CardHeader>
+						<CardTitle>Patient file processing logs</CardTitle>
+						<CardDescription>
+							View processing runs for patient text reports (Gemini summaries and
+							extractions).
+						</CardDescription>
+					</CardHeader>
+					<CardContent>
+						<Button variant="secondary" className="w-full sm:w-auto" asChild>
+							<Link
+								href={SETTINGS_PATIENT_FILE_LOGS_HREF}
+								className="inline-flex items-center gap-2"
+							>
+								Open patient file logs
 								<ChevronRightIcon className="size-4" />
 							</Link>
 						</Button>

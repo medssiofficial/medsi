@@ -69,6 +69,8 @@ export const usePatientFilesInfinite = (args?: {
 		retry: false,
 		refetchOnWindowFocus: false,
 		refetchOnReconnect: false,
-		staleTime: 60 * 1000,
+		staleTime: 0,
+		// Keep list synced with background task transitions (pending -> processing -> completed/failed).
+		refetchInterval: 4000,
 	});
 };

@@ -6,6 +6,14 @@ import { usePatientDashboardOverview } from "@/services/api/patient/get-dashboar
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
+const getCaseRoute = (caseId: string, stage: string) => {
+	if (stage === "chatting") return `/consultation/chat?caseId=${caseId}`;
+	if (stage === "processing") return `/cases/${caseId}/analyzing`;
+	if (stage === "analyzed") return `/cases/${caseId}/analyzed`;
+	if (stage === "ready_for_matching") return `/cases/${caseId}/review`;
+	return `/consultation/chat?caseId=${caseId}`;
+};
+
 export const useDashboardScreen = () => {
 	const router = useRouter();
 	const { APIErrorHandler } = useAPIErrorHandler();
@@ -17,6 +25,11 @@ export const useDashboardScreen = () => {
 	}, [APIErrorHandler, dashboardQuery.error, dashboardQuery.isError]);
 
 	const handleStartConsultation = () => {
+		const ongoingCase = dashboardQuery.data?.ongoing_case;
+		if (ongoingCase) {
+			router.push(getCaseRoute(ongoingCase.id, ongoingCase.case_stage));
+			return;
+		}
 		router.push(NEW_CONSULTATION_URL);
 	};
 
