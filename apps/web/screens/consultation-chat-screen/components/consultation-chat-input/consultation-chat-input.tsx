@@ -40,6 +40,7 @@ interface ConsultationChatInputProps {
 	onInputChange: (value: string) => void;
 	onSend: () => void;
 	onSkip: () => void;
+	canSkip: boolean;
 	onAttach: () => void;
 	onMic: () => void;
 	isRecording: boolean;
@@ -58,6 +59,7 @@ export const ConsultationChatInput = (props: ConsultationChatInputProps) => {
 		onInputChange,
 		onSend,
 		onSkip,
+		canSkip,
 		onAttach,
 		onMic,
 		isRecording,
@@ -117,16 +119,18 @@ export const ConsultationChatInput = (props: ConsultationChatInputProps) => {
 	return (
 		<>
 			<div className="flex shrink-0 items-center gap-2 border-t border-border-subtle bg-neutral-warm pb-6 pt-3">
-				<Button
-					type="button"
-					variant="ghost"
-					size="sm"
-					className="shrink-0 text-xs text-muted-foreground hover:text-foreground"
-					onClick={onSkip}
-					disabled={isSending}
-				>
-					Skip
-				</Button>
+				{canSkip && (
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						className="shrink-0 text-xs text-muted-foreground hover:text-foreground"
+						onClick={onSkip}
+						disabled={isSending}
+					>
+						Skip
+					</Button>
+				)}
 
 				<Button
 					type="button"
@@ -140,57 +144,62 @@ export const ConsultationChatInput = (props: ConsultationChatInputProps) => {
 					<PaperclipIcon className="size-[22px]" />
 				</Button>
 
-				<div className="flex min-w-0 flex-1 items-center gap-1 rounded-full bg-muted px-1">
-					<input
-						type="text"
-						value={inputText}
-						onChange={(e) => onInputChange(e.target.value)}
-						onKeyDown={handleKeyDown}
-						placeholder={
-							isFileOnlyQuestion
-								? "This question requires a file. Use attach."
-								: "Type a message..."
-						}
-						className="h-11 min-w-0 flex-1 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground"
-						disabled={isSending || isFileOnlyQuestion}
-						readOnly={isFileOnlyQuestion}
-					/>
-				</div>
+				{isFileOnlyQuestion ? (
+					<div className="flex min-w-0 flex-1 items-center rounded-full bg-muted px-4 py-3">
+						<p className="text-sm text-muted-foreground">
+							This question needs a report file. Upload or skip.
+						</p>
+					</div>
+				) : (
+					<>
+						<div className="flex min-w-0 flex-1 items-center gap-1 rounded-full bg-muted px-1">
+							<input
+								type="text"
+								value={inputText}
+								onChange={(e) => onInputChange(e.target.value)}
+								onKeyDown={handleKeyDown}
+								placeholder="Type a message..."
+								className="h-11 min-w-0 flex-1 bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground"
+								disabled={isSending}
+							/>
+						</div>
 
-				<Button
-					type="button"
-					variant="ghost"
-					size="icon-sm"
-					className={
-						isRecording
-							? "animate-pulse text-red-500"
-							: "text-muted-foreground"
-					}
-					onClick={onMic}
-					aria-label={isRecording ? "Stop recording" : "Voice input"}
-					disabled={isSending || isFileOnlyQuestion}
-				>
-					{isRecording ? (
-						<MicOffIcon className="size-[22px]" />
-					) : (
-						<MicIcon className="size-[22px]" />
-					)}
-				</Button>
+						<Button
+							type="button"
+							variant="ghost"
+							size="icon-sm"
+							className={
+								isRecording
+									? "animate-pulse text-red-500"
+									: "text-muted-foreground"
+							}
+							onClick={onMic}
+							aria-label={isRecording ? "Stop recording" : "Voice input"}
+							disabled={isSending}
+						>
+							{isRecording ? (
+								<MicOffIcon className="size-[22px]" />
+							) : (
+								<MicIcon className="size-[22px]" />
+							)}
+						</Button>
 
-				<Button
-					type="button"
-					size="icon"
-					className="size-10 shrink-0 rounded-full bg-[#0F6E6E] text-white hover:bg-[#0c5a5a]"
-					onClick={onSend}
-					aria-label="Send message"
-					disabled={isSending || !inputText.trim() || isFileOnlyQuestion}
-				>
-					{isSending ? (
-						<LoaderCircleIcon className="size-[18px] animate-spin" />
-					) : (
-						<SendIcon className="size-[18px]" />
-					)}
-				</Button>
+						<Button
+							type="button"
+							size="icon"
+							className="size-10 shrink-0 rounded-full bg-[#0F6E6E] text-white hover:bg-[#0c5a5a]"
+							onClick={onSend}
+							aria-label="Send message"
+							disabled={isSending || !inputText.trim()}
+						>
+							{isSending ? (
+								<LoaderCircleIcon className="size-[18px] animate-spin" />
+							) : (
+								<SendIcon className="size-[18px]" />
+							)}
+						</Button>
+					</>
+				)}
 			</div>
 
 			<Dialog

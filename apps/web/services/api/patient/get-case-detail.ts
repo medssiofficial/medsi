@@ -39,6 +39,11 @@ interface CaseInfoState {
 	current_question_id: string | null;
 	off_topic_streak: number;
 	collected_fields: Record<string, unknown>;
+	question?: {
+		id: string;
+		question_text: string;
+		response_type: "text" | "file";
+	} | null;
 }
 
 export interface CaseDetailData {

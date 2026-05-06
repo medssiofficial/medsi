@@ -36,6 +36,7 @@ export const useConsultationChatScreen = () => {
 	const [inputText, setInputText] = useState("");
 	const [currentQuestion, setCurrentQuestion] =
 		useState<CurrentQuestion | null>(null);
+	const [canSkipCurrentQuestion, setCanSkipCurrentQuestion] = useState(false);
 	const [caseStatus, setCaseStatus] = useState<
 		"in_progress" | "completed" | "cancelled"
 	>("in_progress");
@@ -93,6 +94,23 @@ export const useConsultationChatScreen = () => {
 		if (!caseDetailQuery.data || messages.length > 0) return;
 
 		const caseData = caseDetailQuery.data;
+		const initialQuestion = caseData.info_state?.question;
+		if (initialQuestion) {
+			setCurrentQuestion({
+				id: initialQuestion.id,
+				question_text: initialQuestion.question_text,
+				response_type: initialQuestion.response_type,
+			});
+		}
+		const meta = caseData.info_state?.collected_fields?.__question_meta as
+			| Record<string, unknown>
+			| undefined;
+		const currentKey = `question_${caseData.info_state?.current_question_index ?? 0}`;
+		const questionMeta = meta?.[currentKey] as { retry_count?: number } | undefined;
+		setCanSkipCurrentQuestion(
+			(initialQuestion?.response_type === "file") ||
+				Number(questionMeta?.retry_count ?? 0) >= 5,
+		);
 
 		if (caseData.chat_messages && caseData.chat_messages.length > 0) {
 			setMessages(
@@ -168,6 +186,7 @@ export const useConsultationChatScreen = () => {
 					} else {
 						setCurrentQuestion(null);
 					}
+					setCanSkipCurrentQuestion(Boolean(data.can_skip));
 
 					if (
 						data.case_status === "completed" ||
@@ -221,6 +240,7 @@ export const useConsultationChatScreen = () => {
 
 					setInputText("");
 					setCurrentQuestion(data.next_question ?? null);
+					setCanSkipCurrentQuestion(Boolean(data.can_skip));
 					if (data.case_status === "completed" || data.case_status === "cancelled") {
 						setCaseStatus(data.case_status);
 					}
@@ -273,6 +293,7 @@ export const useConsultationChatScreen = () => {
 										if (chatData.next_question) {
 											setCurrentQuestion(chatData.next_question);
 										}
+										setCanSkipCurrentQuestion(Boolean(chatData.can_skip));
 
 										if (
 											chatData.case_status === "completed" ||
@@ -330,6 +351,7 @@ export const useConsultationChatScreen = () => {
 									if (chatData.next_question) {
 										setCurrentQuestion(chatData.next_question);
 									}
+									setCanSkipCurrentQuestion(Boolean(chatData.can_skip));
 
 									if (
 										chatData.case_status === "completed" ||
@@ -414,6 +436,7 @@ export const useConsultationChatScreen = () => {
 		inputText,
 		setInputText,
 		currentQuestion,
+		canSkipCurrentQuestion: canSkipCurrentQuestion || currentQuestion?.response_type === "file",
 		caseStatus,
 		caseId,
 		isRecording,

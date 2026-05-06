@@ -62,6 +62,7 @@ const ConsultationChatScreen = () => {
 						onInputChange={hook.setInputText}
 						onSend={hook.handleSendMessage}
 						onSkip={hook.handleSkipQuestion}
+						canSkip={hook.canSkipCurrentQuestion}
 						onAttach={() => hook.setShowFilePicker(true)}
 						onMic={hook.handleToggleRecording}
 						isRecording={hook.isRecording}

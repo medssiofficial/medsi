@@ -58,7 +58,11 @@ export const getMedicalCaseDetail = async (args: GetMedicalCaseDetailArgs) => {
 	const medicalCase = await prisma.medical_case.findUnique({
 		where,
 		include: {
-			info_state: true,
+			info_state: {
+				include: {
+					question: true,
+				},
+			},
 			analysis: true,
 			embedding_state: true,
 			files: {
@@ -328,6 +332,72 @@ export const incrementOffTopicStreak = async (
 	]);
 
 	return { off_topic_streak: infoState.off_topic_streak };
+};
+
+interface IncrementCaseQuestionRetryArgs {
+	case_id: string;
+	question_key: string;
+	latest_answer?: string;
+	latest_clarity?: "clear" | "partial" | "unclear";
+	detected_problem_type?: string | null;
+}
+
+export const incrementCaseQuestionRetry = async (
+	args: IncrementCaseQuestionRetryArgs,
+) => {
+	const infoState = await prisma.case_info_state.findUnique({
+		where: { case_id: args.case_id },
+	});
+
+	if (!infoState) {
+		throw new Error(`Info state not found for case ${args.case_id}`);
+	}
+
+	const existingFields =
+		(infoState.collected_fields as Record<string, unknown>) ?? {};
+	const rawMeta = existingFields.__question_meta;
+	const questionMeta = (
+		typeof rawMeta === "object" && rawMeta !== null ? rawMeta : {}
+	) as Record<string, unknown>;
+	const current = questionMeta[args.question_key];
+	const currentRecord =
+		typeof current === "object" && current !== null
+			? (current as Record<string, unknown>)
+			: {};
+	const currentRetry =
+		typeof currentRecord.retry_count === "number"
+			? currentRecord.retry_count
+			: 0;
+	const nextRetry = currentRetry + 1;
+
+	const nextQuestionMeta: Record<string, unknown> = {
+		...questionMeta,
+		[args.question_key]: {
+			...currentRecord,
+			retry_count: nextRetry,
+			last_answer: args.latest_answer ?? null,
+			last_clarity: args.latest_clarity ?? null,
+			updated_at: new Date().toISOString(),
+		},
+	};
+
+	if (args.detected_problem_type && args.detected_problem_type.trim().length > 0) {
+		nextQuestionMeta.__detected_problem_type = args.detected_problem_type.trim();
+	}
+
+	const mergedFields = {
+		...existingFields,
+		__question_meta: nextQuestionMeta,
+	};
+
+	await prisma.case_info_state.update({
+		where: { case_id: args.case_id },
+		data: {
+			collected_fields: mergedFields as Prisma.InputJsonValue,
+		},
+	});
+
+	return { retry_count: nextRetry, collected_fields: mergedFields };
 };
 
 // ---------------------------------------------------------------------------

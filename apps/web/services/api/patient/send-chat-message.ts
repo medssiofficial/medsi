@@ -13,6 +13,9 @@ interface ChatResponse {
 	assistant_message: string;
 	case_status: "in_progress" | "completed" | "cancelled";
 	off_topic_warnings?: number;
+	retry_count?: number;
+	retry_limit?: number;
+	can_skip?: boolean;
 	next_question: {
 		id: string;
 		question_text: string;
