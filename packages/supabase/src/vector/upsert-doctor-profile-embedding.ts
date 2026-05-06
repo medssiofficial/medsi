@@ -35,18 +35,29 @@ export const upsertDoctorProfileEmbedding = async (
 
 	const supabase = rawClient as unknown as SupabaseClient;
 
-	const { error } = await supabase.from(TABLE).upsert(
-		{
-			doctor_id: args.doctorId,
-			embedding: args.embedding,
-			model: args.model,
-			updated_at: new Date().toISOString(),
-		},
-		{ onConflict: "doctor_id" },
-	);
+	const payload = {
+		doctor_id: args.doctorId,
+		embedding: args.embedding,
+		model: args.model,
+		updated_at: new Date().toISOString(),
+	};
+
+	const { data, error } = await supabase
+		.from(TABLE)
+		.upsert(payload, { onConflict: "doctor_id" })
+		.select("doctor_id")
+		.maybeSingle();
 
 	if (error) {
 		return { ok: false, error: error.message };
+	}
+
+	// Guardrail: treat missing returned row as failed persistence.
+	if (!data || data.doctor_id !== args.doctorId) {
+		return {
+			ok: false,
+			error: "Vector upsert did not return a persisted doctor_id row.",
+		};
 	}
 
 	return { ok: true };
